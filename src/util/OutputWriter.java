@@ -2,14 +2,11 @@ package util;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.PrintWriter;
 
 public class OutputWriter {
     static BufferedWriter out;
 
     public static void init(String filename) {
-
-
         try {
             out = new BufferedWriter(new FileWriter(filename));
         } catch (Exception e) {
@@ -18,25 +15,25 @@ public class OutputWriter {
     }
 
     public static void close() {
-        try{
+        try {
             out.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void write(String string){
-        try{
+    public static void write(String string) {
+        try {
             out.write(string);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void writeln(String string){
-        try{
-            out.write(string+"\n");
-        }catch (Exception e){
+    public static void writeln(String string) {
+        try {
+            out.write(string + "\n");
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -8,7 +8,7 @@ public class Compiler {
     public static void init() {
         CompilerMode.setDebug(true);
         CompilerMode.setStage("lexical");
-        CompilerMode.setDebugFilename(2022,'A',1);
+        CompilerMode.setDebugFilename(2022, 'A', 1);
     }
 
     public static void main(String[] args) {
