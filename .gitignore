@@ -1,0 +1,8 @@
+.idea/
+*.zip
+*.iml
+out/
+answer.txt
+output.txt
+testfile.txt
+data/
