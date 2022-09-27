@@ -5,8 +5,6 @@ import util.CompilerMode;
 import util.InputReader;
 import util.OutputWriter;
 
-import java.io.File;
-
 public class Judge {
     public static void init() {
         CompilerMode.setDebug(false);

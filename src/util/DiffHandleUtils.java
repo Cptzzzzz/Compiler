@@ -90,7 +90,7 @@ public class DiffHandleUtils {
     public static void generateDiffHtml(List<String> diffString, String htmlPath) {
         StringBuilder builder = new StringBuilder();
         for (String line : diffString) {
-            builder.append(line);
+            builder.append(line.replace("\\n","\\\\n").replace("`","\\`"));
             builder.append("\n");
         }
         //如果打开html为空白界面，可能cdn加载githubCss失败 ,githubCss 链接可替换为 https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/styles/github.min.css
