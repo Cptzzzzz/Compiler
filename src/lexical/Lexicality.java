@@ -22,7 +22,7 @@ public class Lexicality {
     }
 
     public static void solve(String word, int line) {
-        System.out.println(word);
+//        System.out.println(word);
         Lexicality lexicality = new Lexicality(word);
         lexicality.setLineNumber(line);
         if (word.matches("\".*\"")) {

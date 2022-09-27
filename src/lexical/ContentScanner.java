@@ -142,10 +142,13 @@ public class ContentScanner {
                     state = 0;
                 } else if (s.equals("\n")) {
                     res += "\n";
+                    state=4;
+                }else{
+                    state=4;
                 }
             }
         }
-        System.out.println(res);
+//        System.out.println(res);
         return res;
     }
 
