@@ -1,2 +1,2 @@
-del src.zip
-zip src.zip .\src\Compiler.java .\src\lexical\*.java .\src\util\CompilerMode.java .\src\util\InputReader.java .\src\util\OutputWriter.java
+del src.zip bin.zip
+zip compiler.zip bin src -r
