@@ -21,13 +21,13 @@ public class CompilerMode {
         stage = res;
     }
 
-    static String debugFilename;
+    static boolean judge = false;
 
-    public static void setDebugFilename(int year, char category, int number) {
-        debugFilename = String.format("data/%d/testfiles-only/%c/testfile%d.txt", year, category, number);
+    public static void setJudge(boolean res) {
+        judge = res;
     }
 
-    public static String getDebugFilename() {
-        return debugFilename;
+    public static boolean getJudge() {
+        return judge;
     }
 }

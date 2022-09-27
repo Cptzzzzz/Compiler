@@ -5,4 +5,5 @@ out/
 answer.txt
 output.txt
 testfile.txt
-data/
+output/
+diff/

@@ -1,8 +1,5 @@
 package lexical;
 
-
-import util.CompilerMode;
-
 public class ContentScanner {
     public static void start(String content) {
         content = content + " ";
@@ -150,8 +147,6 @@ public class ContentScanner {
                 }
             }
         }
-        if (CompilerMode.getDebug())
-            System.out.println(res);
         return res;
     }
 

@@ -1,8 +1,6 @@
 package lexical;
 
-import util.CompilerMode;
 import util.OutputWriter;
-
 import java.util.ArrayList;
 
 public class Lexicality {
@@ -23,8 +21,6 @@ public class Lexicality {
     }
 
     public static void solve(String word, int line) {
-        if (CompilerMode.getDebug())
-            System.out.println(word);
         Lexicality lexicality = new Lexicality(word);
         lexicality.setLineNumber(line);
         if (word.matches("\".*\"")) {

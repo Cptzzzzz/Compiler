@@ -6,23 +6,26 @@ import util.OutputWriter;
 
 public class Compiler {
     public static void init() {
-        CompilerMode.setDebug(true);
-        CompilerMode.setStage("lexical");
-        CompilerMode.setDebugFilename(2022, 'A', 1);
+        CompilerMode.setDebug(false);
+        CompilerMode.setStage("Lexical analysis");
+        CompilerMode.setJudge(false);
     }
 
     public static void main(String[] args) {
         Compiler.init();
+        submit();
+    }
+
+    public static void submit() {
         String content = InputReader.readFile("testfile.txt");
-        if (CompilerMode.getDebug())
-            content = InputReader.readFile(CompilerMode.getDebugFilename());
         OutputWriter.init("output.txt");
         Lexicality.init();
         content = ContentScanner.pretreat(content);
         ContentScanner.start(content);
 
-        if (CompilerMode.getStage().equals("lexical"))
+        if (CompilerMode.getStage().equals("Lexical analysis"))
             Lexicality.outputAll();
         OutputWriter.close();
     }
+
 }
