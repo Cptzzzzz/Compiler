@@ -1,5 +1,6 @@
 package lexical;
 
+import util.CompilerMode;
 import util.OutputWriter;
 
 import java.util.ArrayList;
@@ -22,7 +23,8 @@ public class Lexicality {
     }
 
     public static void solve(String word, int line) {
-//        System.out.println(word);
+        if (CompilerMode.getDebug())
+            System.out.println(word);
         Lexicality lexicality = new Lexicality(word);
         lexicality.setLineNumber(line);
         if (word.matches("\".*\"")) {
@@ -149,6 +151,6 @@ public class Lexicality {
     }
 
     public static void main(String args[]) {
-        System.out.println("abc".matches("^[_|a-z][_|a-z|0-9]*"));
+
     }
 }
