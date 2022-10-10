@@ -1,90 +1,42 @@
 package syntax;
 
-import lexical.Lexicality;
 import lexical.LexicalitySupporter;
-import util.OutputWriter;
-
-import java.util.ArrayList;
 
 public class VarDef extends ParserUnit {
     VarDef() {
-
-    }
-
-    VarDef(String name, ArrayList<ParserUnit> units) {
-        this.name = name;
-        this.derivations = new ArrayList<>(units);
-    }
-
-    VarDef(String name, ArrayList<ParserUnit> units, ArrayList<Lexicality> lexicalities) {
-        this.name = name;
-        this.derivations = new ArrayList<>(units);
-        this.lexicalities = new ArrayList<>(lexicalities);
+        name = "VarDef";
     }
 
     public static VarDef parser(LexicalitySupporter lexicalitySupporter) {
-        ArrayList<ParserUnit> arrayList = new ArrayList<>();
-        ArrayList<Lexicality> lexicalities = new ArrayList<>();
-        lexicalities.add(lexicalitySupporter.read());
-        lexicalitySupporter.next();
-        while(lexicalitySupporter.read().getType().equals("LBRACK")){
-            lexicalities.add(lexicalitySupporter.read());
-            lexicalitySupporter.next();
-            if(ConstExp.pretreat(lexicalitySupporter)){
-                arrayList.add(ConstExp.parser(lexicalitySupporter));
-            }
-            if(lexicalitySupporter.read().getType().equals("RBRACK")){
-                lexicalities.add(lexicalitySupporter.read());
-                lexicalitySupporter.next();
-            }
-        }
-        if(lexicalitySupporter.read().getType().equals("ASSIGN")){
-            lexicalities.add(lexicalitySupporter.read());
-            lexicalitySupporter.next();
-            if(InitVal.pretreat(lexicalitySupporter)){
-                arrayList.add(InitVal.parser(lexicalitySupporter));
-            }
-        }
-        return new VarDef("VarDef", arrayList, lexicalities);
-    }
+        VarDef varDef = new VarDef();
+        varDef.add(lexicalitySupporter.readAndNext());
+        while (lexicalitySupporter.read().getType().equals("LBRACK")) {
+            varDef.add(lexicalitySupporter.readAndNext());
+            varDef.add(ConstExp.parser(lexicalitySupporter));
 
-    public void output() {
-        int lexicalityLength = lexicalities.size(), derivationLength = derivations.size();
-        int lexicalityPointer = 0, derivationPointer = 0;
-        OutputWriter.writeln(lexicalities.get(lexicalityPointer).toString());
-        lexicalityPointer++;
-        while (lexicalityPointer < lexicalityLength &&
-                lexicalities.get(lexicalityPointer).getType().equals("LBRACK")) {
-            OutputWriter.writeln(lexicalities.get(lexicalityPointer).toString());
-            lexicalityPointer++;
-            derivations.get(derivationPointer).output();
-            derivationPointer++;
-            OutputWriter.writeln(lexicalities.get(lexicalityPointer).toString());
-            lexicalityPointer++;
+            if (lexicalitySupporter.read().getType().equals("RBRACK")) {
+                varDef.add(lexicalitySupporter.readAndNext());
+            } else {
+                //todo 错误处理
+            }
         }
-        if (lexicalityLength != lexicalityPointer && derivationPointer != derivationLength) {
-            OutputWriter.writeln(lexicalities.get(lexicalityPointer).toString());
-            derivations.get(derivationPointer).output();
+        if (lexicalitySupporter.read().getType().equals("ASSIGN")) {
+            varDef.add(lexicalitySupporter.readAndNext());
+            varDef.add(InitVal.parser(lexicalitySupporter));
         }
-        OutputWriter.writeln(String.format("<%s>", name));
+        return varDef;
     }
 
     public static boolean pretreat(LexicalitySupporter lexicalitySupporter) {
-        if (lexicalitySupporter.isEmpty()) {
+        LexicalitySupporter lexicalitySupporter1 = new LexicalitySupporter(lexicalitySupporter.getPointer());
+        if (lexicalitySupporter1.read().getType().equals("IDENFR")) {
+            lexicalitySupporter1.next();
+        } else {
             return false;
         }
-        int offset=0;
-        if (lexicalitySupporter.read().getType().equals("IDENFR")) {
-            lexicalitySupporter.next();
-            offset++;
-        }else{
+        if (lexicalitySupporter1.read().getType().equals("LPARENT")) {
             return false;
-        }
-        if(lexicalitySupporter.read().getType().equals("LPARENT")){
-            lexicalitySupporter.backspace(offset);
-            return false;
-        }else{
-            lexicalitySupporter.backspace(offset);
+        } else {
             return true;
         }
     }

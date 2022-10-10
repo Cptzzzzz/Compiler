@@ -27,8 +27,7 @@ public class Compiler {
         Lexicality.init();
         content = ContentScanner.pretreat(content);
         ContentScanner.start(content);
-        LexicalitySupporter lexicalitySupporter = LexicalitySupporter.builder();
-        CompUnit root = CompUnit.parser(lexicalitySupporter);
+        CompUnit root = ParserUnit.treeBuilder();
 
         if (CompilerMode.getStage().equals("Lexical analysis")) {
             Lexicality.outputAll();

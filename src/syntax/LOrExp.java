@@ -2,54 +2,39 @@ package syntax;
 
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
-import util.OutputWriter;
 
 import java.util.ArrayList;
 
 public class LOrExp extends ParserUnit {
     LOrExp() {
-
-    }
-
-    LOrExp(String name, ArrayList<ParserUnit> units) {
-        this.name = name;
-        this.derivations = new ArrayList<>(units);
-    }
-
-    LOrExp(String name, ArrayList<ParserUnit> units, ArrayList<Lexicality> lexicalities) {
-        this.name = name;
-        this.derivations = new ArrayList<>(units);
-        this.lexicalities = new ArrayList<>(lexicalities);
+        name = "LOrExp";
     }
 
     public static LOrExp parser(LexicalitySupporter lexicalitySupporter) {
-        ArrayList<ParserUnit> arrayList = new ArrayList<>();
+        LOrExp lOrExp, temp;
+        LAndExp lAndExp;
+        ArrayList<LAndExp> arrayList = new ArrayList<>();
         ArrayList<Lexicality> lexicalities = new ArrayList<>();
         arrayList.add(LAndExp.parser(lexicalitySupporter));
-        while(lexicalitySupporter.read().getType().equals("OR")){
-            lexicalities.add(lexicalitySupporter.read());
-            lexicalitySupporter.next();
-            if(LAndExp.pretreat(lexicalitySupporter)){
-                arrayList.add(LAndExp.parser(lexicalitySupporter));
-            }
+        while (lexicalitySupporter.read().getType().equals("OR")) {
+            lexicalities.add(lexicalitySupporter.readAndNext());
+            arrayList.add(LAndExp.parser(lexicalitySupporter));
         }
-        return new LOrExp("LOrExp",arrayList,lexicalities);
+        int length = lexicalities.size();
+        lAndExp = arrayList.get(0);
+        lOrExp = new LOrExp();
+        lOrExp.add(lAndExp);
+        for (int i = 0; i < length; i++) {
+            temp = new LOrExp();
+            temp.add(lOrExp);
+            temp.add(lexicalities.get(i));
+            temp.add(arrayList.get(i + 1));
+            lOrExp = temp;
+        }
+        return lOrExp;
     }
 
-    public void output(){
-        derivations.get(0).output();
-        int length=lexicalities.size();
-        for(int i=0;i<length;i++){
-            OutputWriter.writeln(String.format("<%s>",name));
-            OutputWriter.writeln(lexicalities.get(i).toString());
-            derivations.get(i+1).output();
-        }
-        OutputWriter.writeln(String.format("<%s>",name));
-    }
     public static boolean pretreat(LexicalitySupporter lexicalitySupporter) {
-        if (lexicalitySupporter.isEmpty()) {
-            return false;
-        }
         if (LAndExp.pretreat(lexicalitySupporter)) {
             return true;
         }

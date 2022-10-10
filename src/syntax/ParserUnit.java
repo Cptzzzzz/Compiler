@@ -1,21 +1,19 @@
 package syntax;
 
-import lexical.Lexicality;
 import lexical.LexicalitySupporter;
-import util.OutputWriter;
+import util.Node;
 
 import java.util.ArrayList;
 
-public class ParserUnit {
+public class ParserUnit extends Node {
     String name;
-    ArrayList<ParserUnit> derivations;
-    ArrayList<Lexicality> lexicalities;
+
     public ParserUnit() {
     }
 
-    ParserUnit(String name, ArrayList<ParserUnit> units) {
-        this.name = name;
-        this.derivations = new ArrayList<>(units);
+    public static CompUnit treeBuilder() {
+        LexicalitySupporter lexicalitySupporter = new LexicalitySupporter();
+        return CompUnit.parser(lexicalitySupporter);
     }
 
     public static ParserUnit parser(LexicalitySupporter lexicalitySupporter) {
@@ -26,10 +24,20 @@ public class ParserUnit {
         return true;
     }
 
-    public void output(){
-        OutputWriter.writeln(String.format("<%s>",name));
+    public String toString() {
+        return String.format("<%s>", getName());
     }
-    public String getName(){
+
+    public String getName() {
         return name;
     }
+
+    public void add(Node node) {
+        if (nodes == null) {
+            nodes = new ArrayList<Node>();
+        }
+        nodes.add(node);
+    }
+
+
 }

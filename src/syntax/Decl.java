@@ -1,33 +1,26 @@
 package syntax;
 
 import lexical.LexicalitySupporter;
-
-import java.util.ArrayList;
+import util.CompilerMode;
 
 public class Decl extends ParserUnit {
     Decl() {
-
-    }
-
-    Decl(String name, ArrayList<ParserUnit> units) {
-        this.name = name;
-        this.derivations = new ArrayList<>(units);
+        name = "Decl";
+        isOutput=false;
     }
 
     public static Decl parser(LexicalitySupporter lexicalitySupporter) {
-        ArrayList<ParserUnit> arrayList = new ArrayList<>();
+        if(CompilerMode.getDebug())
+            System.out.println("Decl");
+        Decl decl = new Decl();
         if (ConstDecl.pretreat(lexicalitySupporter)) {
-            arrayList.add(ConstDecl.parser(lexicalitySupporter));
+            decl.add(ConstDecl.parser(lexicalitySupporter));
         } else if (VarDecl.pretreat(lexicalitySupporter)) {
-            arrayList.add(VarDecl.parser(lexicalitySupporter));
+            decl.add(VarDecl.parser(lexicalitySupporter));
         }
-        return new Decl("Decl",arrayList);
+        return decl;
     }
-    public void output(){
-        for(ParserUnit parserUnit:derivations){
-            parserUnit.output();
-        }
-    }
+
     public static boolean pretreat(LexicalitySupporter lexicalitySupporter) {
         if (ConstDecl.pretreat(lexicalitySupporter) || VarDecl.pretreat(lexicalitySupporter)) {
             return true;

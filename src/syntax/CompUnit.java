@@ -1,46 +1,25 @@
 package syntax;
 
 import lexical.LexicalitySupporter;
-import util.OutputWriter;
 
-import java.util.ArrayList;
-
-public class CompUnit extends ParserUnit{
-
-    CompUnit(){
-
-    }
-    CompUnit(String name, ArrayList<ParserUnit> units){
-        this.name=name;
-        this.derivations=new ArrayList<>(units);
+public class CompUnit extends ParserUnit {
+    CompUnit() {
+        name = "CompUnit";
     }
 
     public static CompUnit parser(LexicalitySupporter lexicalitySupporter) {
-        ArrayList<ParserUnit> arrayList=new ArrayList<ParserUnit>();
-        while(Decl.pretreat(lexicalitySupporter)){
-            arrayList.add(Decl.parser(lexicalitySupporter));
+        CompUnit compUnit = new CompUnit();
+        while (Decl.pretreat(lexicalitySupporter)) {
+            compUnit.add(Decl.parser(lexicalitySupporter));
         }
-        while(FuncDef.pretreat(lexicalitySupporter)){
-            arrayList.add(FuncDef.parser(lexicalitySupporter));
+        while (FuncDef.pretreat(lexicalitySupporter)) {
+            compUnit.add(FuncDef.parser(lexicalitySupporter));
         }
-        if(MainFuncDef.pretreat(lexicalitySupporter)){
-            arrayList.add(MainFuncDef.parser(lexicalitySupporter));
-        }else{
-
-        }
-        return new CompUnit("CompUnit",arrayList);
+        compUnit.add(MainFuncDef.parser(lexicalitySupporter));
+        return compUnit;
     }
 
     public static boolean pretreat(LexicalitySupporter lexicalitySupporter) {
-
         return true;
-    }
-
-
-    public void output(){
-        for(ParserUnit parserUnit:derivations){
-            parserUnit.output();
-        }
-        OutputWriter.writeln(String.format("<%s>",name));
     }
 }

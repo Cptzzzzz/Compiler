@@ -1,10 +1,11 @@
 package lexical;
 
+import util.Node;
 import util.OutputWriter;
 
 import java.util.*;
 
-public class Lexicality {
+public class Lexicality extends Node {
     static ArrayList<Lexicality> lexicalities;
     static HashMap<String, String> keywords;
     static HashMap<String,String> symbols;
@@ -61,7 +62,7 @@ public class Lexicality {
 
     public static void outputAll() {
         for (Lexicality i : lexicalities) {
-            OutputWriter.writeln(i.toString());
+            i.output();
         }
     }
 

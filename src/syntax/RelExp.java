@@ -8,53 +8,37 @@ import java.util.ArrayList;
 
 public class RelExp extends ParserUnit {
     RelExp() {
-
-    }
-
-    RelExp(String name, ArrayList<ParserUnit> units) {
-        this.name = name;
-        this.derivations = new ArrayList<>(units);
-    }
-
-    RelExp(String name, ArrayList<ParserUnit> units, ArrayList<Lexicality> lexicalities) {
-        this.name = name;
-        this.derivations = new ArrayList<>(units);
-        this.lexicalities = new ArrayList<>(lexicalities);
+        name = "RelExp";
     }
 
     public static RelExp parser(LexicalitySupporter lexicalitySupporter) {
-        ArrayList<ParserUnit> arrayList = new ArrayList<>();
+        RelExp relExp,temp;
+        AddExp addExp;
+        ArrayList<AddExp> arrayList = new ArrayList<>();
         ArrayList<Lexicality> lexicalities = new ArrayList<>();
         arrayList.add(AddExp.parser(lexicalitySupporter));
         while (lexicalitySupporter.read().getType().equals("LSS") ||
                 lexicalitySupporter.read().getType().equals("LEQ") ||
                 lexicalitySupporter.read().getType().equals("GRE") ||
                 lexicalitySupporter.read().getType().equals("GEQ")) {
-            lexicalities.add(lexicalitySupporter.read());
-            lexicalitySupporter.next();
-            if (AddExp.pretreat(lexicalitySupporter)) {
+            lexicalities.add(lexicalitySupporter.readAndNext());
                 arrayList.add(AddExp.parser(lexicalitySupporter));
-            }
         }
-
-        return new RelExp("RelExp", arrayList, lexicalities);
-    }
-
-    public void output() {
-        derivations.get(0).output();
         int length = lexicalities.size();
+        addExp = arrayList.get(0);
+        relExp = new RelExp();
+        relExp.add(addExp);
         for (int i = 0; i < length; i++) {
-            OutputWriter.writeln(String.format("<%s>", name));
-            OutputWriter.writeln(lexicalities.get(i).toString());
-            derivations.get(i + 1).output();
+            temp = new RelExp();
+            temp.add(relExp);
+            temp.add(lexicalities.get(i));
+            temp.add(arrayList.get(i + 1));
+            relExp = temp;
         }
-        OutputWriter.writeln(String.format("<%s>", name));
+        return relExp;
     }
 
     public static boolean pretreat(LexicalitySupporter lexicalitySupporter) {
-        if (lexicalitySupporter.isEmpty()) {
-            return false;
-        }
         if (AddExp.pretreat(lexicalitySupporter)) {
             return true;
         }

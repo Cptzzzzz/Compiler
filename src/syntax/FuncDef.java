@@ -1,83 +1,44 @@
 package syntax;
 
-import lexical.Lexicality;
 import lexical.LexicalitySupporter;
-import util.OutputWriter;
-
-import java.util.ArrayList;
+import util.CompilerMode;
 
 public class FuncDef extends ParserUnit {
     FuncDef() {
-
-    }
-
-    FuncDef(String name, ArrayList<ParserUnit> units) {
-        this.name = name;
-        this.derivations = new ArrayList<>(units);
-    }
-
-    FuncDef(String name, ArrayList<ParserUnit> units, ArrayList<Lexicality> lexicalities) {
-        this.name = name;
-        this.derivations = new ArrayList<>(units);
-        this.lexicalities = new ArrayList<>(lexicalities);
+        name = "FuncDef";
     }
 
     public static FuncDef parser(LexicalitySupporter lexicalitySupporter) {
-        ArrayList<ParserUnit> arrayList = new ArrayList<>();
-        ArrayList<Lexicality> lexicalities = new ArrayList<>();
-        arrayList.add(FuncType.parser(lexicalitySupporter));
-        if (lexicalitySupporter.read().getType().equals("IDENFR")) {
-            lexicalities.add(lexicalitySupporter.read());
-            lexicalitySupporter.next();
-        }
+        if(CompilerMode.getDebug())
+            System.out.println("FuncDef");
+        FuncDef funcDef = new FuncDef();
+        funcDef.add(FuncType.parser(lexicalitySupporter));
+        funcDef.add(lexicalitySupporter.readAndNext());
         if (lexicalitySupporter.read().getType().equals("LPARENT")) {
-            lexicalities.add(lexicalitySupporter.read());
-            lexicalitySupporter.next();
+            funcDef.add(lexicalitySupporter.readAndNext());
+            if (FuncFParams.pretreat(lexicalitySupporter)) {
+                funcDef.add(FuncFParams.parser(lexicalitySupporter));
+            }
+            if (lexicalitySupporter.read().getType().equals("RPARENT")) {
+                funcDef.add(lexicalitySupporter.readAndNext());
+            } else {
+                //todo 错误处理
+            }
         }
-        if (FuncFParams.pretreat(lexicalitySupporter)) {
-            arrayList.add(FuncFParams.parser(lexicalitySupporter));
-        }
-        if (lexicalitySupporter.read().getType().equals("RPARENT")) {
-            lexicalities.add(lexicalitySupporter.read());
-            lexicalitySupporter.next();
-        }
-        if (Block.pretreat(lexicalitySupporter)) {
-            arrayList.add(Block.parser(lexicalitySupporter));
-        }
-        return new FuncDef("FuncDef", arrayList, lexicalities);
+        funcDef.add(Block.parser(lexicalitySupporter));
+        return funcDef;
     }
 
-    public void output(){
-        derivations.get(0).output();
-        OutputWriter.writeln(lexicalities.get(0).toString());
-        if(derivations.size()==3){
-            OutputWriter.writeln(lexicalities.get(1).toString());
-            derivations.get(1).output();
-            OutputWriter.writeln(lexicalities.get(2).toString());
-            derivations.get(2).output();
-        }else{
-            OutputWriter.writeln(lexicalities.get(1).toString());
-            OutputWriter.writeln(lexicalities.get(2).toString());
-            derivations.get(1).output();
-        }
-        OutputWriter.writeln(String.format("<%s>",name));
-    }
     public static boolean pretreat(LexicalitySupporter lexicalitySupporter) {
-        if (lexicalitySupporter.isEmpty()) {
-            return false;
-        }
-        int offset = 0;
-        if (FuncType.pretreat(lexicalitySupporter)) {
-            offset++;
-            lexicalitySupporter.next();
+        LexicalitySupporter lexicalitySupporter1 = new LexicalitySupporter(lexicalitySupporter.getPointer());
+        if (FuncType.pretreat(lexicalitySupporter1)) {
+            lexicalitySupporter1.next();
         } else {
             return false;
         }
-        if (lexicalitySupporter.read().getType().equals("IDENFR")) {
-            lexicalitySupporter.backspace(offset);
+        if (lexicalitySupporter1.read().getType().equals("IDENFR")) {
             return true;
         } else {
-            lexicalitySupporter.backspace(offset);
             return false;
         }
     }

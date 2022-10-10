@@ -2,6 +2,7 @@ import lexical.ContentScanner;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import syntax.CompUnit;
+import syntax.ParserUnit;
 import util.AutoJudge;
 import util.CompilerMode;
 import util.InputReader;
@@ -56,7 +57,7 @@ public class Judge {
             Lexicality.outputAll();
         else if(CompilerMode.getStage().equals("Syntax analysis")){
             LexicalitySupporter lexicalitySupporter = LexicalitySupporter.builder();
-            CompUnit root = CompUnit.parser(lexicalitySupporter);
+            CompUnit root = ParserUnit.treeBuilder();
             root.output();
         }
         OutputWriter.close();
