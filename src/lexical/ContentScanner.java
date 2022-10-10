@@ -115,8 +115,10 @@ public class ContentScanner {
                 res += s;
             } else if (state == 2) {
                 if (s.equals("/")) {
+                    res+="  ";
                     state = 3;
                 } else if (s.equals("*")) {
+                    res+="  ";
                     state = 4;
                 } else {
                     res += "/";
@@ -127,22 +129,29 @@ public class ContentScanner {
                 if (s.equals("\n")) {
                     state = 0;
                     res += "\n";
+                }else {
+                    res+=" ";
                 }
             } else if (state == 4) {
                 if (s.equals("*")) {
                     state = 5;
                 } else if (s.equals("\n")) {
                     res += "\n";
+                }else {
+                    res+=" ";
                 }
             } else if (state == 5) {
                 if (s.equals("*")) {
                     state = 5;
+                    res+=" ";
                 } else if (s.equals("/")) {
+                    res+="  ";
                     state = 0;
                 } else if (s.equals("\n")) {
                     res += "\n";
                     state = 4;
                 } else {
+                    res+=" ";
                     state = 4;
                 }
             }

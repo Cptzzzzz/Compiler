@@ -1,5 +1,7 @@
 import lexical.ContentScanner;
 import lexical.Lexicality;
+import lexical.LexicalitySupporter;
+import syntax.CompUnit;
 import util.AutoJudge;
 import util.CompilerMode;
 import util.InputReader;
@@ -8,11 +10,11 @@ import util.OutputWriter;
 public class Judge {
     public static void init() {
         CompilerMode.setDebug(false);
-        CompilerMode.setStage("Lexical analysis");
+        CompilerMode.setStage("Syntax analysis");
         CompilerMode.setJudge(false);
     }
     public static void main(String[] args) {
-        Compiler.init();
+        Judge.init();
         judge();
     }
     public static void judge() {
@@ -52,6 +54,11 @@ public class Judge {
 
         if (CompilerMode.getStage().equals("Lexical analysis"))
             Lexicality.outputAll();
+        else if(CompilerMode.getStage().equals("Syntax analysis")){
+            LexicalitySupporter lexicalitySupporter = LexicalitySupporter.builder();
+            CompUnit root = CompUnit.parser(lexicalitySupporter);
+            root.output();
+        }
         OutputWriter.close();
 
         boolean res = AutoJudge.compare(standard, output);
