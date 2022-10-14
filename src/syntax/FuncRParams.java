@@ -27,19 +27,23 @@ public class FuncRParams extends ParserUnit {
         return false;
     }
 
-    public ArrayList<Variable> getParams(){
-        ArrayList<Variable> variables=new ArrayList<>();
+    public int getParamNumber(){
+        int res=0;
         for(Node node:nodes){
-            if(node instanceof Exp){//todo 补全求参数维度的逻辑
-                Variable variable=new Variable();
-                ArrayList<Integer> dimensions=new ArrayList<>();
-                for(int i=((Exp)node).getDimension();i>0;i--){
-                    dimensions.add(0);
-                }
-                variable.setDimensions(dimensions);
-                variables.add(variable);
+            if(node instanceof Exp){
+                res++;
             }
         }
-        return variables;
+        return res;
+    }
+
+    public ArrayList<Integer> getParamDimensions(){
+        ArrayList<Integer> res=new ArrayList<>();
+        for(Node node:nodes){
+            if(node instanceof Exp){
+                res.add(((Exp) node).getDimension());
+            }
+        }
+        return res;
     }
 }

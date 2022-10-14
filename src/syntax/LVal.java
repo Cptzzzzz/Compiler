@@ -57,12 +57,6 @@ public class LVal extends ParserUnit {
         return ((Lexicality) nodes.get(0)).getLineNumber();
     }
 
-    public ArrayList<LVal> getLVal() {
-        ArrayList<LVal> res=new ArrayList<>();
-        res.add(this);
-        return res;
-    }
-
     public int getDimension() {
         return    getVariableDimension(getVariableName())-  (nodes.size() - 1) / 3;
     }

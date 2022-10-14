@@ -52,23 +52,37 @@ public class UnaryExp extends ParserUnit {
 
     public void setup() {
         if (nodes.get(0) instanceof Lexicality) {
-            Function function = getFunction();
-            functionTable.judge(function, ((Lexicality) nodes.get(0)).getLineNumber());
-            if (functionTable.isVoid(function.getName())) {
-                ((ParserUnit) parent).judgeVoid();
+            Function function = functionTable.get(((Lexicality) nodes.get(0)).getContent());
+            if (function == null) {
+                ErrorWriter.add(new Error(((Lexicality) nodes.get(0)).getLineNumber(), 'c'));
+            }else{
+                int number=getParamNumber();
+                if(number!=function.getParams().size()){
+                    ErrorWriter.add(new Error(((Lexicality) nodes.get(0)).getLineNumber(), 'd'));
+                }
+                for(int i=0;i<number;i++){
+                    try{
+                        if(getParamDimensions().get(i)!=function.getParams().get(i).getDimension()){
+                            ErrorWriter.add(new Error(((Lexicality) nodes.get(0)).getLineNumber(), 'e'));
+                            break;
+                        }
+                    }catch (Exception e){
+
+                    }
+                }
             }
         }
         super.setup();
     }
 
-    public Function getFunction() {
-        Function function = new Function();
-        function.setName(((Lexicality) nodes.get(0)).getContent());
-        function.setParams(new ArrayList<>());
-        for (Node node : nodes) {
-            if (node instanceof FuncRParams)
-                function.setParams(((FuncRParams) node).getParams());
-        }
-        return function;
+    public int getParamNumber(){
+        if(nodes.size()==3)
+            return 0;
+        return ((FuncRParams) nodes.get(2)).getParamNumber();
+    }
+
+    public ArrayList<Integer> getParamDimensions(){
+        if(getParamNumber()==0) return new ArrayList<>();
+        return ((FuncRParams) nodes.get(2)).getParamDimensions();
     }
 }

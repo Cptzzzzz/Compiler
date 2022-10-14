@@ -108,26 +108,4 @@ public class ParserUnit extends Node {
         }
         return ((ParserUnit) parent).isLoop();
     }
-
-    public ArrayList<LVal> getLVal(){
-        ArrayList<LVal> lVals=new ArrayList<>();
-        for(Node node:nodes){
-            if(node instanceof ParserUnit)
-                for(LVal lVal:((ParserUnit) node).getLVal()){
-                    lVals.add(lVal);
-                }
-        }
-        return lVals;
-    }
-
-    public void judgeVoid(){
-        if(getType().equals("UnaryExp")){
-            if(nodes.get(0) instanceof Lexicality){
-                ErrorWriter.add(new Error(((Lexicality)nodes.get(0)).getLineNumber(),'e'));
-            }
-        }else if(parent==null){
-            return;
-        }
-        ((ParserUnit) parent).judgeVoid();
-    }
 }

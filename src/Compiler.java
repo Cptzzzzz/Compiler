@@ -6,6 +6,7 @@ import syntax.FunctionTable;
 import syntax.ParserUnit;
 import syntax.VariableTable;
 import util.CompilerMode;
+import util.Error;
 import util.ErrorWriter;
 import util.InputReader;
 import util.OutputWriter;
@@ -13,7 +14,7 @@ import util.OutputWriter;
 public class Compiler {
     public static void init() {
         CompilerMode.setDebug(false);
-        CompilerMode.setStage("Syntax analysis");
+        CompilerMode.setStage("Error handling");
         CompilerMode.setJudge(false);
     }
 
@@ -35,11 +36,12 @@ public class Compiler {
         root.buildVariableTable(new VariableTable());
         root.setup();
 
-        ErrorWriter.output();
         if (CompilerMode.getStage().equals("Lexical analysis")) {
             Lexicality.outputAll();
         } else if (CompilerMode.getStage().equals("Syntax analysis")) {
             root.output();
+        } else if (CompilerMode.getStage().equals("Error handling")) {
+            ErrorWriter.output();
         }
         OutputWriter.close();
         ErrorWriter.close();

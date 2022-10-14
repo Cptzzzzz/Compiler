@@ -1,6 +1,8 @@
 package syntax;
 
+import lexical.Lexicality;
 import lexical.LexicalitySupporter;
+import util.Node;
 
 import java.util.ArrayList;
 
@@ -22,12 +24,19 @@ public class Exp extends ParserUnit {
         return false;
     }
 
-    public int getDimension() {
-        ArrayList<LVal> lVals = this.getLVal();
-        int res = 0;
-        for (LVal lVal : lVals) {
-            if (lVal.getDimension() > res) {
-                res = lVal.getDimension();
+    public int getDimension(){
+        int res=0;
+        for(Node node:collect("LVal")){
+            if(((LVal)node).getDimension()>res){
+                res=((LVal)node).getDimension();
+            }
+        }
+        for(Node node:collect("UnaryExp")){
+            if(node.nodes.get(0) instanceof Lexicality){
+                Function function= functionTable.get(((Lexicality) node.nodes.get(0)).getContent());
+                if(function!=null){
+                    res=function.isReturnValue()?0:-1;
+                }
             }
         }
         return res;

@@ -38,4 +38,18 @@ public class Node {
                 node.buildParent(this);
             }
     }
+
+    public ArrayList<Node> collect(String name) {
+        ArrayList<Node> res = new ArrayList<>();
+        if (getType().equals(name)) {
+            res.add(this);
+        }
+        if (nodes != null)
+            for (Node node : nodes) {
+                for (Node node1 : node.collect(name)) {
+                    res.add(node1);
+                }
+            }
+        return res;
+    }
 }

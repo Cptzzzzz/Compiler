@@ -6,7 +6,9 @@ public class Variable {
     boolean isConst;
     String name;
     ArrayList<Integer>  dimensions;
-
+    public int getDimension(){
+        return getDimensions().size();
+    }
     public boolean isConst() {
         return isConst;
     }
