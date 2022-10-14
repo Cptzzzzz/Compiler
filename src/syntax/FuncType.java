@@ -4,7 +4,7 @@ import lexical.LexicalitySupporter;
 
 public class FuncType extends ParserUnit {
     FuncType() {
-        name = "FuncType";
+        type = "FuncType";
     }
 
     public static FuncType parser(LexicalitySupporter lexicalitySupporter) {

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class MulExp extends ParserUnit {
     MulExp() {
-        name="MulExp";
+        type ="MulExp";
     }
 
     public static MulExp parser(LexicalitySupporter lexicalitySupporter) {

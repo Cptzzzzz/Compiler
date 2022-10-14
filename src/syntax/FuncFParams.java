@@ -2,9 +2,11 @@ package syntax;
 
 import lexical.LexicalitySupporter;
 
+import java.util.ArrayList;
+
 public class FuncFParams extends ParserUnit {
     FuncFParams() {
-        name = "FuncFParams";
+        type = "FuncFParams";
     }
 
     public static FuncFParams parser(LexicalitySupporter lexicalitySupporter) {
@@ -22,5 +24,14 @@ public class FuncFParams extends ParserUnit {
             return true;
         }
         return false;
+    }
+    public ArrayList<Variable> getParams(){
+        int length=nodes.size();
+        ArrayList<Variable> variables=new ArrayList<>();
+        for(int i=0;i<length;i++){
+            if(nodes.get(i) instanceof FuncFParam)
+            variables.add(((FuncFParam) nodes.get(i)).getParam());
+        }
+        return variables;
     }
 }

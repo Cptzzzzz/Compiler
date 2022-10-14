@@ -2,9 +2,11 @@ package syntax;
 
 import lexical.LexicalitySupporter;
 
+import java.util.ArrayList;
+
 public class Exp extends ParserUnit {
     Exp() {
-        name = "Exp";
+        type = "Exp";
     }
 
     public static Exp parser(LexicalitySupporter lexicalitySupporter) {
@@ -18,5 +20,16 @@ public class Exp extends ParserUnit {
             return true;
         }
         return false;
+    }
+
+    public int getDimension() {
+        ArrayList<LVal> lVals = this.getLVal();
+        int res = 0;
+        for (LVal lVal : lVals) {
+            if (lVal.getDimension() > res) {
+                res = lVal.getDimension();
+            }
+        }
+        return res;
     }
 }

@@ -4,7 +4,7 @@ import lexical.LexicalitySupporter;
 
 public class UnaryOp extends ParserUnit {
     UnaryOp() {
-        name = "UnaryOp";
+        type = "UnaryOp";
     }
 
     public static UnaryOp parser(LexicalitySupporter lexicalitySupporter) {

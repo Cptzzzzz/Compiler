@@ -1,17 +1,21 @@
 package syntax;
 
+import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import util.CompilerMode;
+import util.Error;
+import util.ErrorWriter;
+
+import java.util.ArrayList;
 
 public class MainFuncDef extends ParserUnit {
     MainFuncDef() {
-        name = "MainFuncDef";
+        type = "MainFuncDef";
     }
 
-
     public static MainFuncDef parser(LexicalitySupporter lexicalitySupporter) {
-        if(CompilerMode.getDebug())
-        System.out.println("MainFuncDef");
+        if (CompilerMode.getDebug())
+            System.out.println("MainFuncDef");
         MainFuncDef mainFuncDef = new MainFuncDef();
         for (int i = 0; i < 4; i++) {
             mainFuncDef.add(lexicalitySupporter.readAndNext());
@@ -43,5 +47,18 @@ public class MainFuncDef extends ParserUnit {
             return false;
         }
         return true;
+    }
+
+    public void setup() {
+        super.setup();
+        if (!isReturned()) {
+            Block block = (Block) nodes.get(nodes.size() - 1);
+            ErrorWriter.add(new Error(((Lexicality) block.nodes.get(block.nodes.size() - 1)).getLineNumber()
+                    , 'g'));
+        }
+    }
+
+    public boolean isReturned(){
+        return ((Block) nodes.get(nodes.size()-1)).isReturned();
     }
 }

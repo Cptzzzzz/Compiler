@@ -4,8 +4,7 @@ import lexical.LexicalitySupporter;
 
 public class BlockItem extends ParserUnit {
     BlockItem() {
-        name = "BlockItem";
-        isOutput=false;
+        type = "BlockItem";
     }
 
     public static BlockItem parser(LexicalitySupporter lexicalitySupporter) {
@@ -23,5 +22,10 @@ public class BlockItem extends ParserUnit {
             return true;
         }
         return false;
+    }
+
+    public boolean isReturnStmt(){
+        if(nodes.get(0) instanceof Decl)return false;
+        return ((Stmt) nodes.get(0)).isReturnStmt();
     }
 }

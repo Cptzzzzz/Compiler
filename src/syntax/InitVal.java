@@ -4,7 +4,7 @@ import lexical.LexicalitySupporter;
 
 public class InitVal extends ParserUnit {
     InitVal() {
-        name = "InitVal";
+        type = "InitVal";
     }
 
     public static InitVal parser(LexicalitySupporter lexicalitySupporter) {
@@ -20,11 +20,7 @@ public class InitVal extends ParserUnit {
                     initVal.add(InitVal.parser(lexicalitySupporter));
                 }
             }
-            if (lexicalitySupporter.read().getType().equals("RBRACE")) {
-                initVal.add(lexicalitySupporter.readAndNext());
-            } else {
-                //todo 错误处理
-            }
+            initVal.add(lexicalitySupporter.readAndNext());
         }
         return initVal;
     }

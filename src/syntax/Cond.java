@@ -1,10 +1,12 @@
 package syntax;
 
+import lexical.Lexicality;
 import lexical.LexicalitySupporter;
+import util.Node;
 
 public class Cond extends ParserUnit {
     Cond() {
-        name = "Cond";
+        type = "Cond";
     }
 
     public static Cond parser(LexicalitySupporter lexicalitySupporter) {

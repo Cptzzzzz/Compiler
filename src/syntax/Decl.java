@@ -5,8 +5,7 @@ import util.CompilerMode;
 
 public class Decl extends ParserUnit {
     Decl() {
-        name = "Decl";
-        isOutput=false;
+        type = "Decl";
     }
 
     public static Decl parser(LexicalitySupporter lexicalitySupporter) {

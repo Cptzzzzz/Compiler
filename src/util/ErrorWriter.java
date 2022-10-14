@@ -2,9 +2,12 @@ package util;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class ErrorWriter {
     static BufferedWriter out;
+    static ArrayList<Error> errors;
 
     public static void init(String filename) {
         try {
@@ -12,6 +15,7 @@ public class ErrorWriter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        errors = new ArrayList<>();
     }
 
     public static void close() {
@@ -36,5 +40,16 @@ public class ErrorWriter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void output() {
+        errors.sort(Comparator.comparingInt(Error::getLine));
+        for (Error error : errors) {
+            writeln(error.toString());
+        }
+    }
+
+    public static void add(Error error) {
+        errors.add(error);
     }
 }

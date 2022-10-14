@@ -4,7 +4,7 @@ import lexical.LexicalitySupporter;
 
 public class Number extends ParserUnit {
     Number() {
-        name = "Number";
+        type = "Number";
     }
 
     public static Number parser(LexicalitySupporter lexicalitySupporter) {

@@ -4,7 +4,7 @@ import lexical.LexicalitySupporter;
 
 public class PrimaryExp extends ParserUnit {
     PrimaryExp() {
-        name = "PrimaryExp";
+        type = "PrimaryExp";
     }
 
     public static PrimaryExp parser(LexicalitySupporter lexicalitySupporter) {

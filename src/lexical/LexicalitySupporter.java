@@ -31,4 +31,12 @@ public class LexicalitySupporter {
     public int getPointer() {
         return pointer;
     }
+
+    public int getLastLineNumber(){
+        return Lexicality.get(pointer-1).getLineNumber();
+    }
+
+    public int getLineNumber(){
+        return Lexicality.get(pointer).getLineNumber();
+    }
 }

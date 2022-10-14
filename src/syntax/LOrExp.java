@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class LOrExp extends ParserUnit {
     LOrExp() {
-        name = "LOrExp";
+        type = "LOrExp";
     }
 
     public static LOrExp parser(LexicalitySupporter lexicalitySupporter) {

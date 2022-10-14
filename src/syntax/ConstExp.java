@@ -4,7 +4,7 @@ import lexical.LexicalitySupporter;
 
 public class ConstExp extends ParserUnit {
     ConstExp() {
-        name = "ConstExp";
+        type = "ConstExp";
     }
 
     public static ConstExp parser(LexicalitySupporter lexicalitySupporter) {

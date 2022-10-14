@@ -4,7 +4,7 @@ import lexical.LexicalitySupporter;
 
 public class ConstInitVal extends ParserUnit {
     ConstInitVal() {
-        name = "ConstInitVal";
+        type = "ConstInitVal";
     }
 
     public static ConstInitVal parser(LexicalitySupporter lexicalitySupporter) {
@@ -20,11 +20,7 @@ public class ConstInitVal extends ParserUnit {
                     constInitVal.add(ConstInitVal.parser(lexicalitySupporter));
                 }
             }
-            if (lexicalitySupporter.read().getType().equals("RBRACE")) {
-                constInitVal.add(lexicalitySupporter.readAndNext());
-            } else {
-                //todo 错误处理
-            }
+            constInitVal.add(lexicalitySupporter.readAndNext());
         }
         return constInitVal;
     }

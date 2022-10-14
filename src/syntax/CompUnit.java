@@ -4,7 +4,7 @@ import lexical.LexicalitySupporter;
 
 public class CompUnit extends ParserUnit {
     CompUnit() {
-        name = "CompUnit";
+        type = "CompUnit";
     }
 
     public static CompUnit parser(LexicalitySupporter lexicalitySupporter) {

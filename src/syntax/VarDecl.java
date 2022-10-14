@@ -1,10 +1,13 @@
 package syntax;
 
+import lexical.Lexicality;
 import lexical.LexicalitySupporter;
+import util.Error;
+import util.ErrorWriter;
 
 public class VarDecl extends ParserUnit {
     VarDecl() {
-        name = "VarDecl";
+        type = "VarDecl";
     }
 
     public static VarDecl parser(LexicalitySupporter lexicalitySupporter) {
@@ -18,7 +21,8 @@ public class VarDecl extends ParserUnit {
         if (lexicalitySupporter.read().getType().equals("SEMICN")) {
             varDecl.add(lexicalitySupporter.readAndNext());
         } else {
-            //todo 错误处理
+            varDecl.add(new Lexicality(";", "SEMICN"));
+            ErrorWriter.add(new Error(lexicalitySupporter.getLastLineNumber(), 'i'));
         }
         return varDecl;
     }

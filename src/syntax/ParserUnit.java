@@ -1,13 +1,14 @@
 package syntax;
 
+import lexical.Lexicality;
 import lexical.LexicalitySupporter;
+import util.Error;
+import util.ErrorWriter;
 import util.Node;
 
 import java.util.ArrayList;
 
 public class ParserUnit extends Node {
-    String name;
-
     public ParserUnit() {
     }
 
@@ -25,11 +26,7 @@ public class ParserUnit extends Node {
     }
 
     public String toString() {
-        return String.format("<%s>", getName());
-    }
-
-    public String getName() {
-        return name;
+        return String.format("<%s>", getType());
     }
 
     public void add(Node node) {
@@ -39,5 +36,98 @@ public class ParserUnit extends Node {
         nodes.add(node);
     }
 
+    VariableTable variableTable;
+    FunctionTable functionTable;
 
+    public void buildFunctionTable(FunctionTable functionTable) {
+        this.functionTable = functionTable;
+        for (Node node : nodes) {
+            if (node instanceof ParserUnit)
+                ((ParserUnit) node).buildFunctionTable(functionTable);
+        }
+    }
+
+    public void buildVariableTable(VariableTable variableTable) {
+        this.variableTable = variableTable;
+        for (Node node : nodes) {
+            if (node instanceof ParserUnit)
+                ((ParserUnit) node).buildVariableTable(variableTable);
+        }
+    }
+
+    public void setup() {
+        for (Node node : nodes) {
+            if (node instanceof ParserUnit)
+                ((ParserUnit) node).setup();
+        }
+    }
+
+    public void getVariable(String name, int line, boolean isConst) {
+        if (getType().equals("Block")) {
+            if (variableTable.isExist(name)) {
+                if (variableTable.isConst(name) && isConst)
+                    ErrorWriter.add(new Error(line, 'h'));
+                return;
+            }
+        } else if (parent == null) {
+            if (!variableTable.isExist(name)) {
+                if(!isConst)
+                ErrorWriter.add(new Error(line, 'c'));
+            } else if (variableTable.isConst(name) && isConst) {
+                ErrorWriter.add(new Error(line, 'h'));
+            }
+            return;
+        }
+        ((ParserUnit) parent).getVariable(name, line, isConst);
+    }
+
+    public int getVariableDimension(String name){
+        if(getType().equals("Block")){
+            if(variableTable.isExist(name)){
+                return variableTable.getDimension(name);
+            }
+        }else if(parent==null){
+            if(variableTable.isExist(name)){
+                return variableTable.getDimension(name);
+            }
+        }
+        return ((ParserUnit) parent).getVariableDimension(name);
+    }
+    public boolean shouldReturnValue() {
+        if (getType().equals("FuncDef")) {
+            return nodes.get(0).nodes.get(0).getType().equals("INTTK");
+        } else if (getType().equals("MainFuncDef")) return true;
+        return ((ParserUnit) parent).shouldReturnValue();
+    }
+
+    public boolean isLoop() {
+        if (getType().equals("Stmt")) {
+            if (((Stmt) this).judgeLoop()) return true;
+        } else if (parent == null) {
+            return false;
+        }
+        return ((ParserUnit) parent).isLoop();
+    }
+
+    public ArrayList<LVal> getLVal(){
+        ArrayList<LVal> lVals=new ArrayList<>();
+        for(Node node:nodes){
+            if(node instanceof ParserUnit)
+                for(LVal lVal:((ParserUnit) node).getLVal()){
+                    lVals.add(lVal);
+                }
+        }
+        return lVals;
+    }
+
+    public void judgeVoid(){
+        if(getType().equals("UnaryExp")){
+            if(nodes.get(0) instanceof Lexicality){
+                ErrorWriter.add(new Error(((Lexicality)nodes.get(0)).getLineNumber(),'e'));
+            }
+        }else if(parent==null){
+            return;
+        }
+        ((ParserUnit) parent).judgeVoid();
+    }
 }

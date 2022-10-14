@@ -2,10 +2,11 @@ package syntax;
 
 import lexical.LexicalitySupporter;
 import util.CompilerMode;
+import util.Node;
 
 public class Block extends ParserUnit {
     Block() {
-        name = "Block";
+        type = "Block";
     }
 
     public static Block parser(LexicalitySupporter lexicalitySupporter) {
@@ -25,5 +26,18 @@ public class Block extends ParserUnit {
             return true;
         }
         return false;
+    }
+
+    public void buildVariableTable(VariableTable variableTable){
+        this.variableTable=new VariableTable();
+        for(Node node:nodes){
+            if(node instanceof ParserUnit)
+                ((ParserUnit) node).buildVariableTable(this.variableTable);
+        }
+    }
+
+    public boolean isReturned(){
+        if(nodes.size()==2) return false;
+        return ((BlockItem) nodes.get(nodes.size()-2)).isReturnStmt();
     }
 }

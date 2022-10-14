@@ -1,10 +1,16 @@
 package syntax;
 
+import lexical.Lexicality;
 import lexical.LexicalitySupporter;
+import util.Error;
+import util.ErrorWriter;
+import util.Node;
+
+import java.util.ArrayList;
 
 public class VarDef extends ParserUnit {
     VarDef() {
-        name = "VarDef";
+        type = "VarDef";
     }
 
     public static VarDef parser(LexicalitySupporter lexicalitySupporter) {
@@ -13,11 +19,11 @@ public class VarDef extends ParserUnit {
         while (lexicalitySupporter.read().getType().equals("LBRACK")) {
             varDef.add(lexicalitySupporter.readAndNext());
             varDef.add(ConstExp.parser(lexicalitySupporter));
-
             if (lexicalitySupporter.read().getType().equals("RBRACK")) {
                 varDef.add(lexicalitySupporter.readAndNext());
             } else {
-                //todo 错误处理
+                varDef.add(new Lexicality("]", "RBRACK"));
+                ErrorWriter.add(new Error(lexicalitySupporter.getLastLineNumber(), 'k'));
             }
         }
         if (lexicalitySupporter.read().getType().equals("ASSIGN")) {
@@ -39,5 +45,20 @@ public class VarDef extends ParserUnit {
         } else {
             return true;
         }
+    }
+
+    public void setup(){
+        Variable variable=new Variable();
+        variable.setName(((Lexicality) nodes.get(0)).getContent());
+        variable.setConst(false);
+        ArrayList<Integer> dimensions=new ArrayList<>();
+        int length=nodes.size();
+        for(int i=0;i<length;i++){
+            if(nodes.get(i) instanceof ConstExp)//todo 补全数组长度的逻辑
+                dimensions.add(0);
+        }
+        variable.setDimensions(dimensions);
+        variableTable.add(variable,((Lexicality) nodes.get(0)).getLineNumber());
+        super.setup();
     }
 }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class AddExp extends ParserUnit {
     AddExp() {
-        name = "AddExp";
+        type = "AddExp";
     }
 
     public static AddExp parser(LexicalitySupporter lexicalitySupporter) {

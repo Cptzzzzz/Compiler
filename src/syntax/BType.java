@@ -4,8 +4,7 @@ import lexical.LexicalitySupporter;
 
 public class BType extends ParserUnit {
     BType() {
-        name = "BType";
-        isOutput=false;
+        type = "BType";
     }
 
     public static BType parser(LexicalitySupporter lexicalitySupporter) {

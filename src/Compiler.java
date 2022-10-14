@@ -2,7 +2,9 @@ import lexical.ContentScanner;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import syntax.CompUnit;
+import syntax.FunctionTable;
 import syntax.ParserUnit;
+import syntax.VariableTable;
 import util.CompilerMode;
 import util.ErrorWriter;
 import util.InputReader;
@@ -28,7 +30,12 @@ public class Compiler {
         content = ContentScanner.pretreat(content);
         ContentScanner.start(content);
         CompUnit root = ParserUnit.treeBuilder();
+        root.buildParent(null);
+        root.buildFunctionTable(new FunctionTable());
+        root.buildVariableTable(new VariableTable());
+        root.setup();
 
+        ErrorWriter.output();
         if (CompilerMode.getStage().equals("Lexical analysis")) {
             Lexicality.outputAll();
         } else if (CompilerMode.getStage().equals("Syntax analysis")) {

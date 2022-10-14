@@ -2,13 +2,12 @@ package syntax;
 
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
-import util.OutputWriter;
 
 import java.util.ArrayList;
 
 public class RelExp extends ParserUnit {
     RelExp() {
-        name = "RelExp";
+        type = "RelExp";
     }
 
     public static RelExp parser(LexicalitySupporter lexicalitySupporter) {
