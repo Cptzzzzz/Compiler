@@ -53,14 +53,22 @@
   语句块项 BlockItem → Decl | Stmt
 
   **语句 Stmt** → LVal '=' Exp ';'
-    | [Exp] ';' 
-    | Block 
-    | 'if' '( Cond ')' Stmt [ 'else' Stmt ] 
-    | 'while' '(' Cond ')' Stmt
-    | 'break' ';' | 'continue' ';'
-    | 'return' [Exp] ';'
-    | LVal = 'getint''('')'';'
-    | 'printf' '('FormatString {',' Exp} ')'';' 
+
+​    | [Exp] ';' 
+
+​    | Block 
+
+​    | 'if' '( Cond ')' Stmt [ 'else' Stmt ] 
+
+​    | 'while' '(' Cond ')' Stmt
+
+​    | 'break' ';' | 'continue' ';'
+
+​    | 'return' [Exp] ';'
+
+​    | LVal = 'getint''('')'';'
+
+​    | 'printf' '('FormatString {',' Exp} ')'';' 
 
 ​    **| 'repeat' Stmt 'until' '(' Cond ')' ';'** 
 
