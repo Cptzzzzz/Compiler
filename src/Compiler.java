@@ -14,7 +14,7 @@ import util.OutputWriter;
 public class Compiler {
     public static void init() {
         CompilerMode.setDebug(false);
-        CompilerMode.setStage("Error handling");
+        CompilerMode.setStage("Syntax analysis");
         CompilerMode.setJudge(false);
     }
 

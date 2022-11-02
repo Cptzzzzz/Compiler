@@ -126,6 +126,14 @@ public class Stmt extends ParserUnit {
                     ErrorWriter.add(new Error(lexicalitySupporter.getLastLineNumber(), 'i'));
                 }
                 break;
+            case 9:
+                stmt.add(lexicalitySupporter.readAndNext());
+                stmt.add(Stmt.parser(lexicalitySupporter));
+                stmt.add(lexicalitySupporter.readAndNext());
+                stmt.add(lexicalitySupporter.readAndNext());
+                stmt.add(Cond.parser(lexicalitySupporter));
+                stmt.add(lexicalitySupporter.readAndNext());
+                stmt.add(lexicalitySupporter.readAndNext());
         }
         return stmt;
     }
@@ -161,6 +169,8 @@ public class Stmt extends ParserUnit {
             return 7;
         } else if (lexicalitySupporter.read().getType().equals("PRINTFTK")) {
             return 8;
+        }else if(lexicalitySupporter.read().getType().equals("REPEATTK")){
+            return 9;
         }
         return 0;
     }

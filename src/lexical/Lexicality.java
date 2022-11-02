@@ -32,6 +32,8 @@ public class Lexicality extends Node {
         keywords.put("printf", "PRINTFTK");
         keywords.put("return", "RETURNTK");
         keywords.put("void", "VOIDTK");
+        keywords.put("repeat","REPEATTK");
+        keywords.put("until","UNTILTK");
 
         symbols = new HashMap<String, String>();
         symbols.put("\\!", "NOT");
@@ -62,6 +64,7 @@ public class Lexicality extends Node {
         others.put("\".*\"", "STRCON");
         others.put("[\\_a-zA-Z]+[\\_a-z0-9A-Z]*", "IDENFR");
         others.put("^(0|[1-9][0-9]*)$", "INTCON");
+        others.put("(0x|0X)[0-9a-fA-F]+","HEXCON");
     }
 
     public static void outputAll() {
@@ -169,6 +172,7 @@ public class Lexicality extends Node {
     }
 
     public static void main(String args[]) {
-
+        String name="0XaF";
+        System.out.println(name.matches("0(x|X)[0-9a-fA-F]+"));
     }
 }

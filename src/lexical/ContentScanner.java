@@ -34,12 +34,26 @@ public class ContentScanner {
             }
 
             if (!word.equals("")) {
-                if (word.matches("^[\\_a-zA-Z][\\_a-z0-9A-Z]*")) {//是一个字符串
+                if(word.equals("0")){
+                    if(s.equals("x")||s.equals("X")){
+                        word+=s;
+                        continue;
+                    }else{
+                        Lexicality.solve(word, line);
+                    }
+                }else if (word.matches("^[\\_a-zA-Z][\\_a-z0-9A-Z]*")) {//是一个字符串
                     if (s.matches("[\\_a-z0-9A-Z]")) {
                         word += s;
                         continue;
                     } else {
                         Lexicality.solve(word, line);
+                    }
+                } else if(word.matches("0(x|X)[0-9a-fA-F]*")){
+                    if(s.matches("[0-9a-fA-F]")){
+                        word+=s;
+                        continue;
+                    }else{
+                        Lexicality.solve(word,line);
                     }
                 } else if (word.matches("^(0|[1-9][0-9]*)$")) {//是一个数字
                     if (s.matches("[0-9]*")) {
@@ -48,7 +62,7 @@ public class ContentScanner {
                     } else {
                         Lexicality.solve(word, line);
                     }
-                } else if (word.equals("<") || word.equals(">") || word.equals("=")) {
+                }else if (word.equals("<") || word.equals(">") || word.equals("=")) {
                     if (s.equals("=")) {
                         word += s;
                         Lexicality.solve(word, line);

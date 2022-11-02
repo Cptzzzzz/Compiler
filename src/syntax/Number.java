@@ -14,7 +14,7 @@ public class Number extends ParserUnit {
     }
 
     public static boolean pretreat(LexicalitySupporter lexicalitySupporter) {
-        if (lexicalitySupporter.read().getType().equals("INTCON")) {
+        if (lexicalitySupporter.read().getType().equals("INTCON")||lexicalitySupporter.read().getType().equals("HEXCON")) {
             return true;
         }
         return false;

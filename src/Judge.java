@@ -9,7 +9,7 @@ import util.*;
 public class Judge {
     public static void init() {
         CompilerMode.setDebug(false);
-        CompilerMode.setStage("Error handling");
+        CompilerMode.setStage("Syntax analysis");
         CompilerMode.setJudge(false);
     }
     public static void main(String[] args) {
