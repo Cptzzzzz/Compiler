@@ -4,6 +4,7 @@ import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import util.Error;
 import util.ErrorWriter;
+import util.Node;
 
 import java.util.ArrayList;
 
@@ -49,11 +50,11 @@ public class FuncFParam extends ParserUnit {
         Variable variable = new Variable();
         variable.setConst(false);
         variable.setName(((Lexicality) nodes.get(1)).getContent());
-        ArrayList<Integer> dimensions=new ArrayList<>();
-        if(nodes.size()!=2)dimensions.add(0);
-        int times=(nodes.size()-4)/3;
-        for(int i=0;i<times;i++){//todo 求数组的维数
-            dimensions.add(0);
+        ArrayList<Integer> dimensions = new ArrayList<>();
+        if (nodes.size() != 2) dimensions.add(0);
+        for (Node node : nodes) {
+            if (node instanceof ConstExp)
+                dimensions.add(((ConstExp) node).getValue());
         }
         variable.setDimensions(dimensions);
         return variable;

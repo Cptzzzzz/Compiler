@@ -1,5 +1,9 @@
 package syntax;
 
+import intermediate.Allocator;
+import intermediate.Assign;
+import intermediate.IntermediateCode;
+import intermediate.Value;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import util.Error;
@@ -58,6 +62,61 @@ public class LVal extends ParserUnit {
     }
 
     public int getDimension() {
-        return    getVariableDimension(getVariableName())-  (nodes.size() - 1) / 3;
+        return getVariableDimension(getVariableName()) - (nodes.size() - 1) / 3;
+    }
+
+    public int getValue() {
+        ArrayList<Integer> args = new ArrayList<>();
+        for (Node node : nodes) {
+            if (node instanceof Exp) {
+                args.add(((Exp) node).getValue());
+            }
+        }
+        if(args.size()==0)
+            args.add(0);
+        return getVariableValue(((Lexicality) nodes.get(0)).getContent(), args);
+    }
+
+    public String generateIntermediateCode(){
+        Variable variable=getVariableInstance(((Lexicality)nodes.get(0)).getContent());
+        if(variable.getDimension()==0){
+            if(variable.isConst()){
+                return String.format("%d",variable.getValue(null));
+            }else{
+                return variable.getFinalName();
+            }
+        }else if(variable.getDimension()==1){
+            String v=((Exp)nodes.get(2)).generateIntermediateCode();
+            return new Value(variable.getFinalName(),new Value(v)).toString();
+        }else{
+            String v1=((Exp)nodes.get(2)).generateIntermediateCode();
+            String v2=((Exp)nodes.get(5)).generateIntermediateCode();
+            if(v1.matches("^(0|[1-9][0-9]*)$")){
+                v1=String.format("%d",Integer.valueOf(v1)*variable.getDimensions().get(1));
+            }else{
+                String t=Allocator.generateVariableName();
+                IntermediateCode.add(new Assign(
+                        new Value(t),
+                        Assign.MULTI,
+                        new Value(v1),
+                        new Value(variable.getDimensions().get(1))
+                ));
+                v1=t;
+            }
+            if(v2.matches("^(0|[1-9][0-9]*)$")&&v1.matches("^(0|[1-9][0-9]*)$")){
+                v2=String.format("%d",Integer.valueOf(v1)+Integer.valueOf(v2));
+            }else{
+                String t=Allocator.generateVariableName();
+                IntermediateCode.add(new Assign(
+                        new Value(t),
+                        Assign.PLUS,
+                        new Value(v1),
+                        new Value(v2)
+                ));
+                v2=t;
+            }
+            return new Value(variable.getFinalName(),new Value(v2)).store();
+        }
     }
 }
+

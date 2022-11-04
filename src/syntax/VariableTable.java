@@ -7,9 +7,15 @@ import java.util.ArrayList;
 
 public class VariableTable {
     ArrayList<Variable> variables;
+    int number;
 
-    public VariableTable() {
+    public int getNumber() {
+        return number;
+    }
+
+    public VariableTable(int depth) {
         variables = new ArrayList<>();
+        this.number =depth;
     }
 
     public void add(ArrayList<Variable> variables, int line) {
@@ -64,5 +70,27 @@ public class VariableTable {
         return false;
     }
 
+    public int getValue(String name,ArrayList<Integer> args){
+        for(Variable variable1:variables){
+            if(variable1.getName().equals(name)){
+                return variable1.getValue(args);
+            }
+        }
+        return 0;
+    }
 
+    public void generateIntermediateCode(String name){
+        for(Variable variable:variables){
+            if(name.equals(variable.getName()))
+                variable.generateIntermediateCode(number);
+        }
+    }
+
+    public Variable getVariableInstance(String name){
+        for(Variable variable:variables){
+            if(name.equals(variable.getName()))
+                return variable;
+        }
+        return null;
+    }
 }

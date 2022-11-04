@@ -1,5 +1,8 @@
 package syntax;
 
+import intermediate.IntermediateCode;
+import intermediate.PushParam;
+import intermediate.Value;
 import lexical.LexicalitySupporter;
 import util.Node;
 
@@ -45,5 +48,14 @@ public class FuncRParams extends ParserUnit {
             }
         }
         return res;
+    }
+
+    public String generateIntermediateCode() {
+        for(Node node:nodes){
+            if(node instanceof Exp){
+                IntermediateCode.add(new PushParam(new Value(((Exp)node).generateIntermediateCode())));
+            }
+        }
+        return null;
     }
 }

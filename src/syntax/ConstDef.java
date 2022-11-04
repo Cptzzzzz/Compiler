@@ -45,13 +45,18 @@ public class ConstDef extends ParserUnit {
         variable.setName(((Lexicality) nodes.get(0)).getContent());
         variable.setConst(true);
         ArrayList<Integer> dimensions=new ArrayList<>();
-        int length=nodes.size();
-        for(int i=0;i<length;i++){
-            if(nodes.get(i) instanceof ConstExp)//todo 补全数组长度的逻辑
-                dimensions.add(0);
+        for(Node node:nodes){
+            if(node instanceof ConstExp)
+                dimensions.add(((ConstExp)node).getValue());
         }
         variable.setDimensions(dimensions);
+        variable.setValues(((ConstInitVal)nodes.get(nodes.size()-1)).getValues());
         variableTable.add(variable,((Lexicality) nodes.get(0)).getLineNumber());
         super.setup();
+    }
+
+    public String generateIntermediateCode(){
+        variableTable.generateIntermediateCode(((Lexicality) nodes.get(0)).getContent());
+        return null;
     }
 }

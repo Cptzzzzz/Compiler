@@ -54,7 +54,7 @@ public class Judge {
         CompUnit root = ParserUnit.treeBuilder();
         root.buildParent(null);
         root.buildFunctionTable(new FunctionTable());
-        root.buildVariableTable(new VariableTable());
+        root.buildVariableTable(new VariableTable(1));
         root.setup();
 
         ErrorWriter.output();

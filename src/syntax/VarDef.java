@@ -1,5 +1,8 @@
 package syntax;
 
+import intermediate.Assign;
+import intermediate.IntermediateCode;
+import intermediate.Value;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import util.Error;
@@ -52,13 +55,44 @@ public class VarDef extends ParserUnit {
         variable.setName(((Lexicality) nodes.get(0)).getContent());
         variable.setConst(false);
         ArrayList<Integer> dimensions=new ArrayList<>();
-        int length=nodes.size();
-        for(int i=0;i<length;i++){
-            if(nodes.get(i) instanceof ConstExp)//todo 补全数组长度的逻辑
-                dimensions.add(0);
+        for(Node node:nodes){
+            if(node instanceof ConstExp)
+                dimensions.add(((ConstExp)node).getValue());
         }
         variable.setDimensions(dimensions);
         variableTable.add(variable,((Lexicality) nodes.get(0)).getLineNumber());
         super.setup();
+    }
+
+    public String generateIntermediateCode(){
+        variableTable.generateIntermediateCode(((Lexicality) nodes.get(0)).getContent());
+        if(nodes.get(nodes.size()-1) instanceof InitVal){
+            Variable variable=variableTable.getVariableInstance(((Lexicality) nodes.get(0)).getContent());
+            ArrayList<Value> values=((InitVal)nodes.get(nodes.size()-1)).getValues();
+            if(variable.getDimension()==0){
+                IntermediateCode.add(new Assign(
+                        new Value(variable.getFinalName()),Assign.NONE,values.get(0)
+                ));
+            }else if(variable.getDimension()==1){
+                int length=values.size();
+                for(int i=0;i<length;i++){
+                    IntermediateCode.add(new Assign(
+                            new Value(variable.getFinalName(),new Value(i)),Assign.NONE,values.get(i)
+                    ));
+                }
+            }else{
+                ArrayList<Integer> dimension=variable.getDimensions();
+                int l1=dimension.get(0),l2=dimension.get(1);
+                for(int i=0;i<l1;i++){
+                    for(int j=0;j<l2;j++){
+                        IntermediateCode.add(new Assign(
+                                new Value(variable.getFinalName(),new Value(i*l2+j)),
+                                Assign.NONE,values.get(i*l2+j)
+                        ));
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

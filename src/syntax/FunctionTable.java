@@ -30,4 +30,12 @@ public class FunctionTable {
         }
         return null;
     }
+
+    public void generateIntermediateCode(String name){
+        for(Function function:functions){
+            if(name.equals(function.getName())){
+                function.generateIntermediateCode();
+            }
+        }
+    }
 }

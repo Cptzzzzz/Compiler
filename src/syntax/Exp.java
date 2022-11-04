@@ -41,4 +41,11 @@ public class Exp extends ParserUnit {
         }
         return res;
     }
+    public int getValue(){
+        return ((AddExp)nodes.get(0)).getValue();
+    }
+
+    public String generateIntermediateCode() {
+        return ((AddExp)nodes.get(0)).generateIntermediateCode();
+    }
 }

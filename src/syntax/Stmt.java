@@ -1,15 +1,20 @@
 package syntax;
 
+import intermediate.*;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import util.CompilerMode;
 import util.Error;
 import util.ErrorWriter;
+import util.Node;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Stmt extends ParserUnit {
+    int stmtType;
+
     Stmt() {
         type = "Stmt";
     }
@@ -21,7 +26,8 @@ public class Stmt extends ParserUnit {
         }
 
         Stmt stmt = new Stmt();
-        switch (stmtType(lexicalitySupporter)) {
+        stmt.stmtType = stmtType(lexicalitySupporter);
+        switch (stmt.stmtType) {
             case 1:
                 stmt.add(LVal.parser(lexicalitySupporter));
                 stmt.add(lexicalitySupporter.readAndNext());
@@ -204,8 +210,52 @@ public class Stmt extends ParserUnit {
         return false;
     }
 
-    public boolean isReturnStmt(){
-        if(nodes.get(0).getType().equals("RETURNTK")) return true;
+    public boolean isReturnStmt() {
+        if (nodes.get(0).getType().equals("RETURNTK")) return true;
         return false;
+    }
+
+    public String generateIntermediateCode() {
+        switch (stmtType) {
+            case 1:
+                Value lVal = Value.parser(((LVal) nodes.get(0)).generateIntermediateCode());
+                if (nodes.get(2) instanceof Exp) {
+                    String exp = ((Exp) nodes.get(2)).generateIntermediateCode();
+                    IntermediateCode.add(new Assign(
+                            lVal, Assign.NONE, new Value(exp)
+                    ));
+                } else {//todo getint
+                    IntermediateCode.add(new GetInt(Value.parser(((LVal)nodes.get(0)).generateIntermediateCode())));
+                }
+                break;
+            case 2:
+                if (nodes.get(0) instanceof Exp)
+                    ((Exp) nodes.get(0)).generateIntermediateCode();
+                break;
+            case 3:
+                super.generateIntermediateCode();
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            case 7:
+                if(nodes.size()==2)
+                    IntermediateCode.add(new Return());
+                else
+                    IntermediateCode.add(new Return(new Value(((Exp)nodes.get(1)).generateIntermediateCode())));
+                break;
+            case 8://todo printf
+                ArrayList<Value> res=new ArrayList<>();
+                for(Node node:nodes){
+                    if(node instanceof Exp)
+                        res.add(new Value(((Exp)node).generateIntermediateCode()));
+                }
+                IntermediateCode.add(new Printf(((Lexicality)nodes.get(2)).getContent(),res));
+                break;
+        }
+        return null;
     }
 }

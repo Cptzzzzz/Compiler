@@ -19,4 +19,12 @@ public class ConstExp extends ParserUnit {
         }
         return false;
     }
+
+    public int getValue() {
+        return ((AddExp) nodes.get(0)).getValue();
+    }
+
+    public String generateIntermediateCode() {
+        return null;
+    }
 }

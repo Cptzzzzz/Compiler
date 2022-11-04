@@ -1,5 +1,7 @@
 package syntax;
 
+import intermediate.CallFunction;
+import intermediate.IntermediateCode;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import util.Error;
@@ -55,18 +57,18 @@ public class UnaryExp extends ParserUnit {
             Function function = functionTable.get(((Lexicality) nodes.get(0)).getContent());
             if (function == null) {
                 ErrorWriter.add(new Error(((Lexicality) nodes.get(0)).getLineNumber(), 'c'));
-            }else{
-                int number=getParamNumber();
-                if(number!=function.getParams().size()){
+            } else {
+                int number = getParamNumber();
+                if (number != function.getParams().size()) {
                     ErrorWriter.add(new Error(((Lexicality) nodes.get(0)).getLineNumber(), 'd'));
                 }
-                for(int i=0;i<number;i++){
-                    try{
-                        if(getParamDimensions().get(i)!=function.getParams().get(i).getDimension()){
+                for (int i = 0; i < number; i++) {
+                    try {
+                        if (getParamDimensions().get(i) != function.getParams().get(i).getDimension()) {
                             ErrorWriter.add(new Error(((Lexicality) nodes.get(0)).getLineNumber(), 'e'));
                             break;
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
 
                     }
                 }
@@ -75,14 +77,38 @@ public class UnaryExp extends ParserUnit {
         super.setup();
     }
 
-    public int getParamNumber(){
-        if(nodes.size()==3)
+    public int getParamNumber() {
+        if (nodes.size() == 3)
             return 0;
         return ((FuncRParams) nodes.get(2)).getParamNumber();
     }
 
-    public ArrayList<Integer> getParamDimensions(){
-        if(getParamNumber()==0) return new ArrayList<>();
+    public ArrayList<Integer> getParamDimensions() {
+        if (getParamNumber() == 0) return new ArrayList<>();
         return ((FuncRParams) nodes.get(2)).getParamDimensions();
+    }
+
+    public int getValue() {
+        if (nodes.get(0) instanceof UnaryOp) {
+            return (nodes.get(0).nodes.get(0).getType().equals("PLUS") ? 1 : -1) * ((UnaryExp) nodes.get(1)).getValue();
+        } else {
+            return ((PrimaryExp) nodes.get(0)).getValue();
+        }
+    }
+
+    public String generateIntermediateCode() {
+        if(nodes.get(0) instanceof UnaryOp){
+            if(nodes.get(0).nodes.get(0).getType().equals("PLUS")){
+                return ((UnaryExp)nodes.get(1)).generateIntermediateCode();
+            }
+        }else if(nodes.get(0) instanceof PrimaryExp){
+            return ((PrimaryExp)nodes.get(0)).generateIntermediateCode();
+        }else{
+            //todo call function
+            super.generateIntermediateCode();
+            IntermediateCode.add(new CallFunction(((Lexicality)nodes.get(0)).getContent()));
+            return "RET";
+        }
+        return null;
     }
 }

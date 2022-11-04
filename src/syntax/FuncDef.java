@@ -76,4 +76,10 @@ public class FuncDef extends ParserUnit {
     public boolean isReturned(){
         return ((Block) nodes.get(nodes.size()-1)).isReturned();
     }
+
+    public String generateIntermediateCode() {
+        functionTable.generateIntermediateCode(((Lexicality)nodes.get(1)).getContent());
+        ((Block)nodes.get(nodes.size()-1)).generateIntermediateCode();
+        return null;
+    }
 }

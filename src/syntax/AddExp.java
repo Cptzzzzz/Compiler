@@ -1,5 +1,9 @@
 package syntax;
 
+import intermediate.Allocator;
+import intermediate.Assign;
+import intermediate.IntermediateCode;
+import intermediate.Value;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 
@@ -40,5 +44,37 @@ public class AddExp extends ParserUnit {
             return true;
         }
         return false;
+    }
+
+    public int getValue() {
+        if (nodes.size() == 1) {
+            return ((MulExp) nodes.get(0)).getValue();
+        } else {
+            if (nodes.get(1).getType().equals("PLUS")) {
+                return ((AddExp) nodes.get(0)).getValue() + ((MulExp) nodes.get(2)).getValue();
+            } else {
+                return ((AddExp) nodes.get(0)).getValue() - ((MulExp) nodes.get(2)).getValue();
+            }
+        }
+    }
+
+    public String generateIntermediateCode() {
+        if (nodes.size() == 1) {
+            return ((MulExp) nodes.get(0)).generateIntermediateCode();
+        } else {
+            String v1 = ((AddExp) nodes.get(0)).generateIntermediateCode();
+            String v2 = ((MulExp) nodes.get(2)).generateIntermediateCode();
+            if (v1.matches("^(0|[1-9][0-9]*)$") && v2.matches("^(0|[1-9][0-9]*)$")) {
+                if (nodes.get(1).getType().equals("PLUS"))
+                    return String.format("%d",
+                            Integer.valueOf(v1) + Integer.valueOf(v2));
+                return String.format("%d",
+                        Integer.valueOf(v1) - Integer.valueOf(v2));
+            }
+            String temp = Allocator.generateVariableName();
+            IntermediateCode.add(new Assign(new Value(temp),
+                    nodes.get(1).getType().equals("PLUS") ? Assign.PLUS : Assign.MINUS, new Value(v1), new Value(v2)));
+            return temp;
+        }
     }
 }

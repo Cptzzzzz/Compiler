@@ -9,3 +9,9 @@ output/
 diff/
 error.txt
 src/learn
+InstructionStatistics.txt
+in.txt
+out.txt
+mips.txt
+test_mips.bat
+intermediate-code.txt

@@ -1,6 +1,9 @@
 package syntax;
 
 import lexical.LexicalitySupporter;
+import util.Node;
+
+import java.util.ArrayList;
 
 public class ConstInitVal extends ParserUnit {
     ConstInitVal() {
@@ -33,5 +36,19 @@ public class ConstInitVal extends ParserUnit {
             return true;
         }
         return false;
+    }
+
+    public ArrayList<Integer> getValues(){
+        ArrayList<Integer> res=new ArrayList<>();
+        for(Node node:nodes){
+            if(node instanceof ConstExp){
+                res.add(((ConstExp)node).getValue());
+            }else if(node instanceof ConstInitVal){
+                for(int a:((ConstInitVal)node).getValues()){
+                    res.add(a);
+                }
+            }
+        }
+        return res;
     }
 }

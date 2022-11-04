@@ -1,6 +1,10 @@
 package syntax;
 
+import intermediate.Value;
 import lexical.LexicalitySupporter;
+import util.Node;
+
+import java.util.ArrayList;
 
 public class InitVal extends ParserUnit {
     InitVal() {
@@ -33,5 +37,17 @@ public class InitVal extends ParserUnit {
             return true;
         }
         return false;
+    }
+
+    public ArrayList<Value> getValues(){
+        ArrayList<Value> res=new ArrayList<>();
+        for(Node node:nodes){
+            if(node instanceof InitVal)
+                for(Value value:((InitVal)node).getValues())
+                    res.add(value);
+            else if(node instanceof Exp)
+                res.add(new Value(((Exp)node).generateIntermediateCode()));
+        }
+        return res;
     }
 }

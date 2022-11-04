@@ -1,5 +1,6 @@
 package syntax;
 
+import intermediate.Allocator;
 import lexical.LexicalitySupporter;
 import util.CompilerMode;
 import util.Node;
@@ -29,7 +30,7 @@ public class Block extends ParserUnit {
     }
 
     public void buildVariableTable(VariableTable variableTable){
-        this.variableTable=new VariableTable();
+        this.variableTable=new VariableTable(Allocator.generateTableNumber());
         for(Node node:nodes){
             if(node instanceof ParserUnit)
                 ((ParserUnit) node).buildVariableTable(this.variableTable);

@@ -1,5 +1,7 @@
 package syntax;
 
+import intermediate.FuncDeclaration;
+import intermediate.IntermediateCode;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import util.CompilerMode;
@@ -60,5 +62,10 @@ public class MainFuncDef extends ParserUnit {
 
     public boolean isReturned(){
         return ((Block) nodes.get(nodes.size()-1)).isReturned();
+    }
+
+    public String generateIntermediateCode() {
+        IntermediateCode.add(new FuncDeclaration("main",true));
+        return super.generateIntermediateCode();
     }
 }

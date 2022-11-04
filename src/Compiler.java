@@ -1,3 +1,5 @@
+import intermediate.Allocator;
+import intermediate.IntermediateCode;
 import lexical.ContentScanner;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
@@ -14,36 +16,45 @@ import util.OutputWriter;
 public class Compiler {
     public static void init() {
         CompilerMode.setDebug(false);
-        CompilerMode.setStage("Error handling");
+        CompilerMode.setStage("Code generate");
         CompilerMode.setJudge(false);
+        IntermediateCode.init();
+        OutputWriter.init("output.txt");
+        ErrorWriter.init("error.txt");
+        Lexicality.init();
+    }
+
+    public static void close() {
+        OutputWriter.close();
+        ErrorWriter.close();
+        IntermediateCode.close();
     }
 
     public static void main(String[] args) {
         Compiler.init();
         submit();
+        close();
     }
 
     public static void submit() {
         String content = InputReader.readFile("testfile.txt");
-        OutputWriter.init("output.txt");
-        ErrorWriter.init("error.txt");
-        Lexicality.init();
         content = ContentScanner.pretreat(content);
         ContentScanner.start(content);
         CompUnit root = ParserUnit.treeBuilder();
         root.buildParent(null);
         root.buildFunctionTable(new FunctionTable());
-        root.buildVariableTable(new VariableTable());
-        root.setup();
+        root.buildVariableTable(new VariableTable(Allocator.generateTableNumber()));
+        root.setup();//build FunctionTable and VariableTable
 
+        root.generateIntermediateCode();
         if (CompilerMode.getStage().equals("Lexical analysis")) {
             Lexicality.outputAll();
         } else if (CompilerMode.getStage().equals("Syntax analysis")) {
             root.output();
         } else if (CompilerMode.getStage().equals("Error handling")) {
             ErrorWriter.output();
+        } else if (CompilerMode.getStage().equals("Code generate")) {
+            IntermediateCode.output();
         }
-        OutputWriter.close();
-        ErrorWriter.close();
     }
 }

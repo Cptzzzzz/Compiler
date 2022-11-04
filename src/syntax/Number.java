@@ -1,5 +1,6 @@
 package syntax;
 
+import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 
 public class Number extends ParserUnit {
@@ -18,5 +19,13 @@ public class Number extends ParserUnit {
             return true;
         }
         return false;
+    }
+
+    public int getValue(){
+        return Integer.valueOf(((Lexicality)nodes.get(0)).getContent());
+    }
+
+    public String generateIntermediateCode(){
+        return ((Lexicality)nodes.get(0)).getContent();
     }
 }

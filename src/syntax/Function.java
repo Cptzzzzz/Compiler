@@ -1,5 +1,9 @@
 package syntax;
 
+import intermediate.FuncDeclaration;
+import intermediate.FuncParam;
+import intermediate.IntermediateCode;
+
 import java.util.ArrayList;
 
 public class Function {
@@ -29,5 +33,12 @@ public class Function {
 
     public void setParams(ArrayList<Variable> params) {
         this.params = params;
+    }
+
+    public void generateIntermediateCode(){
+        IntermediateCode.add(new FuncDeclaration(name,isReturnValue()));
+        for(Variable variable:params){
+            IntermediateCode.add(new FuncParam(variable.getFinalName(),variable.getDimension()!=0));
+        }
     }
 }

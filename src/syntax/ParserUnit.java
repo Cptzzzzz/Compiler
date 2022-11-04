@@ -71,8 +71,8 @@ public class ParserUnit extends Node {
             }
         } else if (parent == null) {
             if (!variableTable.isExist(name)) {
-                if(!isConst)
-                ErrorWriter.add(new Error(line, 'c'));
+                if (!isConst)
+                    ErrorWriter.add(new Error(line, 'c'));
             } else if (variableTable.isConst(name) && isConst) {
                 ErrorWriter.add(new Error(line, 'h'));
             }
@@ -81,18 +81,19 @@ public class ParserUnit extends Node {
         ((ParserUnit) parent).getVariable(name, line, isConst);
     }
 
-    public int getVariableDimension(String name){
-        if(getType().equals("Block")){
-            if(variableTable.isExist(name)){
+    public int getVariableDimension(String name) {
+        if (getType().equals("Block")) {
+            if (variableTable.isExist(name)) {
                 return variableTable.getDimension(name);
             }
-        }else if(parent==null){
-            if(variableTable.isExist(name)){
+        } else if (parent == null) {
+            if (variableTable.isExist(name)) {
                 return variableTable.getDimension(name);
             }
         }
         return ((ParserUnit) parent).getVariableDimension(name);
     }
+
     public boolean shouldReturnValue() {
         if (getType().equals("FuncDef")) {
             return nodes.get(0).nodes.get(0).getType().equals("INTTK");
@@ -107,5 +108,30 @@ public class ParserUnit extends Node {
             return false;
         }
         return ((ParserUnit) parent).isLoop();
+    }
+
+    public int getVariableValue(String name, ArrayList<Integer> args) {
+        if (getType().equals("Block") || parent == null) {
+            if (variableTable.isConst(name)) {
+                return variableTable.getValue(name, args);
+            }
+        }
+        return ((ParserUnit) parent).getVariableValue(name, args);
+    }
+
+    public String generateIntermediateCode() {
+        for (Node node : nodes) {
+            if (node instanceof ParserUnit)
+                ((ParserUnit) node).generateIntermediateCode();
+        }
+        return null;
+    }
+
+    public Variable getVariableInstance(String name){
+        if(getType().equals("Block")||parent==null){
+            if(variableTable.isExist(name))
+                return variableTable.getVariableInstance(name);
+        }
+        return ((ParserUnit)parent).getVariableInstance(name);
     }
 }
