@@ -72,50 +72,45 @@ public class LVal extends ParserUnit {
                 args.add(((Exp) node).getValue());
             }
         }
-        if(args.size()==0)
+        if (args.size() == 0)
             args.add(0);
         return getVariableValue(((Lexicality) nodes.get(0)).getContent(), args);
     }
 
-    public String generateIntermediateCode(){
-        Variable variable=getVariableInstance(((Lexicality)nodes.get(0)).getContent());
-        if(variable.getDimension()==0){
-            if(variable.isConst()){
-                return String.format("%d",variable.getValue(null));
-            }else{
-                return variable.getFinalName();
+    public Value generateIntermediateCode() {
+        Variable variable = getVariableInstance(((Lexicality) nodes.get(0)).getContent());
+        if (variable.getDimension() == 0) {
+            if (variable.isConst()) {
+                return new Value(variable.getValue(null));
+            } else {
+                return new Value(variable.getFinalName());
             }
-        }else if(variable.getDimension()==1){
-            String v=((Exp)nodes.get(2)).generateIntermediateCode();
-            return new Value(variable.getFinalName(),new Value(v)).toString();
-        }else{
-            String v1=((Exp)nodes.get(2)).generateIntermediateCode();
-            String v2=((Exp)nodes.get(5)).generateIntermediateCode();
-            if(v1.matches("^(0|[1-9][0-9]*)$")){
-                v1=String.format("%d",Integer.valueOf(v1)*variable.getDimensions().get(1));
-            }else{
-                String t=Allocator.generateVariableName();
-                IntermediateCode.add(new Assign(
-                        new Value(t),
-                        Assign.MULTI,
-                        new Value(v1),
-                        new Value(variable.getDimensions().get(1))
-                ));
-                v1=t;
+        } else if (variable.getDimension() == 1) {
+            if (nodes.size() == 1) {
+                return new Value(variable.getFinalName(), new Value(0), true);
+            } else {
+                Value temp = Allocator.generateVariableValue();
+                IntermediateCode.add(new Assign(temp, Assign.MULTI, new Value(4), ((Exp) nodes.get(2)).generateIntermediateCode()));
+                return new Value(variable.getFinalName(), temp, false);
             }
-            if(v2.matches("^(0|[1-9][0-9]*)$")&&v1.matches("^(0|[1-9][0-9]*)$")){
-                v2=String.format("%d",Integer.valueOf(v1)+Integer.valueOf(v2));
-            }else{
-                String t=Allocator.generateVariableName();
-                IntermediateCode.add(new Assign(
-                        new Value(t),
-                        Assign.PLUS,
-                        new Value(v1),
-                        new Value(v2)
-                ));
-                v2=t;
+        } else {
+            if (nodes.size() == 1) {
+                return new Value(variable.getFinalName(), new Value(0), true);
+            } else if (nodes.size() == 4) {
+                Value temp = Allocator.generateVariableValue();
+                IntermediateCode.add(new Assign(temp, Assign.MULTI, new Value(variable.dimensions.get(1)), ((Exp) nodes.get(2)).generateIntermediateCode()));
+                Value temp1=Allocator.generateVariableValue();
+                IntermediateCode.add(new Assign(temp1, Assign.MULTI, temp,new Value(4)));
+                return new Value(variable.getFinalName(), temp1, true);
+            } else {
+                Value temp = Allocator.generateVariableValue();
+                IntermediateCode.add(new Assign(temp, Assign.MULTI, new Value(variable.dimensions.get(1)), ((Exp) nodes.get(2)).generateIntermediateCode()));
+                Value temp1 = Allocator.generateVariableValue();
+                IntermediateCode.add(new Assign(temp1, Assign.PLUS, temp, ((Exp) nodes.get(5)).generateIntermediateCode()));
+                Value temp2=Allocator.generateVariableValue();
+                IntermediateCode.add(new Assign(temp2, Assign.MULTI,temp1,new Value(4)));
+                return new Value(variable.getFinalName(),temp2, false);
             }
-            return new Value(variable.getFinalName(),new Value(v2)).store();
         }
     }
 }

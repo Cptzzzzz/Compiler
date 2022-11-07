@@ -2,13 +2,12 @@ package syntax;
 
 import intermediate.FuncDeclaration;
 import intermediate.IntermediateCode;
+import intermediate.Value;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import util.CompilerMode;
 import util.Error;
 import util.ErrorWriter;
-
-import java.util.ArrayList;
 
 public class MainFuncDef extends ParserUnit {
     MainFuncDef() {
@@ -64,8 +63,8 @@ public class MainFuncDef extends ParserUnit {
         return ((Block) nodes.get(nodes.size()-1)).isReturned();
     }
 
-    public String generateIntermediateCode() {
-        IntermediateCode.add(new FuncDeclaration("main",true));
+    public Value generateIntermediateCode() {
+        IntermediateCode.add(new FuncDeclaration("main",true,0,getAllVariableTable()));
         return super.generateIntermediateCode();
     }
 }

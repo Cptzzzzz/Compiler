@@ -58,22 +58,20 @@ public class AddExp extends ParserUnit {
         }
     }
 
-    public String generateIntermediateCode() {
+    public Value generateIntermediateCode() {
         if (nodes.size() == 1) {
             return ((MulExp) nodes.get(0)).generateIntermediateCode();
         } else {
-            String v1 = ((AddExp) nodes.get(0)).generateIntermediateCode();
-            String v2 = ((MulExp) nodes.get(2)).generateIntermediateCode();
-            if (v1.matches("^(0|[1-9][0-9]*)$") && v2.matches("^(0|[1-9][0-9]*)$")) {
+            Value v1 = ((AddExp) nodes.get(0)).generateIntermediateCode();
+            Value v2 = ((MulExp) nodes.get(2)).generateIntermediateCode();
+            if (v1.isNumber()&&v2.isNumber()) {
                 if (nodes.get(1).getType().equals("PLUS"))
-                    return String.format("%d",
-                            Integer.valueOf(v1) + Integer.valueOf(v2));
-                return String.format("%d",
-                        Integer.valueOf(v1) - Integer.valueOf(v2));
+                    return new Value(v1.getValue()+v2.getValue());
+                return new Value(v1.getValue()-v2.getValue());
             }
-            String temp = Allocator.generateVariableName();
-            IntermediateCode.add(new Assign(new Value(temp),
-                    nodes.get(1).getType().equals("PLUS") ? Assign.PLUS : Assign.MINUS, new Value(v1), new Value(v2)));
+            Value temp = Allocator.generateVariableValue();
+            IntermediateCode.add(new Assign(temp,
+                    nodes.get(1).getType().equals("PLUS") ? Assign.PLUS : Assign.MINUS,v1, v2));
             return temp;
         }
     }

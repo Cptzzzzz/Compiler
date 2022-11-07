@@ -34,11 +34,4 @@ public class Function {
     public void setParams(ArrayList<Variable> params) {
         this.params = params;
     }
-
-    public void generateIntermediateCode(){
-        IntermediateCode.add(new FuncDeclaration(name,isReturnValue()));
-        for(Variable variable:params){
-            IntermediateCode.add(new FuncParam(variable.getFinalName(),variable.getDimension()!=0));
-        }
-    }
 }

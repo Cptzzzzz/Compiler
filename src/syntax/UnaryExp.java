@@ -1,7 +1,6 @@
 package syntax;
 
-import intermediate.CallFunction;
-import intermediate.IntermediateCode;
+import intermediate.*;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import util.Error;
@@ -96,18 +95,24 @@ public class UnaryExp extends ParserUnit {
         }
     }
 
-    public String generateIntermediateCode() {
+    public Value generateIntermediateCode() {
         if(nodes.get(0) instanceof UnaryOp){
             if(nodes.get(0).nodes.get(0).getType().equals("PLUS")){
                 return ((UnaryExp)nodes.get(1)).generateIntermediateCode();
+            }else if(nodes.get(0).nodes.get(0).getType().equals("MINU")){
+                Value temp = Allocator.generateVariableValue();
+                IntermediateCode.add(new Assign(temp,Assign.MINUS,((UnaryExp)nodes.get(1)).generateIntermediateCode()));
+                return temp;
+            }else{//todo implement !
+
             }
         }else if(nodes.get(0) instanceof PrimaryExp){
             return ((PrimaryExp)nodes.get(0)).generateIntermediateCode();
         }else{
-            //todo call function
             super.generateIntermediateCode();
-            IntermediateCode.add(new CallFunction(((Lexicality)nodes.get(0)).getContent()));
-            return "RET";
+            Value temp=Allocator.generateVariableValue();
+            IntermediateCode.add(new CallFunction(((Lexicality)nodes.get(0)).getContent(),temp));
+            return temp;
         }
         return null;
     }

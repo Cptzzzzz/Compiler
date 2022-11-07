@@ -50,10 +50,10 @@ public class FuncRParams extends ParserUnit {
         return res;
     }
 
-    public String generateIntermediateCode() {
+    public Value generateIntermediateCode() {
         for(Node node:nodes){
             if(node instanceof Exp){
-                IntermediateCode.add(new PushParam(new Value(((Exp)node).generateIntermediateCode())));
+                IntermediateCode.add(new PushParam(((Exp)node).generateIntermediateCode()));
             }
         }
         return null;

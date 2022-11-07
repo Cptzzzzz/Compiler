@@ -1,5 +1,6 @@
 package syntax;
 
+import intermediate.Value;
 import lexical.LexicalitySupporter;
 
 public class ConstExp extends ParserUnit {
@@ -24,7 +25,7 @@ public class ConstExp extends ParserUnit {
         return ((AddExp) nodes.get(0)).getValue();
     }
 
-    public String generateIntermediateCode() {
+    public Value generateIntermediateCode() {
         return null;
     }
 }

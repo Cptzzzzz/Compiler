@@ -1,6 +1,7 @@
 package syntax;
 
 import intermediate.Assign;
+import intermediate.Declaration;
 import intermediate.IntermediateCode;
 import intermediate.Value;
 import lexical.Lexicality;
@@ -60,39 +61,27 @@ public class VarDef extends ParserUnit {
                 dimensions.add(((ConstExp)node).getValue());
         }
         variable.setDimensions(dimensions);
+        if(variableTable.isGlobal()){
+            if(nodes.get(nodes.size()-1) instanceof InitVal)
+                variable.setValues(((InitVal)nodes.get(nodes.size()-1)).getIntValues());
+            else{
+                ArrayList<Integer> res=new ArrayList<>();
+                for(int i=variable.getLength()-1;i>=0;i--)
+                    res.add(0);
+                variable.setValues(res);
+            }
+        }
         variableTable.add(variable,((Lexicality) nodes.get(0)).getLineNumber());
         super.setup();
     }
 
-    public String generateIntermediateCode(){
-        variableTable.generateIntermediateCode(((Lexicality) nodes.get(0)).getContent());
-        if(nodes.get(nodes.size()-1) instanceof InitVal){
-            Variable variable=variableTable.getVariableInstance(((Lexicality) nodes.get(0)).getContent());
+    public Value generateIntermediateCode(){
+        Declaration declaration=new Declaration(variableTable.getVariableInstance(((Lexicality) nodes.get(0)).getContent()));
+        if(nodes.get(nodes.size()-1) instanceof InitVal && !variableTable.isGlobal()){
             ArrayList<Value> values=((InitVal)nodes.get(nodes.size()-1)).getValues();
-            if(variable.getDimension()==0){
-                IntermediateCode.add(new Assign(
-                        new Value(variable.getFinalName()),Assign.NONE,values.get(0)
-                ));
-            }else if(variable.getDimension()==1){
-                int length=values.size();
-                for(int i=0;i<length;i++){
-                    IntermediateCode.add(new Assign(
-                            new Value(variable.getFinalName(),new Value(i)),Assign.NONE,values.get(i)
-                    ));
-                }
-            }else{
-                ArrayList<Integer> dimension=variable.getDimensions();
-                int l1=dimension.get(0),l2=dimension.get(1);
-                for(int i=0;i<l1;i++){
-                    for(int j=0;j<l2;j++){
-                        IntermediateCode.add(new Assign(
-                                new Value(variable.getFinalName(),new Value(i*l2+j)),
-                                Assign.NONE,values.get(i*l2+j)
-                        ));
-                    }
-                }
-            }
+            declaration.setValues(values);
         }
+        IntermediateCode.add(declaration);
         return null;
     }
 }

@@ -1,5 +1,9 @@
 package syntax;
 
+import intermediate.FuncDeclaration;
+import intermediate.FuncParam;
+import intermediate.IntermediateCode;
+import intermediate.Value;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import util.CompilerMode;
@@ -64,6 +68,9 @@ public class FuncDef extends ParserUnit {
             ErrorWriter.add(new Error(((Lexicality) block.nodes.get(block.nodes.size() - 1)).getLineNumber()
                     , 'g'));
         }
+        if (!block.isReturned() && nodes.get(0).nodes.get(0).getType().equals("VOIDTK")) {
+            block.addReturn();
+        }
     }
 
     public ArrayList<Variable> getParams() {
@@ -73,13 +80,17 @@ public class FuncDef extends ParserUnit {
         return ((FuncFParams) nodes.get(3)).getParams();
     }
 
-    public boolean isReturned(){
-        return ((Block) nodes.get(nodes.size()-1)).isReturned();
+    public boolean isReturned() {
+        return ((Block) nodes.get(nodes.size() - 1)).isReturned();
     }
 
-    public String generateIntermediateCode() {
-        functionTable.generateIntermediateCode(((Lexicality)nodes.get(1)).getContent());
-        ((Block)nodes.get(nodes.size()-1)).generateIntermediateCode();
+    public Value generateIntermediateCode() {
+        Function function = functionTable.getFunctionInstance(((Lexicality) nodes.get(1)).getContent());
+        IntermediateCode.add(new FuncDeclaration(function.getName(), function.isReturnValue(), function.params.size(), getAllVariableTable()));
+        for (Variable variable : function.params) {
+            IntermediateCode.add(new FuncParam(variable.getFinalName(), variable.getDimension() != 0));
+        }
+        ((Block) nodes.get(nodes.size() - 1)).generateIntermediateCode();
         return null;
     }
 }

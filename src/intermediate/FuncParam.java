@@ -1,5 +1,8 @@
 package intermediate;
 
+import backend.Mips;
+import backend.SymbolManager;
+
 public class FuncParam extends IntermediateCode{
     public boolean isArray;
     public String name;
@@ -8,7 +11,9 @@ public class FuncParam extends IntermediateCode{
         this.isArray=isArray;
         this.type="FuncParam";
     }
+    public void solve(){
 
+    }
     public String toString(){
         return String.format("para %s%s",name,isArray?"[]":"");
     }

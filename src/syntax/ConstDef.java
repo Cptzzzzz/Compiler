@@ -1,5 +1,8 @@
 package syntax;
 
+import intermediate.Declaration;
+import intermediate.IntermediateCode;
+import intermediate.Value;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import util.Error;
@@ -55,8 +58,8 @@ public class ConstDef extends ParserUnit {
         super.setup();
     }
 
-    public String generateIntermediateCode(){
-        variableTable.generateIntermediateCode(((Lexicality) nodes.get(0)).getContent());
+    public Value generateIntermediateCode(){
+        IntermediateCode.add(new Declaration(variableTable.getVariableInstance(((Lexicality) nodes.get(0)).getContent())));
         return null;
     }
 }

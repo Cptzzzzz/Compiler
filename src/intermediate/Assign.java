@@ -1,5 +1,7 @@
 package intermediate;
 
+import backend.Mips;
+import backend.SymbolManager;
 import syntax.Variable;
 
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ public class Assign extends IntermediateCode {
             return MINUS;
         if (operator.equals("/"))
             return DIV;
-        if (operator.equals("%%"))
+        if (operator.equals("%"))
             return MOD;
         return NONE;
     }
@@ -39,7 +41,7 @@ public class Assign extends IntermediateCode {
             case 4:
                 return "/";
             case 5:
-                return "%%";
+                return "%";
             default:
                 return "";
         }
@@ -75,5 +77,39 @@ public class Assign extends IntermediateCode {
         } else {
             return String.format("%s = %s %s %s", left.toString(), right.get(0).toString(), Assign.toString(operator), right.get(1).toString());
         }
+    }
+
+    public void solve(){
+        if(right.size()==1){
+            if(operator==Assign.NONE){
+                SymbolManager.loadValueToRegister(right.get(0),"$t0");
+                SymbolManager.storeValueFromRegister(left,"$t0");
+            }else if(operator==Assign.MINUS){
+                SymbolManager.loadValueToRegister(right.get(0),"$t0");
+                Mips.writeln("sub $t0,$zero,$t0");
+                SymbolManager.storeValueFromRegister(left,"$t0");
+            }
+        }else{
+            SymbolManager.loadValueToRegister(right.get(1),"$t1");
+            Mips.writeln("sw $t1,0($sp)");
+            SymbolManager.loadValueToRegister(right.get(0),"$t0");
+            Mips.writeln("lw $t1,0($sp)");
+            if(operator==Assign.MINUS){
+                Mips.writeln("sub $t0,$t0,$t1");
+            }else if(operator==Assign.PLUS){
+                Mips.writeln("add $t0,$t0,$t1");
+            }else if(operator==Assign.MULTI){
+                Mips.writeln("mul $t0,$t0,$t1");
+            }else if(operator==Assign.DIV){
+                Mips.writeln("div $t0,$t0,$t1");
+            }else if(operator==Assign.MOD){
+                Mips.writeln("div $t0,$t1");
+                Mips.writeln("mfhi $t0");
+            }
+            SymbolManager.storeValueFromRegister(left,"$t0");
+        }
+    }
+    public Value getLeft(){
+        return left;
     }
 }

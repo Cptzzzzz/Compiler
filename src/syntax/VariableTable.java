@@ -9,10 +9,17 @@ public class VariableTable {
     ArrayList<Variable> variables;
     int number;
 
+    public ArrayList<Variable> getVariables() {
+        return variables;
+    }
+
     public int getNumber() {
         return number;
     }
 
+    public boolean isGlobal(){
+        return number==1;
+    }
     public VariableTable(int depth) {
         variables = new ArrayList<>();
         this.number =depth;
@@ -28,8 +35,10 @@ public class VariableTable {
                     break;
                 }
             }
-            if (flag)
+            if (flag){
+                variable1.setTableNumber(number);
                 this.variables.add(variable1);
+            }
         }
     }
 
@@ -40,9 +49,12 @@ public class VariableTable {
                 return;
             }
         }
+        variable.setTableNumber(number);
         variables.add(variable);
     }
-
+    public void add(Variable variable) {
+        variables.add(variable);
+    }
     public boolean isExist(String name){
         for(Variable variable1:variables){
             if(variable1.getName().equals(name)){
@@ -79,18 +91,19 @@ public class VariableTable {
         return 0;
     }
 
-    public void generateIntermediateCode(String name){
-        for(Variable variable:variables){
-            if(name.equals(variable.getName()))
-                variable.generateIntermediateCode(number);
-        }
-    }
-
     public Variable getVariableInstance(String name){
         for(Variable variable:variables){
             if(name.equals(variable.getName()))
                 return variable;
         }
         return null;
+    }
+
+    public int getSpace(){
+        int res=0;
+        for(Variable variable:variables){
+            res+=variable.getLength()*4;
+        }
+        return res;
     }
 }

@@ -5,6 +5,8 @@ import lexical.LexicalitySupporter;
 import util.CompilerMode;
 import util.Node;
 
+import java.util.ArrayList;
+
 public class Block extends ParserUnit {
     Block() {
         type = "Block";
@@ -40,5 +42,16 @@ public class Block extends ParserUnit {
     public boolean isReturned(){
         if(nodes.size()==2) return false;
         return ((BlockItem) nodes.get(nodes.size()-2)).isReturnStmt();
+    }
+    public void addReturn(){
+        nodes.add(nodes.size()-1,BlockItem.buildReturn());
+    }
+
+    public static void main(String[] args){
+        ArrayList<Integer> rs=new ArrayList<>();
+        rs.add(1);
+        rs.add(2);
+        rs.add(1,5);
+        System.out.println(rs);
     }
 }

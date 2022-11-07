@@ -8,8 +8,12 @@ public class IntermediateCode {
     private static BufferedWriter out;
     private static ArrayList<IntermediateCode> intermediateCodes;
 
-    public static void init(){
-        intermediateCodes=new ArrayList<>();
+    public static ArrayList<IntermediateCode> get() {
+        return intermediateCodes;
+    }
+
+    public static void init() {
+        intermediateCodes = new ArrayList<>();
         try {
             out = new BufferedWriter(new FileWriter("intermediate-code.txt"));
         } catch (Exception e) {
@@ -17,12 +21,12 @@ public class IntermediateCode {
         }
     }
 
-    public static void add(IntermediateCode intermediateCode){
+    public static void add(IntermediateCode intermediateCode) {
         intermediateCodes.add(intermediateCode);
     }
 
-    public static void output(){
-        for(IntermediateCode intermediateCode:intermediateCodes){
+    public static void output() {
+        for (IntermediateCode intermediateCode : intermediateCodes) {
             writeln(intermediateCode.toString());
         }
     }
@@ -44,4 +48,19 @@ public class IntermediateCode {
     }
 
     public String type;
+
+    public static ArrayList<IntermediateCode> removeGlobal() {
+        ArrayList<IntermediateCode> res = new ArrayList<>();
+        boolean flag = false;
+        for (IntermediateCode intermediateCode : intermediateCodes) {
+            if (!(intermediateCode instanceof Declaration)) {
+                flag = true;
+            }
+            if (flag) res.add(intermediateCode);
+        }
+        return res;
+    }
+
+    public void solve() {
+    }
 }

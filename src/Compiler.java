@@ -1,14 +1,13 @@
+import backend.Mips;
 import intermediate.Allocator;
 import intermediate.IntermediateCode;
 import lexical.ContentScanner;
 import lexical.Lexicality;
-import lexical.LexicalitySupporter;
 import syntax.CompUnit;
 import syntax.FunctionTable;
 import syntax.ParserUnit;
 import syntax.VariableTable;
 import util.CompilerMode;
-import util.Error;
 import util.ErrorWriter;
 import util.InputReader;
 import util.OutputWriter;
@@ -45,8 +44,9 @@ public class Compiler {
         root.buildFunctionTable(new FunctionTable());
         root.buildVariableTable(new VariableTable(Allocator.generateTableNumber()));
         root.setup();//build FunctionTable and VariableTable
-
         root.generateIntermediateCode();
+
+        Mips.start();
         if (CompilerMode.getStage().equals("Lexical analysis")) {
             Lexicality.outputAll();
         } else if (CompilerMode.getStage().equals("Syntax analysis")) {

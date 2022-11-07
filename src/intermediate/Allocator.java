@@ -9,6 +9,10 @@ public class Allocator {
     }
     public static String generateVariableName(){
         ++variableNumber;
-        return String.format("temp%d",variableNumber);
+        return String.format("_temp%d",variableNumber);
+    }
+
+    public static Value generateVariableValue(){
+        return new Value(generateVariableName());
     }
 }

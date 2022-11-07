@@ -1,6 +1,6 @@
 package syntax;
 
-import lexical.Lexicality;
+import intermediate.Value;
 import lexical.LexicalitySupporter;
 import util.Error;
 import util.ErrorWriter;
@@ -119,7 +119,7 @@ public class ParserUnit extends Node {
         return ((ParserUnit) parent).getVariableValue(name, args);
     }
 
-    public String generateIntermediateCode() {
+    public Value generateIntermediateCode() {
         for (Node node : nodes) {
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).generateIntermediateCode();
@@ -133,5 +133,20 @@ public class ParserUnit extends Node {
                 return variableTable.getVariableInstance(name);
         }
         return ((ParserUnit)parent).getVariableInstance(name);
+    }
+
+    public VariableTable getAllVariableTable(){
+        VariableTable variableTable=new VariableTable(-1);
+        if(getType().equals("Block")){
+            for(Variable variable:this.variableTable.getVariables()){
+                variableTable.add(variable);
+            }
+        }
+        for(Node node:nodes){
+            if(node instanceof ParserUnit)
+                for(Variable variable:((ParserUnit)node).getAllVariableTable().getVariables())
+                    variableTable.add(variable);
+        }
+        return variableTable;
     }
 }

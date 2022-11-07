@@ -12,8 +12,20 @@ public class Variable {
     String name;
     ArrayList<Integer> dimensions;
     ArrayList<Integer> values;
-    int tableNumber;
 
+    public void setTableNumber(int tableNumber) {
+        this.tableNumber = tableNumber;
+    }
+
+    int tableNumber;
+    public int getLength(){
+        if(getDimension()==0)return 1;
+        else if(getDimension()==1)return dimensions.get(0);
+        else return dimensions.get(0)*dimensions.get(1);
+    }
+    public boolean isGlobal(){
+        return tableNumber==1;
+    }
     public int getDimension() {
         return getDimensions().size();
     }
@@ -79,36 +91,5 @@ public class Variable {
         }
         if (getDimension() > 0) res += String.format(" [%d]", dimension);
         return res;
-    }
-
-    public void generateIntermediateCode(int tableNumber) {
-        this.tableNumber = tableNumber;
-        IntermediateCode.add(new Declaration(this));
-        if (isConst) {
-            if (getDimension() == 0) {
-                IntermediateCode.add(new Assign(
-                        new Value(getFinalName()),Assign.NONE,new Value(values.get(0))
-                ));
-            } else if (getDimension() == 1) {
-                for (int i = 0; i < dimensions.get(0); i++) {
-                    IntermediateCode.add(new Assign(
-                            new Value(getFinalName(), new Value(i)),
-                            Assign.NONE,
-                            new Value(values.get(i))
-                    ));
-                }
-            } else if (getDimension() == 2) {
-                int times = dimensions.get(1);
-                for (int i = 0; i < dimensions.get(0); i++) {
-                    for (int j = 0; j < dimensions.get(1); j++) {
-                        IntermediateCode.add(new Assign(
-                                new Value(getFinalName(), new Value(i * times + j)),
-                                Assign.NONE,
-                                new Value(values.get(i * times + j))
-                        ));
-                    }
-                }
-            }
-        }
     }
 }

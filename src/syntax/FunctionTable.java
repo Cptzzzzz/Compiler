@@ -31,11 +31,12 @@ public class FunctionTable {
         return null;
     }
 
-    public void generateIntermediateCode(String name){
+    public Function getFunctionInstance(String name){
         for(Function function:functions){
             if(name.equals(function.getName())){
-                function.generateIntermediateCode();
+                return function;
             }
         }
+        return null;
     }
 }

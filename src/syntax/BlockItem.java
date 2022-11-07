@@ -28,4 +28,9 @@ public class BlockItem extends ParserUnit {
         if(nodes.get(0) instanceof Decl)return false;
         return ((Stmt) nodes.get(0)).isReturnStmt();
     }
+    public static BlockItem buildReturn(){
+        BlockItem blockItem=new BlockItem();
+        blockItem.add(Stmt.buildReturn());
+        return blockItem;
+    }
 }

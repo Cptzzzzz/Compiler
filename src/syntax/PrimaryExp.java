@@ -46,19 +46,11 @@ public class PrimaryExp extends ParserUnit {
         }
     }
 
-    public String generateIntermediateCode() {
+    public Value generateIntermediateCode() {
         if (nodes.get(0) instanceof Number) {
             return ((Number) nodes.get(0)).generateIntermediateCode();
         } else if (nodes.get(0) instanceof LVal) {
-            Value value = Value.parser(((LVal) nodes.get(0)).generateIntermediateCode());
-            if (value.getType() == Value.ARRAY) {
-                String t = Allocator.generateVariableName();
-                IntermediateCode.add(new Assign(
-                        new Value(t), Assign.NONE, value
-                ));
-                return t;
-            }
-            return value.toString();
+            return ((LVal)nodes.get(0)).generateIntermediateCode();
         } else {
             return ((Exp) nodes.get(1)).generateIntermediateCode();
         }

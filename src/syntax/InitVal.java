@@ -46,7 +46,21 @@ public class InitVal extends ParserUnit {
                 for(Value value:((InitVal)node).getValues())
                     res.add(value);
             else if(node instanceof Exp)
-                res.add(new Value(((Exp)node).generateIntermediateCode()));
+                res.add(((Exp)node).generateIntermediateCode());
+        }
+        return res;
+    }
+
+    public ArrayList<Integer> getIntValues(){
+        ArrayList<Integer> res=new ArrayList<>();
+        for(Node node:nodes){
+            if(node instanceof Exp){
+                res.add(((Exp)node).getValue());
+            }else if(node instanceof InitVal){
+                for(int a:((InitVal)node).getIntValues()){
+                    res.add(a);
+                }
+            }
         }
         return res;
     }

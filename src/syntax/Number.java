@@ -1,5 +1,6 @@
 package syntax;
 
+import intermediate.Value;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 
@@ -25,7 +26,7 @@ public class Number extends ParserUnit {
         return Integer.valueOf(((Lexicality)nodes.get(0)).getContent());
     }
 
-    public String generateIntermediateCode(){
-        return ((Lexicality)nodes.get(0)).getContent();
+    public Value generateIntermediateCode(){
+        return new Value(((Lexicality)nodes.get(0)).getContent());
     }
 }

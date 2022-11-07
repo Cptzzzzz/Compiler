@@ -19,6 +19,14 @@ public class Stmt extends ParserUnit {
         type = "Stmt";
     }
 
+    public static Stmt buildReturn() {
+        Stmt stmt = new Stmt();
+        stmt.add(new Lexicality("return", "RETURNTK"));
+        stmt.add(new Lexicality(";", "SEMICN"));
+        stmt.stmtType = 7;
+        return stmt;
+    }
+
     public static Stmt parser(LexicalitySupporter lexicalitySupporter) {
         if (CompilerMode.getDebug()) {
             System.out.print("Stmt ");
@@ -215,17 +223,17 @@ public class Stmt extends ParserUnit {
         return false;
     }
 
-    public String generateIntermediateCode() {
+    public Value generateIntermediateCode() {
         switch (stmtType) {
             case 1:
-                Value lVal = Value.parser(((LVal) nodes.get(0)).generateIntermediateCode());
+                Value lVal = ((LVal) nodes.get(0)).generateIntermediateCode();
                 if (nodes.get(2) instanceof Exp) {
-                    String exp = ((Exp) nodes.get(2)).generateIntermediateCode();
+                    Value exp = ((Exp) nodes.get(2)).generateIntermediateCode();
                     IntermediateCode.add(new Assign(
-                            lVal, Assign.NONE, new Value(exp)
+                            lVal, Assign.NONE, exp
                     ));
                 } else {//todo getint
-                    IntermediateCode.add(new GetInt(Value.parser(((LVal)nodes.get(0)).generateIntermediateCode())));
+                    IntermediateCode.add(new GetInt(((LVal) nodes.get(0)).generateIntermediateCode()));
                 }
                 break;
             case 2:
@@ -236,24 +244,29 @@ public class Stmt extends ParserUnit {
                 super.generateIntermediateCode();
                 break;
             case 4:
+                ((ParserUnit)nodes.get(4)).generateIntermediateCode();
+                if(nodes.size()==7){
+                    ((ParserUnit)nodes.get(6)).generateIntermediateCode();
+                }
                 break;
             case 5:
+                ((ParserUnit)nodes.get(4)).generateIntermediateCode();
                 break;
             case 6:
                 break;
             case 7:
-                if(nodes.size()==2)
+                if (nodes.size() == 2)
                     IntermediateCode.add(new Return());
                 else
-                    IntermediateCode.add(new Return(new Value(((Exp)nodes.get(1)).generateIntermediateCode())));
+                    IntermediateCode.add(new Return(((Exp) nodes.get(1)).generateIntermediateCode()));
                 break;
             case 8://todo printf
-                ArrayList<Value> res=new ArrayList<>();
-                for(Node node:nodes){
-                    if(node instanceof Exp)
-                        res.add(new Value(((Exp)node).generateIntermediateCode()));
+                ArrayList<Value> res = new ArrayList<>();
+                for (Node node : nodes) {
+                    if (node instanceof Exp)
+                        res.add(((Exp) node).generateIntermediateCode());
                 }
-                IntermediateCode.add(new Printf(((Lexicality)nodes.get(2)).getContent(),res));
+                IntermediateCode.add(new Printf(((Lexicality) nodes.get(2)).getContent(), res));
                 break;
         }
         return null;

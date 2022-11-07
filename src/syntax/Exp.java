@@ -1,10 +1,9 @@
 package syntax;
 
+import intermediate.Value;
 import lexical.Lexicality;
 import lexical.LexicalitySupporter;
 import util.Node;
-
-import java.util.ArrayList;
 
 public class Exp extends ParserUnit {
     Exp() {
@@ -45,7 +44,7 @@ public class Exp extends ParserUnit {
         return ((AddExp)nodes.get(0)).getValue();
     }
 
-    public String generateIntermediateCode() {
+    public Value generateIntermediateCode() {
         return ((AddExp)nodes.get(0)).generateIntermediateCode();
     }
 }
