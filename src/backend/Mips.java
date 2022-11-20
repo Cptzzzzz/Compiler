@@ -51,7 +51,6 @@ public class Mips {
                 }
             }
         }
-        writeln("_temp: .space 1000");
         for (IntermediateCode intermediateCode : IntermediateCode.get()) {
             if (intermediateCode instanceof Printf) {
                 Printf printf = ((Printf) intermediateCode);
@@ -70,7 +69,6 @@ public class Mips {
 
     public static void text() {
         writeln(".text");
-        writeln("la $s0,_temp");
         writeln("jal main_function");
         writeln("nop");
         writeln("nop");
