@@ -8,3 +8,10 @@ testfile.txt
 output/
 diff/
 error.txt
+src/learn
+InstructionStatistics.txt
+in.txt
+out.txt
+test_mips.bat
+intermediate-code.txt
+mips*.txt
