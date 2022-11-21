@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class AddExp extends ParserUnit {
     AddExp() {
-        type = "AddExp";
+        setType("AddExp");
     }
 
     public static AddExp parser(LexicalitySupporter lexicalitySupporter) {
@@ -55,5 +55,29 @@ public class AddExp extends ParserUnit {
             nodes = addExp.nodes;
         }
         super.buildLeftRecursion();
+    }
+
+    public int getInteger() {
+        if (nodes.size() == 1) {
+            return ((MulExp) nodes.get(0)).getInteger();
+        } else {
+            if (nodes.get(1).getType().equals("PLUS")) {
+                return ((AddExp) nodes.get(0)).getInteger() + ((MulExp) nodes.get(2)).getInteger();
+            } else {
+                return ((AddExp) nodes.get(0)).getInteger() - ((MulExp) nodes.get(2)).getInteger();
+            }
+        }
+    }
+
+    public int getDimension() {
+        int res = 0;
+        for (Node node : nodes) {
+            if (node instanceof AddExp && ((AddExp) node).getDimension() > res) {
+                res = ((AddExp) node).getDimension();
+            } else if (node instanceof MulExp && ((MulExp) node).getDimension() > res) {
+                res = ((MulExp) node).getDimension();
+            }
+        }
+        return res;
     }
 }

@@ -4,7 +4,7 @@ import frontend.lexical.LexicalitySupporter;
 
 public class ConstExp extends ParserUnit {
     ConstExp() {
-        type = "ConstExp";
+        setType("ConstExp");
     }
 
     public static ConstExp parser(LexicalitySupporter lexicalitySupporter) {
@@ -15,5 +15,9 @@ public class ConstExp extends ParserUnit {
 
     public static boolean pretreat(LexicalitySupporter lexicalitySupporter) {
         return AddExp.pretreat(lexicalitySupporter);
+    }
+
+    public int getInteger() {
+        return ((AddExp) nodes.get(0)).getInteger();
     }
 }

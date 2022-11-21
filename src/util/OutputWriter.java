@@ -25,19 +25,12 @@ public class OutputWriter {
             }
     }
 
-    public static void write(String string) {
-        try {
-            out.write(string);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void writeln(String string) {
-        try {
-            out.write(string + "\n");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (CompilerMode.getInstance().isLexical() || CompilerMode.getInstance().isSyntax())
+            try {
+                out.write(string + "\n");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 }

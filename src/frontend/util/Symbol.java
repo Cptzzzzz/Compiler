@@ -1,0 +1,89 @@
+package frontend.util;
+
+import java.util.ArrayList;
+
+public class Symbol {
+    private final String name;
+    private final boolean isConst;
+    private final boolean reference;
+    private final int[] dimensions;
+    private final ArrayList<Integer> values;
+    private int scope;
+
+    public ArrayList<Integer> getValues() {
+        return values;
+    }
+
+    public Symbol(String name, boolean isConst, boolean reference, ArrayList<Integer> dimensions) {
+        this.name = name;
+        this.isConst = isConst;
+        this.reference = reference;
+        switch (dimensions.size()) {
+            case 0:
+                this.dimensions = null;
+                break;
+            case 1:
+                this.dimensions = new int[1];
+                this.dimensions[0] = dimensions.get(0);
+                break;
+            default:
+                this.dimensions = new int[2];
+                this.dimensions[0] = dimensions.get(0);
+                this.dimensions[1] = dimensions.get(1);
+        }
+        this.values = null;
+    }
+
+    public Symbol(String name, boolean isConst, boolean reference, ArrayList<Integer> dimensions, ArrayList<Integer> values) {
+        this.name = name;
+        this.isConst = isConst;
+        this.reference = reference;
+        switch (dimensions.size()) {
+            case 0:
+                this.dimensions = null;
+                break;
+            case 1:
+                this.dimensions = new int[1];
+                this.dimensions[0] = dimensions.get(0);
+                break;
+            default:
+                this.dimensions = new int[2];
+                this.dimensions[0] = dimensions.get(0);
+                this.dimensions[1] = dimensions.get(1);
+        }
+        this.values = values;
+    }
+
+    public boolean isReference() {
+        return reference;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getScope() {
+        return scope;
+    }
+
+    public void setScope(int scope) {
+        this.scope = scope;
+    }
+
+    public boolean isConst() {
+        return isConst;
+    }
+
+    public int getDimension() {
+        if (dimensions == null) return 0;
+        return dimensions.length;
+    }
+
+    public int[] getDimensions() {
+        return dimensions;
+    }
+
+    public String getFinalName() {
+        return String.format("%s_%d", name, scope);
+    }
+}

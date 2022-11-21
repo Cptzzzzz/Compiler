@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class EqExp extends ParserUnit {
     EqExp() {
-        type = "EqExp";
+        setType("EqExp");
     }
 
     public static EqExp parser(LexicalitySupporter lexicalitySupporter) {

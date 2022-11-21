@@ -4,7 +4,7 @@ import frontend.lexical.LexicalitySupporter;
 
 public class BType extends ParserUnit {
     BType() {
-        type = "BType";
+        setType("BType");
         setOutput(false);
     }
 

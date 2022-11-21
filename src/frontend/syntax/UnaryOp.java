@@ -4,7 +4,7 @@ import frontend.lexical.LexicalitySupporter;
 
 public class UnaryOp extends ParserUnit {
     UnaryOp() {
-        type = "UnaryOp";
+        setType("UnaryOp");
     }
 
     public static UnaryOp parser(LexicalitySupporter lexicalitySupporter) {

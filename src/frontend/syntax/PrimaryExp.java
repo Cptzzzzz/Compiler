@@ -4,7 +4,7 @@ import frontend.lexical.LexicalitySupporter;
 
 public class PrimaryExp extends ParserUnit {
     PrimaryExp() {
-        type = "PrimaryExp";
+        setType("PrimaryExp");
     }
 
     public static PrimaryExp parser(LexicalitySupporter lexicalitySupporter) {
@@ -27,5 +27,25 @@ public class PrimaryExp extends ParserUnit {
         } else if (LVal.pretreat(lexicalitySupporter)) {
             return true;
         } else return Number.pretreat(lexicalitySupporter);
+    }
+
+    public int getInteger() {
+        if (nodes.get(0).getType().equals("LPARENT")) {
+            return ((Exp) nodes.get(1)).getInteger();
+        } else if (nodes.get(0).getType().equals("Number")) {
+            return ((Number) nodes.get(0)).getInteger();
+        } else {
+            return ((LVal) nodes.get(0)).getInteger();
+        }
+    }
+
+    public int getDimension() {
+        if (nodes.get(0).getType().equals("LVal")) {
+            return ((LVal) nodes.get(0)).getDimension();
+        } else if (nodes.get(0).getType().equals("Number")) {
+            return 0;
+        } else {
+            return ((Exp) nodes.get(1)).getDimension();
+        }
     }
 }

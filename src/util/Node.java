@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Node {
 
 
-    public ArrayList<Node> nodes;
+    public ArrayList<Node> nodes = new ArrayList<>();
     private boolean isOutput = true;
 
     private String type;

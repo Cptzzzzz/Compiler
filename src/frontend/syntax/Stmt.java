@@ -1,11 +1,20 @@
 package frontend.syntax;
 
+import frontend.lexical.Lexicality;
 import frontend.lexical.LexicalitySupporter;
+import frontend.util.Allocator;
+import frontend.util.Symbol;
+import frontend.util.SymbolTable;
 import util.CompilerMode;
+import util.ErrorWriter;
+import util.Node;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Stmt extends ParserUnit {
     Stmt() {
-        type = "Stmt";
+        setType("Stmt");
     }
 
     private int stmtType;
@@ -23,7 +32,6 @@ public class Stmt extends ParserUnit {
             System.out.print("Stmt ");
             System.out.println(stmtType(lexicalitySupporter));
         }
-
         Stmt stmt = new Stmt();
         stmt.setStmtType(stmtType(lexicalitySupporter));
         switch (stmt.getStmtType()) {
@@ -39,13 +47,15 @@ public class Stmt extends ParserUnit {
                     if (lexicalitySupporter.read().getType().equals("RPARENT")) {
                         stmt.add(lexicalitySupporter.readAndNext());
                     } else {
-                        //todo 错误处理
+                        stmt.add(new Lexicality(")", "RPARENT"));
+                        ErrorWriter.add(lexicalitySupporter.getLastLineNumber(), 'j');
                     }
                 }
                 if (lexicalitySupporter.read().getType().equals("SEMICN")) {
                     stmt.add(lexicalitySupporter.readAndNext());
                 } else {
-                    //todo 错误处理
+                    stmt.add(new Lexicality(";", "SEMICN"));
+                    ErrorWriter.add(lexicalitySupporter.getLastLineNumber(), 'i');
                 }
                 break;
             case 2:
@@ -54,7 +64,8 @@ public class Stmt extends ParserUnit {
                 if (lexicalitySupporter.read().getType().equals("SEMICN")) {
                     stmt.add(lexicalitySupporter.readAndNext());
                 } else {
-                    //todo 错误处理
+                    stmt.add(new Lexicality(";", "SEMICN"));
+                    ErrorWriter.add(lexicalitySupporter.getLastLineNumber(), 'i');
                 }
                 break;
             case 3:
@@ -62,16 +73,15 @@ public class Stmt extends ParserUnit {
                 break;
             case 4:
             case 5:
-                boolean flag = true;
-                if (lexicalitySupporter.read().getType().equals("WHILETK"))
-                    flag = false;
+                boolean flag = !lexicalitySupporter.read().getType().equals("WHILETK");
                 stmt.add(lexicalitySupporter.readAndNext());
                 stmt.add(lexicalitySupporter.readAndNext());
                 stmt.add(Cond.parser(lexicalitySupporter));
                 if (lexicalitySupporter.read().getType().equals("RPARENT")) {
                     stmt.add(lexicalitySupporter.readAndNext());
                 } else {
-                    //todo 错误处理
+                    stmt.add(new Lexicality(")", "RPARENT"));
+                    ErrorWriter.add(lexicalitySupporter.getLastLineNumber(), 'j');
                 }
                 stmt.add(Stmt.parser(lexicalitySupporter));
                 if (flag && lexicalitySupporter.read().getType().equals("ELSETK")) {
@@ -84,7 +94,8 @@ public class Stmt extends ParserUnit {
                 if (lexicalitySupporter.read().getType().equals("SEMICN")) {
                     stmt.add(lexicalitySupporter.readAndNext());
                 } else {
-                    //todo 错误处理
+                    stmt.add(new Lexicality(";", "SEMICN"));
+                    ErrorWriter.add(lexicalitySupporter.getLastLineNumber(), 'i');
                 }
                 break;
             case 7:
@@ -95,7 +106,8 @@ public class Stmt extends ParserUnit {
                 if (lexicalitySupporter.read().getType().equals("SEMICN")) {
                     stmt.add(lexicalitySupporter.readAndNext());
                 } else {
-                    //todo 错误处理
+                    stmt.add(new Lexicality(";", "SEMICN"));
+                    ErrorWriter.add(lexicalitySupporter.getLastLineNumber(), 'i');
                 }
                 break;
             case 8:
@@ -109,12 +121,14 @@ public class Stmt extends ParserUnit {
                 if (lexicalitySupporter.read().getType().equals("RPARENT")) {
                     stmt.add(lexicalitySupporter.readAndNext());
                 } else {
-                    //todo 错误处理
+                    stmt.add(new Lexicality(")", "RPARENT"));
+                    ErrorWriter.add(lexicalitySupporter.getLastLineNumber(), 'j');
                 }
                 if (lexicalitySupporter.read().getType().equals("SEMICN")) {
                     stmt.add(lexicalitySupporter.readAndNext());
                 } else {
-                    //todo 错误处理
+                    stmt.add(new Lexicality(";", "SEMICN"));
+                    ErrorWriter.add(lexicalitySupporter.getLastLineNumber(), 'i');
                 }
                 break;
         }
@@ -161,5 +175,65 @@ public class Stmt extends ParserUnit {
             return 8;
         }
         return 0;
+    }
+
+    public void semantic() {
+        switch (stmtType) {
+            case 1:
+            case 9:
+                Symbol symbol = SymbolTable.getInstance().getSymbol(nodes.get(0).nodes.get(0).getContent());
+                if (symbol != null && symbol.isConst()) {
+                    ErrorWriter.add(nodes.get(0).nodes.get(0).getLineNumber(), 'h');
+                }
+                break;
+            case 6:
+                if (state.getLoopNumber() == 0)
+                    ErrorWriter.add(nodes.get(0).getLineNumber(), 'm');
+                break;
+            case 7:
+                if (nodes.size() == 3 && !state.shouldReturnValue())
+                    ErrorWriter.add(nodes.get(0).getLineNumber(), 'f');
+                break;
+            case 8:
+                String format = nodes.get(2).getContent();
+                String s = format.replaceAll("\\\\n", "").replaceAll("%d", "");
+                int length = s.length();
+                char c;
+                for (int i = 1; i < length - 1; i++) {
+                    c = s.charAt(i);
+                    if (c != 32 && c != 33 && !(40 <= c && c <= 91) && !(93 <= c && c <= 126)) {
+                        ErrorWriter.add(nodes.get(2).getLineNumber(), 'a');
+                        break;
+                    }
+                }
+                int tot = 0, cnt = 0;
+                Pattern pattern = Pattern.compile("%d");
+                Matcher matcher = pattern.matcher(format);
+                while (matcher.find())
+                    tot++;
+                for (Node node : nodes) {
+                    if (node.getType().equals("COMMA"))
+                        cnt++;
+                }
+                if (tot != cnt) {
+                    ErrorWriter.add(nodes.get(0).getLineNumber(), 'l');
+                }
+                break;
+        }
+        super.semantic();
+    }
+
+    public void setState(State state) {
+        if (stmtType == 4) {
+            this.state = new State(state.getLoopNumber(), Allocator.getInstance().getIfNumber(), nodes.size() == 7, state.shouldReturnValue());
+        } else if (stmtType == 5) {
+            this.state = new State(Allocator.getInstance().getWhileNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue());
+        } else {
+            this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue());
+        }
+        for (Node node : nodes) {
+            if (node instanceof ParserUnit)
+                ((ParserUnit) node).setState(this.state);
+        }
     }
 }

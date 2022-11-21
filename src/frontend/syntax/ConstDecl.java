@@ -1,10 +1,12 @@
 package frontend.syntax;
 
+import frontend.lexical.Lexicality;
 import frontend.lexical.LexicalitySupporter;
+import util.ErrorWriter;
 
 public class ConstDecl extends ParserUnit {
     ConstDecl() {
-        type = "ConstDecl";
+        setType("ConstDecl");
     }
 
     public static ConstDecl parser(LexicalitySupporter lexicalitySupporter) {
@@ -19,7 +21,8 @@ public class ConstDecl extends ParserUnit {
         if (lexicalitySupporter.read().getType().equals("SEMICN")) {
             constDecl.add(lexicalitySupporter.readAndNext());
         } else {
-            //todo 缺少分号
+            constDecl.add(new Lexicality(";", "SEMICN"));
+            ErrorWriter.add(lexicalitySupporter.getLastLineNumber(), 'i');
         }
         return constDecl;
     }

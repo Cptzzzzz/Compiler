@@ -5,7 +5,7 @@ import util.CompilerMode;
 
 public class Decl extends ParserUnit {
     Decl() {
-        type = "Decl";
+        setType("Decl");
         setOutput(false);
     }
 

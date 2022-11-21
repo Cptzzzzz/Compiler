@@ -2,10 +2,11 @@ package frontend.syntax;
 
 import frontend.lexical.LexicalitySupporter;
 import util.CompilerMode;
+import util.Node;
 
 public class MainFuncDef extends ParserUnit {
     MainFuncDef() {
-        type = "MainFuncDef";
+        setType("MainFuncDef");
     }
 
 
@@ -43,5 +44,19 @@ public class MainFuncDef extends ParserUnit {
             return false;
         }
         return true;
+    }
+
+    public void setState(State state) {
+        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), true);
+        for (Node node : nodes) {
+            if (node instanceof ParserUnit)
+                ((ParserUnit) node).setState(this.state);
+        }
+    }
+
+    @Override
+    public void semantic() {
+        ((Block) nodes.get(nodes.size() - 1)).checkReturn();
+        super.semantic();
     }
 }

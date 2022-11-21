@@ -4,7 +4,7 @@ import frontend.lexical.LexicalitySupporter;
 
 public class BlockItem extends ParserUnit {
     BlockItem() {
-        type = "BlockItem";
+        setType("BlockItem");
         setOutput(false);
     }
 

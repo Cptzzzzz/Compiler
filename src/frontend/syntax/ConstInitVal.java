@@ -1,10 +1,13 @@
 package frontend.syntax;
 
 import frontend.lexical.LexicalitySupporter;
+import util.Node;
+
+import java.util.ArrayList;
 
 public class ConstInitVal extends ParserUnit {
     ConstInitVal() {
-        type = "ConstInitVal";
+        setType("ConstInitVal");
     }
 
     public static ConstInitVal parser(LexicalitySupporter lexicalitySupporter) {
@@ -20,11 +23,7 @@ public class ConstInitVal extends ParserUnit {
                     constInitVal.add(ConstInitVal.parser(lexicalitySupporter));
                 }
             }
-            if (lexicalitySupporter.read().getType().equals("RBRACE")) {
-                constInitVal.add(lexicalitySupporter.readAndNext());
-            } else {
-                //todo 错误处理
-            }
+            constInitVal.add(lexicalitySupporter.readAndNext());
         }
         return constInitVal;
     }
@@ -34,5 +33,16 @@ public class ConstInitVal extends ParserUnit {
             return true;
         }
         return lexicalitySupporter.read().getType().equals("LBRACE");
+    }
+
+    public ArrayList<Integer> getIntegers() {
+        ArrayList<Integer> res = new ArrayList<>();
+        for (Node node : nodes) {
+            if (node instanceof ConstInitVal)
+                res.addAll(((ConstInitVal) node).getIntegers());
+            else if (node instanceof ConstExp)
+                res.add(((ConstExp) node).getInteger());
+        }
+        return res;
     }
 }

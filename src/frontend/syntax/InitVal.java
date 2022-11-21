@@ -1,10 +1,13 @@
 package frontend.syntax;
 
 import frontend.lexical.LexicalitySupporter;
+import util.Node;
+
+import java.util.ArrayList;
 
 public class InitVal extends ParserUnit {
     InitVal() {
-        type = "InitVal";
+        setType("InitVal");
     }
 
     public static InitVal parser(LexicalitySupporter lexicalitySupporter) {
@@ -20,11 +23,7 @@ public class InitVal extends ParserUnit {
                     initVal.add(InitVal.parser(lexicalitySupporter));
                 }
             }
-            if (lexicalitySupporter.read().getType().equals("RBRACE")) {
-                initVal.add(lexicalitySupporter.readAndNext());
-            } else {
-                //todo 错误处理
-            }
+            initVal.add(lexicalitySupporter.readAndNext());
         }
         return initVal;
     }
@@ -34,5 +33,16 @@ public class InitVal extends ParserUnit {
             return true;
         }
         return lexicalitySupporter.read().getType().equals("LBRACE");
+    }
+
+    public ArrayList<Integer> getIntegers() {
+        ArrayList<Integer> res = new ArrayList<>();
+        for (Node node : nodes) {
+            if (node instanceof InitVal)
+                res.addAll(((InitVal) node).getIntegers());
+            else if (node instanceof Exp)
+                res.add(((Exp) node).getInteger());
+        }
+        return res;
     }
 }

@@ -4,7 +4,7 @@ import frontend.lexical.LexicalitySupporter;
 
 public class Number extends ParserUnit {
     Number() {
-        type = "Number";
+        setType("Number");
     }
 
     public static Number parser(LexicalitySupporter lexicalitySupporter) {
@@ -15,5 +15,9 @@ public class Number extends ParserUnit {
 
     public static boolean pretreat(LexicalitySupporter lexicalitySupporter) {
         return lexicalitySupporter.read().getType().equals("INTCON");
+    }
+
+    public int getInteger() {
+        return Integer.parseInt(nodes.get(0).getContent());
     }
 }

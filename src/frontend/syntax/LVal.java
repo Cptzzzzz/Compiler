@@ -1,10 +1,17 @@
 package frontend.syntax;
 
+import frontend.lexical.Lexicality;
 import frontend.lexical.LexicalitySupporter;
+import frontend.util.Symbol;
+import frontend.util.SymbolTable;
+import util.ErrorWriter;
+import util.Node;
+
+import java.util.ArrayList;
 
 public class LVal extends ParserUnit {
     LVal() {
-        type = "LVal";
+        setType("LVal");
     }
 
     public static LVal parser(LexicalitySupporter lexicalitySupporter) {
@@ -13,7 +20,12 @@ public class LVal extends ParserUnit {
         while (lexicalitySupporter.read().getType().equals("LBRACK")) {
             lVal.add(lexicalitySupporter.readAndNext());
             lVal.add(Exp.parser(lexicalitySupporter));
-            lVal.add(lexicalitySupporter.readAndNext());
+            if (lexicalitySupporter.read().getType().equals("RBRACK"))
+                lVal.add(lexicalitySupporter.readAndNext());
+            else {
+                lVal.add(new Lexicality("]", "RBRACK"));
+                ErrorWriter.add(lexicalitySupporter.getLastLineNumber(), 'k');
+            }
         }
         return lVal;
     }
@@ -26,5 +38,47 @@ public class LVal extends ParserUnit {
             return false;
         }
         return !lexicalitySupporter1.read().getType().equals("LPARENT");
+    }
+
+    public int getInteger() {
+        ArrayList<Integer> args = new ArrayList<>();
+        for (Node node : nodes) {
+            if (node instanceof Exp) {
+                args.add(((Exp) node).getInteger());
+            }
+        }
+        Symbol symbol = SymbolTable.getInstance().getSymbol(nodes.get(0).getContent());
+        if (symbol == null) {
+            ErrorWriter.add(nodes.get(0).getLineNumber(), 'c');
+            return 0;
+        }
+        switch (symbol.getDimension()) {
+            case 0:
+                return symbol.getValues().get(0);
+            case 1:
+                return symbol.getValues().get(args.get(0));
+            default:
+                return symbol.getValues().get(args.get(1) + args.get(0) * symbol.getDimensions()[1]);
+        }
+    }
+
+    public void semantic() {
+        String name = nodes.get(0).getContent();
+        if (SymbolTable.getInstance().getSymbol(name) == null)
+            ErrorWriter.add(nodes.get(0).getLineNumber(), 'c');
+    }
+
+    public int getDimension() {
+        Symbol symbol = SymbolTable.getInstance().getSymbol(nodes.get(0).getContent());
+        if (symbol == null) {
+            ErrorWriter.add(nodes.get(0).getLineNumber(), 'c');
+            return 0;
+        }
+        int cnt = 0;
+        for (Node node : nodes) {
+            if (node instanceof Exp)
+                cnt++;
+        }
+        return symbol.getDimension() - cnt;
     }
 }

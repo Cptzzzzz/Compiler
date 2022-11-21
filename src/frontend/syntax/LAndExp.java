@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class LAndExp extends ParserUnit {
     LAndExp() {
-        type = "LAndExp";
+        setType("LAndExp");
     }
 
     public static LAndExp parser(LexicalitySupporter lexicalitySupporter) {

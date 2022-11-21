@@ -4,7 +4,7 @@ import frontend.lexical.LexicalitySupporter;
 
 public class CompUnit extends ParserUnit {
     CompUnit() {
-        type = "CompUnit";
+        setType("CompUnit");
     }
 
     public static CompUnit parser(LexicalitySupporter lexicalitySupporter) {

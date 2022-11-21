@@ -2,6 +2,7 @@ import frontend.lexical.ContentScanner;
 import frontend.lexical.Lexicality;
 import frontend.syntax.CompUnit;
 import frontend.syntax.ParserUnit;
+import frontend.syntax.State;
 import util.CompilerMode;
 import util.ErrorWriter;
 import util.InputReader;
@@ -34,9 +35,13 @@ public class Compiler {
         ContentScanner.getInstance().start(content);//词法分析
         Lexicality.outputAll();//输出词法分析
 
-        CompUnit root = ParserUnit.treeBuilder();//语法分析
+        CompUnit root = ParserUnit.treeBuilder();//语法分析+错误处理
         root.output();//输出语法分析
 
+        root.setState(new State(0, 0, false, false));
+
+        root.semantic();//语义分析+错误处理
+        ErrorWriter.output();//输出错误处理结果
 
         OutputWriter.close();
         ErrorWriter.close();

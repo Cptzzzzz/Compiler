@@ -4,7 +4,7 @@ import frontend.lexical.LexicalitySupporter;
 
 public class FuncType extends ParserUnit {
     FuncType() {
-        type = "FuncType";
+        setType("FuncType");
     }
 
     public static FuncType parser(LexicalitySupporter lexicalitySupporter) {

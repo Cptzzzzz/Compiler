@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class MulExp extends ParserUnit {
     MulExp() {
-        type = "MulExp";
+        setType("MulExp");
     }
 
     public static MulExp parser(LexicalitySupporter lexicalitySupporter) {
@@ -56,5 +56,31 @@ public class MulExp extends ParserUnit {
             nodes = mulExp.nodes;
         }
         super.buildLeftRecursion();
+    }
+
+    public int getInteger() {
+        if (nodes.size() == 1) {
+            return ((UnaryExp) nodes.get(0)).getInteger();
+        } else {
+            if (nodes.get(1).getType().equals("MULT")) {
+                return ((MulExp) nodes.get(0)).getInteger() * ((UnaryExp) nodes.get(2)).getInteger();
+            } else if (nodes.get(1).getType().equals("DIV")) {
+                return ((MulExp) nodes.get(0)).getInteger() / ((UnaryExp) nodes.get(2)).getInteger();
+            } else {
+                return ((MulExp) nodes.get(0)).getInteger() % ((UnaryExp) nodes.get(2)).getInteger();
+            }
+        }
+    }
+
+    public int getDimension() {
+        int res = 0;
+        for (Node node : nodes) {
+            if (node instanceof UnaryExp && ((UnaryExp) node).getDimension() > res) {
+                res = ((UnaryExp) node).getDimension();
+            } else if (node instanceof MulExp && ((MulExp) node).getDimension() > res) {
+                res = ((MulExp) node).getDimension();
+            }
+        }
+        return res;
     }
 }

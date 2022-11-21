@@ -1,10 +1,13 @@
 package frontend.syntax;
 
 import frontend.lexical.LexicalitySupporter;
+import util.Node;
+
+import java.util.ArrayList;
 
 public class FuncRParams extends ParserUnit {
     FuncRParams() {
-        type = "FuncRParams";
+        setType("FuncRParams");
     }
 
     public static FuncRParams parser(LexicalitySupporter lexicalitySupporter) {
@@ -19,5 +22,14 @@ public class FuncRParams extends ParserUnit {
 
     public static boolean pretreat(LexicalitySupporter lexicalitySupporter) {
         return Exp.pretreat(lexicalitySupporter);
+    }
+
+    public ArrayList<Integer> getParamsDimensions() {
+        ArrayList<Integer> res = new ArrayList<>();
+        for (Node node : nodes) {
+            if (node instanceof Exp)
+                res.add(((Exp) node).getDimension());
+        }
+        return res;
     }
 }

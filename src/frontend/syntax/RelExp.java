@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class RelExp extends ParserUnit {
     RelExp() {
-        type = "RelExp";
+        setType("RelExp");
     }
 
     public static RelExp parser(LexicalitySupporter lexicalitySupporter) {

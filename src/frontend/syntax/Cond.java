@@ -4,7 +4,7 @@ import frontend.lexical.LexicalitySupporter;
 
 public class Cond extends ParserUnit {
     Cond() {
-        type = "Cond";
+        setType("Cond");
     }
 
     public static Cond parser(LexicalitySupporter lexicalitySupporter) {

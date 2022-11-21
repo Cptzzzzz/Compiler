@@ -1,10 +1,12 @@
 package frontend.syntax;
 
+import frontend.lexical.Lexicality;
 import frontend.lexical.LexicalitySupporter;
+import util.ErrorWriter;
 
 public class VarDecl extends ParserUnit {
     VarDecl() {
-        type = "VarDecl";
+        setType("VarDecl");
     }
 
     public static VarDecl parser(LexicalitySupporter lexicalitySupporter) {
@@ -18,7 +20,8 @@ public class VarDecl extends ParserUnit {
         if (lexicalitySupporter.read().getType().equals("SEMICN")) {
             varDecl.add(lexicalitySupporter.readAndNext());
         } else {
-            //todo 错误处理
+            varDecl.add(new Lexicality(";", "SEMICN"));
+            ErrorWriter.add(lexicalitySupporter.getLastLineNumber(), 'i');
         }
         return varDecl;
     }

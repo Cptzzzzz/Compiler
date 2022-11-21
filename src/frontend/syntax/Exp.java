@@ -4,7 +4,7 @@ import frontend.lexical.LexicalitySupporter;
 
 public class Exp extends ParserUnit {
     Exp() {
-        type = "Exp";
+        setType("Exp");
     }
 
     public static Exp parser(LexicalitySupporter lexicalitySupporter) {
@@ -15,5 +15,13 @@ public class Exp extends ParserUnit {
 
     public static boolean pretreat(LexicalitySupporter lexicalitySupporter) {
         return AddExp.pretreat(lexicalitySupporter);
+    }
+
+    public int getInteger() {
+        return ((AddExp) nodes.get(0)).getInteger();
+    }
+
+    public int getDimension() {
+        return ((AddExp) nodes.get(0)).getDimension();
     }
 }

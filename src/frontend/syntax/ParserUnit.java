@@ -6,7 +6,7 @@ import util.Node;
 import java.util.ArrayList;
 
 public class ParserUnit extends Node {
-    String type;
+    State state;
 
     public ParserUnit() {
     }
@@ -28,14 +28,7 @@ public class ParserUnit extends Node {
         return String.format("<%s>", getType());
     }
 
-    public String getType() {
-        return type;
-    }
-
     public void add(Node node) {
-        if (nodes == null) {
-            nodes = new ArrayList<Node>();
-        }
         nodes.add(node);
     }
 
@@ -45,10 +38,26 @@ public class ParserUnit extends Node {
                 ((ParserUnit) node).buildLeftRecursion();
         }
     }
+
     public void eliminateLeftRecursion() {
         for (Node node : nodes) {
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).eliminateLeftRecursion();
+        }
+    }
+
+    public void semantic() {
+        for (Node node : nodes) {
+            if (node instanceof ParserUnit)
+                ((ParserUnit) node).semantic();
+        }
+    }
+
+    public void setState(State state) {
+        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue());
+        for (Node node : nodes) {
+            if (node instanceof ParserUnit)
+                ((ParserUnit) node).setState(this.state);
         }
     }
 }

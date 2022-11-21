@@ -64,7 +64,7 @@ public class Lexicality extends Node {
     }
 
     public static void outputAll() {
-        if (CompilerMode.getInstance().isLexical())
+        if (CompilerMode.getInstance().isLexical() && !CompilerMode.getInstance().isSyntax())
             for (Lexicality i : lexicalities) {
                 i.output();
             }
@@ -116,7 +116,7 @@ public class Lexicality extends Node {
     String content;
     int lineNumber;
 
-    Lexicality(String content, String type) {
+    public Lexicality(String content, String type) {
         this.content = content;
         this.type = type;
     }
@@ -126,7 +126,7 @@ public class Lexicality extends Node {
     }
 
     public void output() {
-        if (CompilerMode.getInstance().isLexical())
+        if (CompilerMode.getInstance().isLexical() || CompilerMode.getInstance().isSyntax())
             OutputWriter.writeln(toString());
     }
 
