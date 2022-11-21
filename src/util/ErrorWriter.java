@@ -7,19 +7,21 @@ public class ErrorWriter {
     static BufferedWriter out;
 
     public static void init(String filename) {
-        try {
-            out = new BufferedWriter(new FileWriter(filename));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (CompilerMode.getInstance().isError())
+            try {
+                out = new BufferedWriter(new FileWriter(filename));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 
     public static void close() {
-        try {
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (CompilerMode.getInstance().isError())
+            try {
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 
     public static void write(String string) {

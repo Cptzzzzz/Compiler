@@ -1,33 +1,70 @@
 package util;
 
 public class CompilerMode {
-    static boolean debug = true;
+    private static CompilerMode compilerMode;
 
-    public static boolean getDebug() {
+    private CompilerMode() {
+    }
+
+    public static CompilerMode getInstance() {
+        if (compilerMode == null)
+            compilerMode = new CompilerMode();
+        return compilerMode;
+    }
+
+    private boolean lexical;
+    private boolean syntax;
+    private boolean error;
+    private boolean ir;
+    private boolean mips;
+
+    private boolean debug;
+
+    public boolean isDebug() {
         return debug;
     }
 
-    public static void setDebug(boolean res) {
-        debug = res;
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 
-    static String stage;
-
-    public static String getStage() {
-        return stage;
+    public boolean isLexical() {
+        return lexical;
     }
 
-    public static void setStage(String res) {
-        stage = res;
+    public void setLexical(boolean lexical) {
+        this.lexical = lexical;
     }
 
-    static boolean judge = false;
-
-    public static void setJudge(boolean res) {
-        judge = res;
+    public boolean isSyntax() {
+        return syntax;
     }
 
-    public static boolean getJudge() {
-        return judge;
+    public void setSyntax(boolean syntax) {
+        this.syntax = syntax;
+    }
+
+    public boolean isError() {
+        return error;
+    }
+
+    public void setError(boolean error) {
+        this.error = error;
+    }
+
+    public boolean isIr() {
+        return ir;
+    }
+
+    public void setIr(boolean ir) {
+        this.ir = ir;
+    }
+
+    public boolean isMips() {
+        return mips;
+    }
+
+    public void setMips(boolean mips) {
+        this.mips = mips;
     }
 }

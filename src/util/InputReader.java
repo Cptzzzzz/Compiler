@@ -10,10 +10,10 @@ public class InputReader {
         byte[] data = null;
         try {
             data = Files.readAllBytes(path);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
-        String result = new String(data);
-        return result;
+        assert data != null;
+        return new String(data);
     }
 }

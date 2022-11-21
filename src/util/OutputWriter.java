@@ -8,19 +8,21 @@ public class OutputWriter {
     static BufferedWriter out;
 
     public static void init(String filename) {
-        try {
-            out = new BufferedWriter(new FileWriter(filename));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (CompilerMode.getInstance().isLexical() || CompilerMode.getInstance().isSyntax())
+            try {
+                out = new BufferedWriter(new FileWriter(filename));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 
     public static void close() {
-        try {
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (CompilerMode.getInstance().isLexical() || CompilerMode.getInstance().isSyntax())
+            try {
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 
     public static void write(String string) {
