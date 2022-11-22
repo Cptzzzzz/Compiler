@@ -1,6 +1,7 @@
 package frontend.syntax;
 
-import frontend.lexical.LexicalitySupporter;
+import frontend.util.LexicalitySupporter;
+import frontend.util.ParserUnit;
 
 public class Cond extends ParserUnit {
     Cond() {

@@ -1,8 +1,8 @@
 package frontend.syntax;
 
-import frontend.lexical.Lexicality;
-import frontend.lexical.LexicalitySupporter;
-import util.Node;
+import frontend.util.LexicalitySupporter;
+import frontend.util.Node;
+import frontend.util.ParserUnit;
 
 import java.util.ArrayList;
 
@@ -30,26 +30,26 @@ public class AddExp extends ParserUnit {
     public void eliminateLeftRecursion() {
         ArrayList<Node> nodes = new ArrayList<>();
         AddExp addExp = this;
-        while (addExp.nodes.get(0) instanceof AddExp) {
-            nodes.add(0, addExp.nodes.get(2));
-            nodes.add(0, addExp.nodes.get(1));
-            addExp = ((AddExp) addExp.nodes.get(0));
+        while (addExp.getNode(0) instanceof AddExp) {
+            nodes.add(0, addExp.getNode(2));
+            nodes.add(0, addExp.getNode(1));
+            addExp = ((AddExp) addExp.getNode(0));
         }
-        nodes.add(0, addExp.nodes.get(0));
+        nodes.add(0, addExp.getNode(0));
         this.nodes = nodes;
         super.eliminateLeftRecursion();
     }
 
     public void buildLeftRecursion() {
         int length = nodes.size() / 2;
-        if (!(length == 0 || nodes.get(0) instanceof AddExp)) {
+        if (!(length == 0 || getNode(0) instanceof AddExp)) {
             AddExp addExp = new AddExp(), temp;
-            addExp.add(nodes.get(0));
+            addExp.add(getNode(0));
             for (int i = 0; i < length; i++) {
                 temp = new AddExp();
                 temp.add(addExp);
-                temp.add(nodes.get(1 + 2 * i));
-                temp.add(nodes.get(2 * (1 + i)));
+                temp.add(getNode(1 + 2 * i));
+                temp.add(getNode(2 * (1 + i)));
                 addExp = temp;
             }
             nodes = addExp.nodes;
@@ -59,12 +59,12 @@ public class AddExp extends ParserUnit {
 
     public int getInteger() {
         if (nodes.size() == 1) {
-            return ((MulExp) nodes.get(0)).getInteger();
+            return ((MulExp) getNode(0)).getInteger();
         } else {
             if (nodes.get(1).getType().equals("PLUS")) {
-                return ((AddExp) nodes.get(0)).getInteger() + ((MulExp) nodes.get(2)).getInteger();
+                return ((AddExp) getNode(0)).getInteger() + ((MulExp) getNode(2)).getInteger();
             } else {
-                return ((AddExp) nodes.get(0)).getInteger() - ((MulExp) nodes.get(2)).getInteger();
+                return ((AddExp) getNode(0)).getInteger() - ((MulExp) getNode(2)).getInteger();
             }
         }
     }

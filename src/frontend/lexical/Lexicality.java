@@ -1,7 +1,7 @@
 package frontend.lexical;
 
 import util.CompilerMode;
-import util.Node;
+import frontend.util.Node;
 import util.OutputWriter;
 
 import java.util.*;
@@ -17,8 +17,8 @@ public class Lexicality extends Node {
     }
 
     public static void init() {
-        lexicalities = new ArrayList<Lexicality>();
-        keywords = new HashMap<String, String>();
+        lexicalities = new ArrayList<>();
+        keywords = new HashMap<>();
         keywords.put("main", "MAINTK");
         keywords.put("const", "CONSTTK");
         keywords.put("int", "INTTK");
@@ -32,7 +32,7 @@ public class Lexicality extends Node {
         keywords.put("return", "RETURNTK");
         keywords.put("void", "VOIDTK");
 
-        symbols = new HashMap<String, String>();
+        symbols = new HashMap<>();
         symbols.put("\\!", "NOT");
         symbols.put("\\&\\&", "AND");
         symbols.put("\\|\\|", "OR");
@@ -57,7 +57,7 @@ public class Lexicality extends Node {
         symbols.put("\\{", "LBRACE");
         symbols.put("\\}", "RBRACE");
 
-        others = new HashMap<String, String>();
+        others = new HashMap<>();
         others.put("\".*\"", "STRCON");
         others.put("[\\_a-zA-Z]+[\\_a-z0-9A-Z]*", "IDENFR");
         others.put("^(0|[1-9][0-9]*)$", "INTCON");
@@ -158,7 +158,7 @@ public class Lexicality extends Node {
         this.lineNumber = lineNumber;
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
     }
 }

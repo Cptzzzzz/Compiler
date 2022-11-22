@@ -1,17 +1,16 @@
 package frontend.syntax;
 
 import frontend.lexical.Lexicality;
-import frontend.lexical.LexicalitySupporter;
+import frontend.util.LexicalitySupporter;
+import frontend.util.ParserUnit;
 import frontend.util.Symbol;
 import frontend.util.SymbolTable;
 import util.ErrorWriter;
-import util.Node;
+import frontend.util.Node;
 
 import java.util.ArrayList;
 
 public class ConstDef extends ParserUnit {
-    private String symbol;
-
     ConstDef() {
         setType("ConstDef");
     }
@@ -42,17 +41,15 @@ public class ConstDef extends ParserUnit {
 
     @Override
     public void semantic() {
-        String name = nodes.get(0).getContent();
+        String name = getNode(0).getContent();
         ArrayList<Integer> dimension = new ArrayList<>();
         for (Node node : nodes) {
             if (node instanceof ConstExp)
                 dimension.add(((ConstExp) node).getInteger());
         }
-        if (SymbolTable.getInstance().isExist(name)) {
-            ErrorWriter.add(nodes.get(0).getLineNumber(), 'b');
-        } else {
-            SymbolTable.getInstance().add(new Symbol(name, true, false, dimension, ((ConstInitVal) nodes.get(nodes.size() - 1)).getIntegers()));
-            symbol = SymbolTable.getInstance().getSymbol(name).getFinalName();
-        }
+        if (SymbolTable.getInstance().isExist(name))
+            ErrorWriter.add(getNode(0).getLineNumber(), 'b');
+        else
+            SymbolTable.getInstance().add(new Symbol(name, true, false, dimension, ((ConstInitVal) getNode(nodes.size() - 1)).getIntegers()));
     }
 }

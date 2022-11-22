@@ -1,7 +1,8 @@
 package frontend.syntax;
 
 import frontend.lexical.Lexicality;
-import frontend.lexical.LexicalitySupporter;
+import frontend.util.LexicalitySupporter;
+import frontend.util.ParserUnit;
 import util.ErrorWriter;
 
 public class ConstDecl extends ParserUnit {

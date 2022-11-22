@@ -1,27 +1,20 @@
 package frontend.syntax;
 
 import frontend.lexical.Lexicality;
-import frontend.lexical.LexicalitySupporter;
-import frontend.util.Allocator;
-import frontend.util.SymbolTable;
-import util.CompilerMode;
+import frontend.util.LexicalitySupporter;
+import frontend.util.*;
 import util.ErrorWriter;
 
 public class Block extends ParserUnit {
-    private int number;
-
     Block() {
         setType("Block");
-        number = Allocator.getInstance().getBlockNumber();
     }
 
     public int getNumber() {
-        return number;
+        return state.getBlockNumber();
     }
 
     public static Block parser(LexicalitySupporter lexicalitySupporter) {
-        if (CompilerMode.getInstance().isDebug())
-            System.out.println("Block");
         Block block = new Block();
         block.add(lexicalitySupporter.readAndNext());
         while (BlockItem.pretreat(lexicalitySupporter)) {
@@ -35,8 +28,15 @@ public class Block extends ParserUnit {
         return lexicalitySupporter.read().getType().equals("LBRACE");
     }
 
+    public void setState(State state) {
+        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue(), Allocator.getInstance().getBlockNumber());
+        for (Node node : nodes)
+            if (node instanceof ParserUnit)
+                ((ParserUnit) node).setState(this.state);
+    }
+
     public void semantic() {
-        SymbolTable.getInstance().push(number);
+        SymbolTable.getInstance().push(getNumber());
         super.semantic();
         SymbolTable.getInstance().pop();
     }
@@ -44,7 +44,7 @@ public class Block extends ParserUnit {
     public void checkReturn() {
         boolean flag = false;
         try {
-            flag = ((Stmt) nodes.get(nodes.size() - 2) /* BlockItem */.nodes.get(0)/*stmt */).getStmtType() == 7;
+            flag = ((Stmt) getNode(nodes.size() - 2) /* BlockItem */.getNode(0)/*stmt */).getStmtType() == 7;
         } catch (Exception ignored) {
 
         }
@@ -53,13 +53,13 @@ public class Block extends ParserUnit {
                 Stmt stmt = new Stmt();
                 stmt.setStmtType(7);
                 stmt.add(new Lexicality("return", "RETURNTK"));
-                stmt.add(new Lexicality(";", "COMMA"));
-                stmt.setState(state);
+                stmt.add(new Lexicality(";", "SEMICN"));
                 BlockItem blockItem = new BlockItem();
                 blockItem.add(stmt);
+                blockItem.setState(state);
                 nodes.add(nodes.size() - 1, blockItem);
             } else {
-                ErrorWriter.add(nodes.get(nodes.size() - 1).getLineNumber(), 'g');
+                ErrorWriter.add(getNode(nodes.size() - 1).getLineNumber(), 'g');
             }
         }
     }

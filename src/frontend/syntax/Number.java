@@ -1,6 +1,7 @@
 package frontend.syntax;
 
-import frontend.lexical.LexicalitySupporter;
+import frontend.util.LexicalitySupporter;
+import frontend.util.ParserUnit;
 
 public class Number extends ParserUnit {
     Number() {
@@ -18,6 +19,6 @@ public class Number extends ParserUnit {
     }
 
     public int getInteger() {
-        return Integer.parseInt(nodes.get(0).getContent());
+        return Integer.parseInt(getNode(0).getContent());
     }
 }

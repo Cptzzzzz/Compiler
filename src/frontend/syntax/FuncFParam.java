@@ -1,17 +1,16 @@
 package frontend.syntax;
 
 import frontend.lexical.Lexicality;
-import frontend.lexical.LexicalitySupporter;
+import frontend.util.LexicalitySupporter;
+import frontend.util.ParserUnit;
 import frontend.util.Symbol;
 import frontend.util.SymbolTable;
 import util.ErrorWriter;
-import util.Node;
+import frontend.util.Node;
 
 import java.util.ArrayList;
 
 public class FuncFParam extends ParserUnit {
-    private String symbol;
-
     FuncFParam() {
         setType("FuncFParam");
     }
@@ -48,18 +47,17 @@ public class FuncFParam extends ParserUnit {
 
     public int getDimension() {
         int res = 0;
-        for (Node node : nodes) {
+        for (Node node : nodes)
             if (node.getType().equals("LBRACK"))
                 res++;
-        }
         return res;
     }
 
     public void semantic() {
-        String name = nodes.get(1).getContent();
+        String name = getNode(1).getContent();
         ArrayList<Integer> dimensions = new ArrayList<>();
         if (SymbolTable.getInstance().isExist(name)) {
-            ErrorWriter.add(nodes.get(1).getLineNumber(), 'b');
+            ErrorWriter.add(getNode(1).getLineNumber(), 'b');
             return;
         }
         switch (nodes.size()) {
@@ -72,10 +70,9 @@ public class FuncFParam extends ParserUnit {
                 break;
             default:
                 dimensions.add(0);
-                dimensions.add(((ConstExp) nodes.get(5)).getInteger());
+                dimensions.add(((ConstExp) getNode(5)).getInteger());
                 SymbolTable.getInstance().add(new Symbol(name, false, true, dimensions));
                 break;
         }
-        symbol = SymbolTable.getInstance().getSymbol(name).getFinalName();
     }
 }

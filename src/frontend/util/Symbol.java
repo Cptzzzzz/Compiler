@@ -1,6 +1,7 @@
 package frontend.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Symbol {
     private final String name;
@@ -85,5 +86,12 @@ public class Symbol {
 
     public String getFinalName() {
         return String.format("%s_%d", name, scope);
+    }
+
+    public String toString() {
+        return String.format("Name: %s, Scope: %d, Const: %b, Reference: %b, Dimension: %d, Dimensions: %s, Values: %s",
+                name, scope, isConst, reference, getDimension(),
+                dimensions == null ? "0" : Arrays.toString(dimensions),
+                values == null ? "null" : values.toString());
     }
 }

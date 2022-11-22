@@ -1,13 +1,9 @@
 package frontend.syntax;
 
 import frontend.lexical.Lexicality;
-import frontend.lexical.LexicalitySupporter;
-import frontend.util.Allocator;
-import frontend.util.Symbol;
-import frontend.util.SymbolTable;
-import util.CompilerMode;
+import frontend.util.LexicalitySupporter;
+import frontend.util.*;
 import util.ErrorWriter;
-import util.Node;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,10 +24,6 @@ public class Stmt extends ParserUnit {
     }
 
     public static Stmt parser(LexicalitySupporter lexicalitySupporter) {
-        if (CompilerMode.getInstance().isDebug()) {
-            System.out.print("Stmt ");
-            System.out.println(stmtType(lexicalitySupporter));
-        }
         Stmt stmt = new Stmt();
         stmt.setStmtType(stmtType(lexicalitySupporter));
         switch (stmt.getStmtType()) {
@@ -181,28 +173,28 @@ public class Stmt extends ParserUnit {
         switch (stmtType) {
             case 1:
             case 9:
-                Symbol symbol = SymbolTable.getInstance().getSymbol(nodes.get(0).nodes.get(0).getContent());
+                Symbol symbol = SymbolTable.getInstance().getSymbol(getNode(0).getNode(0).getContent());
                 if (symbol != null && symbol.isConst()) {
-                    ErrorWriter.add(nodes.get(0).nodes.get(0).getLineNumber(), 'h');
+                    ErrorWriter.add(getNode(0).getNode(0).getLineNumber(), 'h');
                 }
                 break;
             case 6:
                 if (state.getLoopNumber() == 0)
-                    ErrorWriter.add(nodes.get(0).getLineNumber(), 'm');
+                    ErrorWriter.add(getNode(0).getLineNumber(), 'm');
                 break;
             case 7:
                 if (nodes.size() == 3 && !state.shouldReturnValue())
-                    ErrorWriter.add(nodes.get(0).getLineNumber(), 'f');
+                    ErrorWriter.add(getNode(0).getLineNumber(), 'f');
                 break;
             case 8:
-                String format = nodes.get(2).getContent();
+                String format = getNode(2).getContent();
                 String s = format.replaceAll("\\\\n", "").replaceAll("%d", "");
                 int length = s.length();
                 char c;
                 for (int i = 1; i < length - 1; i++) {
                     c = s.charAt(i);
                     if (c != 32 && c != 33 && !(40 <= c && c <= 91) && !(93 <= c && c <= 126)) {
-                        ErrorWriter.add(nodes.get(2).getLineNumber(), 'a');
+                        ErrorWriter.add(getNode(2).getLineNumber(), 'a');
                         break;
                     }
                 }
@@ -211,13 +203,11 @@ public class Stmt extends ParserUnit {
                 Matcher matcher = pattern.matcher(format);
                 while (matcher.find())
                     tot++;
-                for (Node node : nodes) {
+                for (Node node : nodes)
                     if (node.getType().equals("COMMA"))
                         cnt++;
-                }
-                if (tot != cnt) {
-                    ErrorWriter.add(nodes.get(0).getLineNumber(), 'l');
-                }
+                if (tot != cnt)
+                    ErrorWriter.add(getNode(0).getLineNumber(), 'l');
                 break;
         }
         super.semantic();
@@ -225,11 +215,11 @@ public class Stmt extends ParserUnit {
 
     public void setState(State state) {
         if (stmtType == 4) {
-            this.state = new State(state.getLoopNumber(), Allocator.getInstance().getIfNumber(), nodes.size() == 7, state.shouldReturnValue());
+            this.state = new State(state.getLoopNumber(), Allocator.getInstance().getIfNumber(), nodes.size() == 7, state.shouldReturnValue(), state.getBlockNumber());
         } else if (stmtType == 5) {
-            this.state = new State(Allocator.getInstance().getWhileNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue());
+            this.state = new State(Allocator.getInstance().getWhileNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue(), state.getBlockNumber());
         } else {
-            this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue());
+            this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue(), state.getBlockNumber());
         }
         for (Node node : nodes) {
             if (node instanceof ParserUnit)

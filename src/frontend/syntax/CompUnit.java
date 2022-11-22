@@ -1,6 +1,8 @@
 package frontend.syntax;
 
-import frontend.lexical.LexicalitySupporter;
+import frontend.util.LexicalitySupporter;
+import frontend.util.ParserUnit;
+import frontend.util.State;
 
 public class CompUnit extends ParserUnit {
     CompUnit() {
@@ -21,5 +23,9 @@ public class CompUnit extends ParserUnit {
 
     public static boolean pretreat(LexicalitySupporter lexicalitySupporter) {
         return true;
+    }
+
+    public void passState() {
+        setState(new State());
     }
 }

@@ -1,6 +1,7 @@
 package frontend.syntax;
 
-import frontend.lexical.LexicalitySupporter;
+import frontend.util.LexicalitySupporter;
+import frontend.util.ParserUnit;
 
 public class Exp extends ParserUnit {
     Exp() {
@@ -18,10 +19,10 @@ public class Exp extends ParserUnit {
     }
 
     public int getInteger() {
-        return ((AddExp) nodes.get(0)).getInteger();
+        return ((AddExp) getNode(0)).getInteger();
     }
 
     public int getDimension() {
-        return ((AddExp) nodes.get(0)).getDimension();
+        return ((AddExp) getNode(0)).getDimension();
     }
 }

@@ -1,7 +1,8 @@
 package frontend.syntax;
 
-import frontend.lexical.LexicalitySupporter;
-import util.Node;
+import frontend.util.LexicalitySupporter;
+import frontend.util.Node;
+import frontend.util.ParserUnit;
 
 import java.util.ArrayList;
 

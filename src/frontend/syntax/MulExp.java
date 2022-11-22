@@ -1,8 +1,8 @@
 package frontend.syntax;
 
-import frontend.lexical.Lexicality;
-import frontend.lexical.LexicalitySupporter;
-import util.Node;
+import frontend.util.LexicalitySupporter;
+import frontend.util.Node;
+import frontend.util.ParserUnit;
 
 import java.util.ArrayList;
 
@@ -31,26 +31,26 @@ public class MulExp extends ParserUnit {
     public void eliminateLeftRecursion() {
         ArrayList<Node> nodes = new ArrayList<>();
         MulExp mulExp = this;
-        while (mulExp.nodes.get(0) instanceof MulExp) {
-            nodes.add(0, mulExp.nodes.get(2));
-            nodes.add(0, mulExp.nodes.get(1));
-            mulExp = ((MulExp) mulExp.nodes.get(0));
+        while (mulExp.getNode(0) instanceof MulExp) {
+            nodes.add(0, mulExp.getNode(2));
+            nodes.add(0, mulExp.getNode(1));
+            mulExp = ((MulExp) mulExp.getNode(0));
         }
-        nodes.add(0, mulExp.nodes.get(0));
+        nodes.add(0, mulExp.getNode(0));
         this.nodes = nodes;
         super.eliminateLeftRecursion();
     }
 
     public void buildLeftRecursion() {
         int length = nodes.size() / 2;
-        if (!(length == 0 || nodes.get(0) instanceof MulExp)) {
+        if (!(length == 0 || getNode(0) instanceof MulExp)) {
             MulExp mulExp = new MulExp(), temp;
-            mulExp.add(nodes.get(0));
+            mulExp.add(getNode(0));
             for (int i = 0; i < length; i++) {
                 temp = new MulExp();
                 temp.add(mulExp);
-                temp.add(nodes.get(1 + 2 * i));
-                temp.add(nodes.get(2 * (1 + i)));
+                temp.add(getNode(1 + 2 * i));
+                temp.add(getNode(2 * (1 + i)));
                 mulExp = temp;
             }
             nodes = mulExp.nodes;
@@ -60,14 +60,14 @@ public class MulExp extends ParserUnit {
 
     public int getInteger() {
         if (nodes.size() == 1) {
-            return ((UnaryExp) nodes.get(0)).getInteger();
+            return ((UnaryExp) getNode(0)).getInteger();
         } else {
-            if (nodes.get(1).getType().equals("MULT")) {
-                return ((MulExp) nodes.get(0)).getInteger() * ((UnaryExp) nodes.get(2)).getInteger();
-            } else if (nodes.get(1).getType().equals("DIV")) {
-                return ((MulExp) nodes.get(0)).getInteger() / ((UnaryExp) nodes.get(2)).getInteger();
+            if (getNode(1).getType().equals("MULT")) {
+                return ((MulExp) getNode(0)).getInteger() * ((UnaryExp) getNode(2)).getInteger();
+            } else if (getNode(1).getType().equals("DIV")) {
+                return ((MulExp) getNode(0)).getInteger() / ((UnaryExp) getNode(2)).getInteger();
             } else {
-                return ((MulExp) nodes.get(0)).getInteger() % ((UnaryExp) nodes.get(2)).getInteger();
+                return ((MulExp) getNode(0)).getInteger() % ((UnaryExp) getNode(2)).getInteger();
             }
         }
     }

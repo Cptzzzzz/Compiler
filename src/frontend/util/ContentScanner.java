@@ -1,4 +1,6 @@
-package frontend.lexical;
+package frontend.util;
+
+import frontend.lexical.Lexicality;
 
 public class ContentScanner {
     private ContentScanner() {

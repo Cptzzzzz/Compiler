@@ -1,6 +1,7 @@
 package frontend.syntax;
 
-import frontend.lexical.LexicalitySupporter;
+import frontend.util.LexicalitySupporter;
+import frontend.util.ParserUnit;
 
 public class ConstExp extends ParserUnit {
     ConstExp() {
@@ -18,6 +19,6 @@ public class ConstExp extends ParserUnit {
     }
 
     public int getInteger() {
-        return ((AddExp) nodes.get(0)).getInteger();
+        return ((AddExp) getNode(0)).getInteger();
     }
 }

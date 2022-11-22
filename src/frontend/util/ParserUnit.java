@@ -1,12 +1,9 @@
-package frontend.syntax;
+package frontend.util;
 
-import frontend.lexical.LexicalitySupporter;
-import util.Node;
-
-import java.util.ArrayList;
+import frontend.syntax.CompUnit;
 
 public class ParserUnit extends Node {
-    State state;
+    public State state;
 
     public ParserUnit() {
     }
@@ -33,31 +30,27 @@ public class ParserUnit extends Node {
     }
 
     public void buildLeftRecursion() {
-        for (Node node : nodes) {
+        for (Node node : nodes)
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).buildLeftRecursion();
-        }
     }
 
     public void eliminateLeftRecursion() {
-        for (Node node : nodes) {
+        for (Node node : nodes)
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).eliminateLeftRecursion();
-        }
     }
 
     public void semantic() {
-        for (Node node : nodes) {
+        for (Node node : nodes)
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).semantic();
-        }
     }
 
     public void setState(State state) {
-        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue());
-        for (Node node : nodes) {
+        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue(), state.getBlockNumber());
+        for (Node node : nodes)
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).setState(this.state);
-        }
     }
 }

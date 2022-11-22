@@ -1,7 +1,8 @@
 package frontend.syntax;
 
 import frontend.lexical.Lexicality;
-import frontend.lexical.LexicalitySupporter;
+import frontend.util.LexicalitySupporter;
+import frontend.util.ParserUnit;
 import util.ErrorWriter;
 
 public class VarDecl extends ParserUnit {
@@ -28,11 +29,10 @@ public class VarDecl extends ParserUnit {
 
     public static boolean pretreat(LexicalitySupporter lexicalitySupporter) {
         LexicalitySupporter lexicalitySupporter1 = new LexicalitySupporter(lexicalitySupporter.getPointer());
-        if (BType.pretreat(lexicalitySupporter1)) {
+        if (BType.pretreat(lexicalitySupporter1))
             BType.parser(lexicalitySupporter1);
-        } else {
+        else
             return false;
-        }
         return VarDef.pretreat(lexicalitySupporter1);
     }
 }

@@ -1,6 +1,7 @@
 package frontend.syntax;
 
-import frontend.lexical.LexicalitySupporter;
+import frontend.util.LexicalitySupporter;
+import frontend.util.ParserUnit;
 
 public class PrimaryExp extends ParserUnit {
     PrimaryExp() {
@@ -13,11 +14,10 @@ public class PrimaryExp extends ParserUnit {
             primaryExp.add(lexicalitySupporter.readAndNext());
             primaryExp.add(Exp.parser(lexicalitySupporter));
             primaryExp.add(lexicalitySupporter.readAndNext());
-        } else if (LVal.pretreat(lexicalitySupporter)) {
+        } else if (LVal.pretreat(lexicalitySupporter))
             primaryExp.add(LVal.parser(lexicalitySupporter));
-        } else if (Number.pretreat(lexicalitySupporter)) {
+        else if (Number.pretreat(lexicalitySupporter))
             primaryExp.add(Number.parser(lexicalitySupporter));
-        }
         return primaryExp;
     }
 
@@ -30,22 +30,20 @@ public class PrimaryExp extends ParserUnit {
     }
 
     public int getInteger() {
-        if (nodes.get(0).getType().equals("LPARENT")) {
-            return ((Exp) nodes.get(1)).getInteger();
-        } else if (nodes.get(0).getType().equals("Number")) {
-            return ((Number) nodes.get(0)).getInteger();
-        } else {
-            return ((LVal) nodes.get(0)).getInteger();
-        }
+        if (getNode(0).getType().equals("LPARENT"))
+            return ((Exp) getNode(1)).getInteger();
+        else if (getNode(0).getType().equals("Number"))
+            return ((Number) getNode(0)).getInteger();
+        else
+            return ((LVal) getNode(0)).getInteger();
     }
 
     public int getDimension() {
-        if (nodes.get(0).getType().equals("LVal")) {
-            return ((LVal) nodes.get(0)).getDimension();
-        } else if (nodes.get(0).getType().equals("Number")) {
+        if (getNode(0).getType().equals("LVal"))
+            return ((LVal) getNode(0)).getDimension();
+        else if (getNode(0).getType().equals("Number"))
             return 0;
-        } else {
-            return ((Exp) nodes.get(1)).getDimension();
-        }
+        else
+            return ((Exp) getNode(1)).getDimension();
     }
 }

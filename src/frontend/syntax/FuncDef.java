@@ -1,13 +1,9 @@
 package frontend.syntax;
 
 import frontend.lexical.Lexicality;
-import frontend.lexical.LexicalitySupporter;
-import frontend.util.Function;
-import frontend.util.FunctionTable;
-import frontend.util.SymbolTable;
-import util.CompilerMode;
+import frontend.util.LexicalitySupporter;
+import frontend.util.*;
 import util.ErrorWriter;
-import util.Node;
 
 import java.util.ArrayList;
 
@@ -17,8 +13,6 @@ public class FuncDef extends ParserUnit {
     }
 
     public static FuncDef parser(LexicalitySupporter lexicalitySupporter) {
-        if (CompilerMode.getInstance().isDebug())
-            System.out.println("FuncDef");
         FuncDef funcDef = new FuncDef();
         funcDef.add(FuncType.parser(lexicalitySupporter));
         funcDef.add(lexicalitySupporter.readAndNext());
@@ -48,26 +42,25 @@ public class FuncDef extends ParserUnit {
     }
 
     public void semantic() {
-        String name = nodes.get(1).getContent();
-        boolean value = nodes.get(0).nodes.get(0).getContent().equals("int");
+        String name = getNode(1).getContent();
+        boolean value = getNode(0).getNode(0).getContent().equals("int");
         ArrayList<Integer> dimensions = new ArrayList<>();
         if (nodes.size() == 6)
-            dimensions = ((FuncFParams) nodes.get(3)).getDimensions();
+            dimensions = ((FuncFParams) getNode(3)).getDimensions();
         if (FunctionTable.getInstance().isExist(name)) {
-            ErrorWriter.add(nodes.get(1).getLineNumber(), 'b');
+            ErrorWriter.add(getNode(1).getLineNumber(), 'b');
         } else {
             FunctionTable.getInstance().add(new Function(name, value, dimensions));
         }
-        SymbolTable.getInstance().push(((Block) nodes.get(nodes.size() - 1)).getNumber());
-        ((Block) nodes.get(nodes.size() - 1)).checkReturn();
+        SymbolTable.getInstance().push(((Block) getNode(nodes.size() - 1)).getNumber());
+        ((Block) getNode(nodes.size() - 1)).checkReturn();
         super.semantic();
     }
 
     public void setState(State state) {
-        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), nodes.get(0).nodes.get(0).getContent().equals("int"));
-        for (Node node : nodes) {
+        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), getNode(0).getNode(0).getContent().equals("int"), state.getBlockNumber());
+        for (Node node : nodes)
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).setState(this.state);
-        }
     }
 }

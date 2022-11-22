@@ -1,8 +1,9 @@
 package frontend.syntax;
 
-import frontend.lexical.LexicalitySupporter;
-import util.CompilerMode;
-import util.Node;
+import frontend.util.LexicalitySupporter;
+import frontend.util.Node;
+import frontend.util.ParserUnit;
+import frontend.util.State;
 
 public class MainFuncDef extends ParserUnit {
     MainFuncDef() {
@@ -11,8 +12,6 @@ public class MainFuncDef extends ParserUnit {
 
 
     public static MainFuncDef parser(LexicalitySupporter lexicalitySupporter) {
-        if (CompilerMode.getInstance().isDebug())
-            System.out.println("MainFuncDef");
         MainFuncDef mainFuncDef = new MainFuncDef();
         for (int i = 0; i < 4; i++) {
             mainFuncDef.add(lexicalitySupporter.readAndNext());
@@ -47,7 +46,7 @@ public class MainFuncDef extends ParserUnit {
     }
 
     public void setState(State state) {
-        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), true);
+        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), true, state.getBlockNumber());
         for (Node node : nodes) {
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).setState(this.state);
@@ -56,7 +55,7 @@ public class MainFuncDef extends ParserUnit {
 
     @Override
     public void semantic() {
-        ((Block) nodes.get(nodes.size() - 1)).checkReturn();
+        ((Block) getNode(nodes.size() - 1)).checkReturn();
         super.semantic();
     }
 }

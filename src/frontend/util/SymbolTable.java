@@ -45,24 +45,28 @@ public class SymbolTable {
         for (int i = symbols.size() - 1; i >= 0; i--) {
             Symbol symbol = symbols.get(i);
             if (stack.contains(symbol.getScope()) &&
-                    name.equals(symbol.getName())) {
+                    name.equals(symbol.getName()))
                 return symbol;
-            }
         }
         return null;
     }
 
     public boolean isExist(String name) {
         int top = getStackTop();
-        for (int i = symbols.size() - 1; i >= 0 && symbols.get(i).getScope() == top; i--) {
+        for (int i = symbols.size() - 1; i >= 0 && symbols.get(i).getScope() == top; i--)
             if (name.equals(symbols.get(i).getName()))
                 return true;
-        }
+
         return false;
     }
 
     public void add(Symbol symbol) {
         symbol.setScope(getStackTop());
         symbols.add(symbol);
+    }
+
+    public void output() {
+        for (Symbol symbol : symbols)
+            System.out.println(symbol);
     }
 }

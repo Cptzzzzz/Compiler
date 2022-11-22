@@ -10,17 +10,21 @@ public class FunctionTable {
     private static FunctionTable functionTable;
 
     public static FunctionTable getInstance() {
-        if (functionTable == null) functionTable = new FunctionTable();
+        if (functionTable == null)
+            reset();
         return functionTable;
+    }
+
+    public static void reset() {
+        functionTable = new FunctionTable();
     }
 
     private ArrayList<Function> functions;
 
     public boolean isExist(String name) {
-        for (Function function : functions) {
+        for (Function function : functions)
             if (name.equals(function.getName()))
                 return true;
-        }
         return false;
     }
 
@@ -31,10 +35,9 @@ public class FunctionTable {
     }
 
     public Function get(String name) {
-        for (Function function : functions) {
+        for (Function function : functions)
             if (name.equals(function.getName()))
                 return function;
-        }
         return null;
     }
 }

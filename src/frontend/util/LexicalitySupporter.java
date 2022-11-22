@@ -1,4 +1,6 @@
-package frontend.lexical;
+package frontend.util;
+
+import frontend.lexical.Lexicality;
 
 public class LexicalitySupporter {
     int pointer;
@@ -9,10 +11,6 @@ public class LexicalitySupporter {
 
     public LexicalitySupporter(int pointer) {
         this.pointer = pointer;
-    }
-
-    public static LexicalitySupporter builder() {
-        return new LexicalitySupporter(0);
     }
 
     public void next() {

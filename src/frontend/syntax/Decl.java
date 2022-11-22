@@ -1,7 +1,7 @@
 package frontend.syntax;
 
-import frontend.lexical.LexicalitySupporter;
-import util.CompilerMode;
+import frontend.util.LexicalitySupporter;
+import frontend.util.ParserUnit;
 
 public class Decl extends ParserUnit {
     Decl() {
@@ -10,8 +10,6 @@ public class Decl extends ParserUnit {
     }
 
     public static Decl parser(LexicalitySupporter lexicalitySupporter) {
-        if(CompilerMode.getInstance().isDebug())
-            System.out.println("Decl");
         Decl decl = new Decl();
         if (ConstDecl.pretreat(lexicalitySupporter)) {
             decl.add(ConstDecl.parser(lexicalitySupporter));

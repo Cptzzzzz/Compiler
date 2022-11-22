@@ -1,8 +1,8 @@
 package frontend.syntax;
 
-import frontend.lexical.Lexicality;
-import frontend.lexical.LexicalitySupporter;
-import util.Node;
+import frontend.util.LexicalitySupporter;
+import frontend.util.Node;
+import frontend.util.ParserUnit;
 
 import java.util.ArrayList;
 
@@ -29,26 +29,26 @@ public class LOrExp extends ParserUnit {
     public void eliminateLeftRecursion() {
         ArrayList<Node> nodes = new ArrayList<>();
         LOrExp lOrExp = this;
-        while (lOrExp.nodes.get(0) instanceof LOrExp) {
-            nodes.add(0, lOrExp.nodes.get(2));
-            nodes.add(0, lOrExp.nodes.get(1));
-            lOrExp = ((LOrExp) lOrExp.nodes.get(0));
+        while (lOrExp.getNode(0) instanceof LOrExp) {
+            nodes.add(0, lOrExp.getNode(2));
+            nodes.add(0, lOrExp.getNode(1));
+            lOrExp = ((LOrExp) lOrExp.getNode(0));
         }
-        nodes.add(0, lOrExp.nodes.get(0));
+        nodes.add(0, lOrExp.getNode(0));
         this.nodes = nodes;
         super.eliminateLeftRecursion();
     }
 
     public void buildLeftRecursion() {
         int length = nodes.size() / 2;
-        if (!(length == 0 || nodes.get(0) instanceof LOrExp)) {
+        if (!(length == 0 || getNode(0) instanceof LOrExp)) {
             LOrExp lOrExp = new LOrExp(), temp;
-            lOrExp.add(nodes.get(0));
+            lOrExp.add(getNode(0));
             for (int i = 0; i < length; i++) {
                 temp = new LOrExp();
                 temp.add(lOrExp);
-                temp.add(nodes.get(1 + 2 * i));
-                temp.add(nodes.get(2 * (1 + i)));
+                temp.add(getNode(1 + 2 * i));
+                temp.add(getNode(2 * (1 + i)));
                 lOrExp = temp;
             }
             nodes = lOrExp.nodes;
