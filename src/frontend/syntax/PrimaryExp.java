@@ -2,6 +2,7 @@ package frontend.syntax;
 
 import frontend.util.LexicalitySupporter;
 import frontend.util.ParserUnit;
+import midend.util.Value;
 
 public class PrimaryExp extends ParserUnit {
     PrimaryExp() {
@@ -45,5 +46,15 @@ public class PrimaryExp extends ParserUnit {
             return 0;
         else
             return ((Exp) getNode(1)).getDimension();
+    }
+
+    @Override
+    public Value generateIR() {
+        if (getNode(0).getType().equals("LVal"))
+            return ((LVal) getNode(0)).generateIR();
+        else if (getNode(0).getType().equals("Number"))
+            return ((Number) getNode(0)).generateIR();
+        else
+            return ((Exp) getNode(1)).generateIR();
     }
 }

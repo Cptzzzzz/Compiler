@@ -3,6 +3,12 @@ package frontend.syntax;
 import frontend.util.LexicalitySupporter;
 import frontend.util.Node;
 import frontend.util.ParserUnit;
+import midend.ir.BinaryAssign;
+import midend.util.IRSupporter;
+import midend.util.Operator;
+import midend.util.Value;
+import midend.util.ValueType;
+import util.Allocator;
 
 import java.util.ArrayList;
 
@@ -19,7 +25,7 @@ public class AddExp extends ParserUnit {
             addExp.add(lexicalitySupporter.readAndNext());
             addExp.add(MulExp.parser(lexicalitySupporter));
         }
-        addExp.buildLeftRecursion();
+        addExp.buildLeftRecursion(false);
         return addExp;
     }
 
@@ -27,7 +33,7 @@ public class AddExp extends ParserUnit {
         return MulExp.pretreat(lexicalitySupporter);
     }
 
-    public void eliminateLeftRecursion() {
+    public void eliminateLeftRecursion(boolean pass) {
         ArrayList<Node> nodes = new ArrayList<>();
         AddExp addExp = this;
         while (addExp.getNode(0) instanceof AddExp) {
@@ -37,10 +43,11 @@ public class AddExp extends ParserUnit {
         }
         nodes.add(0, addExp.getNode(0));
         this.nodes = nodes;
-        super.eliminateLeftRecursion();
+        if (pass)
+            super.eliminateLeftRecursion(true);
     }
 
-    public void buildLeftRecursion() {
+    public void buildLeftRecursion(boolean pass) {
         int length = nodes.size() / 2;
         if (!(length == 0 || getNode(0) instanceof AddExp)) {
             AddExp addExp = new AddExp(), temp;
@@ -54,7 +61,8 @@ public class AddExp extends ParserUnit {
             }
             nodes = addExp.nodes;
         }
-        super.buildLeftRecursion();
+        if (pass)
+            super.buildLeftRecursion(true);
     }
 
     public int getInteger() {
@@ -79,5 +87,24 @@ public class AddExp extends ParserUnit {
             }
         }
         return res;
+    }
+
+    @Override
+    public Value generateIR() {
+        if (nodes.size() == 1)
+            return ((MulExp) getNode(0)).generateIR();
+        Value v1 = ((AddExp) getNode(0)).generateIR();
+        Value v2 = ((MulExp) getNode(2)).generateIR();
+        if (v1.getType() == ValueType.Imm && v2.getType() == ValueType.Imm)
+            if (getNode(1).getType().equals("PLUS"))
+                return new Value(v1.getValue() + v2.getValue());
+            else
+                return new Value(v1.getValue() - v2.getValue());
+        Value value = Allocator.getInstance().getTemp();
+        if (getNode(1).getType().equals("PLUS"))
+            IRSupporter.getInstance().addIRCode(new BinaryAssign(value, v1, v2, Operator.PLUS));
+        else
+            IRSupporter.getInstance().addIRCode(new BinaryAssign(value, v1, v2, Operator.MINUS));
+        return value;
     }
 }

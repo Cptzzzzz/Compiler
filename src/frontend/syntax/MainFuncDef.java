@@ -4,6 +4,10 @@ import frontend.util.LexicalitySupporter;
 import frontend.util.Node;
 import frontend.util.ParserUnit;
 import frontend.util.State;
+import midend.ir.FuncEnd;
+import midend.ir.FuncEntry;
+import midend.util.IRSupporter;
+import midend.util.Value;
 
 public class MainFuncDef extends ParserUnit {
     MainFuncDef() {
@@ -46,7 +50,7 @@ public class MainFuncDef extends ParserUnit {
     }
 
     public void setState(State state) {
-        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), true, state.getBlockNumber());
+        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), true, state.getBlockNumber(), state.getLAndNumber(), state.getLOrNumber());
         for (Node node : nodes) {
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).setState(this.state);
@@ -57,5 +61,13 @@ public class MainFuncDef extends ParserUnit {
     public void semantic() {
         ((Block) getNode(nodes.size() - 1)).checkReturn();
         super.semantic();
+    }
+
+    @Override
+    public Value generateIR() {
+        IRSupporter.getInstance().addIRCode(new FuncEntry("main_function"));
+        ((Block) getNode(nodes.size() - 1)).generateIR();
+        IRSupporter.getInstance().addIRCode(new FuncEnd("main_function"));
+        return null;
     }
 }

@@ -5,6 +5,13 @@ import frontend.util.LexicalitySupporter;
 import frontend.util.Function;
 import frontend.util.FunctionTable;
 import frontend.util.ParserUnit;
+import midend.ir.FuncCall;
+import midend.ir.UnaryAssign;
+import midend.util.IRSupporter;
+import midend.util.Operator;
+import midend.util.Value;
+import midend.util.ValueType;
+import util.Allocator;
 import util.ErrorWriter;
 
 import java.util.ArrayList;
@@ -95,6 +102,45 @@ public class UnaryExp extends ParserUnit {
             } else {
                 Function function = FunctionTable.getInstance().get(getNode(0).getContent());
                 return function.isValue() ? 0 : 3;
+            }
+        }
+    }
+
+    @Override
+    public Value generateIR() {
+        if (getNode(0).getType().equals("PrimaryExp")) {
+            return ((PrimaryExp) getNode(0)).generateIR();
+        } else if (getNode(0).getType().equals("UnaryOp")) {
+            Value value = ((UnaryExp) getNode(1)).generateIR();
+            if (value.getType() == ValueType.Imm) {
+                if (getNode(0).getNode(0).getContent().equals("+"))
+                    return value;
+                else if (getNode(0).getNode(0).getContent().equals("-"))
+                    return new Value(-value.getValue());
+                else
+                    return new Value(value.getValue() == 0 ? 1 : 0);
+            } else {
+                Value value1 = Allocator.getInstance().getTemp();
+                if (getNode(0).getNode(0).getContent().equals("+"))
+                    IRSupporter.getInstance().addIRCode(new UnaryAssign(value1, value, Operator.PLUS));
+                else if (getNode(0).getNode(0).getContent().equals("-"))
+                    IRSupporter.getInstance().addIRCode(new UnaryAssign(value1, value, Operator.MINUS));
+                else
+                    IRSupporter.getInstance().addIRCode(new UnaryAssign(value1, value, Operator.NOT));
+                return value1;
+            }
+        } else {
+            ArrayList<Value> params = new ArrayList<>();
+            if (nodes.size() == 4)
+                params = ((FuncRParams) getNode(2)).getValues();
+            Function function = FunctionTable.getInstance().get(getNode(0).getContent());
+            if (function.isValue()) {
+                Value value = Allocator.getInstance().getTemp();
+                IRSupporter.getInstance().addIRCode(new FuncCall(params, function.getName()+"_function", value));
+                return value;
+            } else {
+                IRSupporter.getInstance().addIRCode(new FuncCall(params, function.getName()+"_function", null));
+                return null;
             }
         }
     }

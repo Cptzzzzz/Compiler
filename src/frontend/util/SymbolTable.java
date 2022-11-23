@@ -51,6 +51,16 @@ public class SymbolTable {
         return null;
     }
 
+    public Symbol getSymbol(String name, int scope) {
+        for (int i = symbols.size() - 1; i >= 0; i--) {
+            Symbol symbol = symbols.get(i);
+            if (name.equals(symbol.getName()) &&
+                    scope == symbol.getScope())
+                return symbol;
+        }
+        return null;
+    }
+
     public boolean isExist(String name) {
         int top = getStackTop();
         for (int i = symbols.size() - 1; i >= 0 && symbols.get(i).getScope() == top; i--)

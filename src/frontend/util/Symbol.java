@@ -1,5 +1,7 @@
 package frontend.util;
 
+import midend.util.ValueType;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -93,5 +95,18 @@ public class Symbol {
                 name, scope, isConst, reference, getDimension(),
                 dimensions == null ? "0" : Arrays.toString(dimensions),
                 values == null ? "null" : values.toString());
+    }
+
+    public int getSize() {
+        if (dimensions == null) return 4;
+        if (reference) return 4;
+        if (dimensions.length == 1) return 4 * dimensions[0];
+        return 4 * dimensions[0] * dimensions[1];
+    }
+
+    public ValueType getType() {
+        if (dimensions == null)
+            return ValueType.Variable;
+        return ValueType.Array;
     }
 }

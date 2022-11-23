@@ -5,6 +5,9 @@ import frontend.util.LexicalitySupporter;
 import frontend.util.ParserUnit;
 import frontend.util.Symbol;
 import frontend.util.SymbolTable;
+import midend.ir.Declaration;
+import midend.util.IRSupporter;
+import midend.util.Value;
 import util.ErrorWriter;
 import frontend.util.Node;
 
@@ -51,5 +54,15 @@ public class ConstDef extends ParserUnit {
             ErrorWriter.add(getNode(0).getLineNumber(), 'b');
         else
             SymbolTable.getInstance().add(new Symbol(name, true, false, dimension, ((ConstInitVal) getNode(nodes.size() - 1)).getIntegers()));
+    }
+
+    @Override
+    public Value generateIR() {
+        Symbol symbol = SymbolTable.getInstance().getSymbol(getNode(0).getContent(), state.getBlockNumber());
+        IRSupporter.getInstance().addIRCode(new Declaration(
+                symbol.getFinalName(), state.getBlockNumber() == 0, true, symbol.getSize(), symbol.isReference(), symbol.getType(),
+                ((ConstInitVal) getNode(nodes.size() - 1)).getIntegers()
+        ));
+        return null;
     }
 }

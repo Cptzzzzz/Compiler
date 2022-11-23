@@ -3,6 +3,13 @@ package frontend.syntax;
 import frontend.util.LexicalitySupporter;
 import frontend.util.Node;
 import frontend.util.ParserUnit;
+import frontend.util.State;
+import midend.ir.Branch;
+import midend.ir.Jump;
+import midend.ir.Label;
+import midend.util.IRSupporter;
+import midend.util.Value;
+import util.Allocator;
 
 import java.util.ArrayList;
 
@@ -18,7 +25,7 @@ public class LAndExp extends ParserUnit {
             lAndExp.add(lexicalitySupporter.readAndNext());
             lAndExp.add(EqExp.parser(lexicalitySupporter));
         }
-        lAndExp.buildLeftRecursion();
+        lAndExp.buildLeftRecursion(false);
         return lAndExp;
     }
 
@@ -26,7 +33,7 @@ public class LAndExp extends ParserUnit {
         return EqExp.pretreat(lexicalitySupporter);
     }
 
-    public void eliminateLeftRecursion() {
+    public void eliminateLeftRecursion(boolean pass) {
         ArrayList<Node> nodes = new ArrayList<>();
         LAndExp lAndExp = this;
         while (lAndExp.getNode(0) instanceof LAndExp) {
@@ -36,10 +43,11 @@ public class LAndExp extends ParserUnit {
         }
         nodes.add(0, lAndExp.getNode(0));
         this.nodes = nodes;
-        super.eliminateLeftRecursion();
+        if (pass)
+            super.eliminateLeftRecursion(true);
     }
 
-    public void buildLeftRecursion() {
+    public void buildLeftRecursion(boolean pass) {
         int length = nodes.size() / 2;
         if (!(length == 0 || getNode(0) instanceof LAndExp)) {
             LAndExp lAndExp = new LAndExp(), temp;
@@ -53,6 +61,31 @@ public class LAndExp extends ParserUnit {
             }
             nodes = lAndExp.nodes;
         }
-        super.buildLeftRecursion();
+        if (pass)
+            super.buildLeftRecursion(true);
+    }
+
+    @Override
+    public void setState(State state) {
+        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue(), state.getBlockNumber(), Allocator.getInstance().getLAndNumber(), state.getLOrNumber());
+        for (Node node : nodes) {
+            if (node instanceof ParserUnit)
+                ((ParserUnit) node).setState(this.state);
+        }
+    }
+
+    @Override
+    public Value generateIR() {
+        eliminateLeftRecursion(false);
+        Value value;
+        for (Node node : nodes) {
+            if (node instanceof EqExp) {
+                value = ((EqExp) node).generateIR();
+                IRSupporter.getInstance().addIRCode(new Branch(value, String.format("LAnd_%d_fail", state.getLAndNumber()), true));
+            }
+        }
+        IRSupporter.getInstance().addIRCode(new Jump(String.format("LOr_%d_success", state.getLOrNumber())));
+        IRSupporter.getInstance().addIRCode(new Label(String.format("LAnd_%d_fail", state.getLAndNumber())));
+        return null;
     }
 }

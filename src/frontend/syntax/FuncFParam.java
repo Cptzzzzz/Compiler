@@ -5,6 +5,9 @@ import frontend.util.LexicalitySupporter;
 import frontend.util.ParserUnit;
 import frontend.util.Symbol;
 import frontend.util.SymbolTable;
+import midend.ir.Declaration;
+import midend.util.IRSupporter;
+import midend.util.Value;
 import util.ErrorWriter;
 import frontend.util.Node;
 
@@ -74,5 +77,14 @@ public class FuncFParam extends ParserUnit {
                 SymbolTable.getInstance().add(new Symbol(name, false, true, dimensions));
                 break;
         }
+        state.setBlockNumber(SymbolTable.getInstance().getSymbol(name).getScope());
+    }
+
+    @Override
+    public Value generateIR() {
+        Symbol symbol = SymbolTable.getInstance().getSymbol(getNode(1).getContent(), state.getBlockNumber());
+        IRSupporter.getInstance().addIRCode(new Declaration(symbol.getFinalName(), false, false, symbol.getSize(),
+                symbol.isReference(), symbol.getType(), null));
+        return null;
     }
 }

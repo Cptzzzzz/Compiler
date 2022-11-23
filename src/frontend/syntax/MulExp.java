@@ -3,6 +3,12 @@ package frontend.syntax;
 import frontend.util.LexicalitySupporter;
 import frontend.util.Node;
 import frontend.util.ParserUnit;
+import midend.ir.BinaryAssign;
+import midend.util.IRSupporter;
+import midend.util.Operator;
+import midend.util.Value;
+import midend.util.ValueType;
+import util.Allocator;
 
 import java.util.ArrayList;
 
@@ -20,7 +26,7 @@ public class MulExp extends ParserUnit {
             mulExp.add(lexicalitySupporter.readAndNext());
             mulExp.add(UnaryExp.parser(lexicalitySupporter));
         }
-        mulExp.buildLeftRecursion();
+        mulExp.buildLeftRecursion(false);
         return mulExp;
     }
 
@@ -28,7 +34,7 @@ public class MulExp extends ParserUnit {
         return UnaryExp.pretreat(lexicalitySupporter);
     }
 
-    public void eliminateLeftRecursion() {
+    public void eliminateLeftRecursion(boolean pass) {
         ArrayList<Node> nodes = new ArrayList<>();
         MulExp mulExp = this;
         while (mulExp.getNode(0) instanceof MulExp) {
@@ -38,10 +44,11 @@ public class MulExp extends ParserUnit {
         }
         nodes.add(0, mulExp.getNode(0));
         this.nodes = nodes;
-        super.eliminateLeftRecursion();
+        if (pass)
+            super.eliminateLeftRecursion(true);
     }
 
-    public void buildLeftRecursion() {
+    public void buildLeftRecursion(boolean pass) {
         int length = nodes.size() / 2;
         if (!(length == 0 || getNode(0) instanceof MulExp)) {
             MulExp mulExp = new MulExp(), temp;
@@ -55,7 +62,8 @@ public class MulExp extends ParserUnit {
             }
             nodes = mulExp.nodes;
         }
-        super.buildLeftRecursion();
+        if (pass)
+            super.buildLeftRecursion(true);
     }
 
     public int getInteger() {
@@ -82,5 +90,28 @@ public class MulExp extends ParserUnit {
             }
         }
         return res;
+    }
+
+    @Override
+    public Value generateIR() {
+        if (nodes.size() == 1)
+            return ((UnaryExp) getNode(0)).generateIR();
+        Value v1 = ((MulExp) getNode(0)).generateIR();
+        Value v2 = ((UnaryExp) getNode(2)).generateIR();
+        if (v1.getType() == ValueType.Imm && v2.getType() == ValueType.Imm)
+            if (getNode(1).getType().equals("MULT"))
+                return new Value(v1.getValue() * v2.getValue());
+            else if (getNode(1).getType().equals("DIV"))
+                return new Value(v1.getValue() / v2.getValue());
+            else
+                return new Value(v1.getValue() % v2.getValue());
+        Value value = Allocator.getInstance().getTemp();
+        if (getNode(1).getType().equals("MULT"))
+            IRSupporter.getInstance().addIRCode(new BinaryAssign(value, v1, v2, Operator.MULTI));
+        else if (getNode(1).getType().equals("DIV"))
+            IRSupporter.getInstance().addIRCode(new BinaryAssign(value, v1, v2, Operator.DIV));
+        else
+            IRSupporter.getInstance().addIRCode(new BinaryAssign(value, v1, v2, Operator.MOD));
+        return value;
     }
 }

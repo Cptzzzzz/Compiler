@@ -2,6 +2,7 @@ package frontend.syntax;
 
 import frontend.util.LexicalitySupporter;
 import frontend.util.ParserUnit;
+import midend.util.Value;
 
 public class Exp extends ParserUnit {
     Exp() {
@@ -24,5 +25,10 @@ public class Exp extends ParserUnit {
 
     public int getDimension() {
         return ((AddExp) getNode(0)).getDimension();
+    }
+
+    @Override
+    public Value generateIR() {
+        return ((AddExp) getNode(0)).generateIR();
     }
 }

@@ -1,10 +1,16 @@
 package frontend.syntax;
 
 import frontend.lexical.Lexicality;
-import frontend.util.LexicalitySupporter;
 import frontend.util.*;
+import midend.ir.*;
+import midend.util.IRSupporter;
+import midend.util.Operator;
+import midend.util.Value;
+import midend.util.ValueType;
+import util.Allocator;
 import util.ErrorWriter;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -215,15 +221,92 @@ public class Stmt extends ParserUnit {
 
     public void setState(State state) {
         if (stmtType == 4) {
-            this.state = new State(state.getLoopNumber(), Allocator.getInstance().getIfNumber(), nodes.size() == 7, state.shouldReturnValue(), state.getBlockNumber());
+            this.state = new State(0, Allocator.getInstance().getIfNumber(), nodes.size() == 7, state.shouldReturnValue(), state.getBlockNumber(), state.getLAndNumber(), state.getLOrNumber());
         } else if (stmtType == 5) {
-            this.state = new State(Allocator.getInstance().getWhileNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue(), state.getBlockNumber());
+            this.state = new State(Allocator.getInstance().getWhileNumber(), 0, state.isHaveElse(), state.shouldReturnValue(), state.getBlockNumber(), state.getLAndNumber(), state.getLOrNumber());
         } else {
-            this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue(), state.getBlockNumber());
+            this.state = new State(0, 0, false, state.shouldReturnValue(), state.getBlockNumber(), state.getLAndNumber(), state.getLOrNumber());
         }
         for (Node node : nodes) {
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).setState(this.state);
         }
+    }
+
+    @Override
+    public Value generateIR() {
+        switch (stmtType) {
+            case 1:
+                Value left = ((LVal) getNode(0)).generateIR();
+                Value right = ((Exp) getNode(2)).generateIR();
+                IRSupporter.getInstance().addIRCode(new UnaryAssign(left, right, Operator.PLUS));
+                break;
+            case 2:
+                if (getNode(0) instanceof Exp)
+                    ((Exp) getNode(0)).generateIR();
+                break;
+            case 3:
+                ((Block) getNode(0)).generateIR();
+                break;
+            case 4:
+                ((Cond) getNode(2)).generateIR();
+                ((Stmt) getNode(4)).generateIR();
+                if (nodes.size() == 7) {
+                    IRSupporter.getInstance().addIRCode(new Jump(String.format("if_%d_end", state.getIfNumber())));
+                    IRSupporter.getInstance().addIRCode(new Label(String.format("else_%d_start", state.getIfNumber())));
+                    ((Stmt) getNode(6)).generateIR();
+                }
+                IRSupporter.getInstance().addIRCode(new Label(String.format("if_%d_end", state.getIfNumber())));
+                break;
+            case 5:
+                IRSupporter.getInstance().addIRCode(new Label(String.format("while_%d_start", state.getLoopNumber())));
+                ((Cond) getNode(2)).generateIR();
+                ((Stmt) getNode(4)).generateIR();
+                IRSupporter.getInstance().addIRCode(new Jump(String.format("while_%d_start", state.getLoopNumber())));
+                IRSupporter.getInstance().addIRCode(new Label(String.format("while_%d_end", state.getLoopNumber())));
+                break;
+            case 6:
+                if (getNode(0).getContent().equals("break"))
+                    IRSupporter.getInstance().addIRCode(new Jump(String.format("while_%d_end", state.getLoopNumber())));
+                else
+                    IRSupporter.getInstance().addIRCode(new Jump(String.format("while_%d_start", state.getLoopNumber())));
+                break;
+            case 7:
+                if (nodes.size() == 3)
+                    IRSupporter.getInstance().addIRCode(new Return(((Exp) getNode(1)).generateIR()));
+                else
+                    IRSupporter.getInstance().addIRCode(new Return(null));
+                break;
+
+            case 8:
+                String format = getNode(2).getContent().substring(1, getNode(2).getContent().length() - 1);
+                ArrayList<Value> values = new ArrayList<>();
+                for (Node node : nodes)
+                    if (node instanceof Exp)
+                        values.add(((Exp) node).generateIR());
+                int index, pointer = 0;
+                while (format.length() > 0) {
+                    index = format.indexOf("%d");
+                    if (index == -1) {
+                        IRSupporter.getInstance().addIRCode(new PrintString(format));
+                        break;
+                    }
+                    if (values.get(pointer).getType() == ValueType.Imm) {
+                        format = format.replace("%d", String.valueOf(values.get(pointer).getValue()));
+                    } else {
+                        if (index != 0)
+                            IRSupporter.getInstance().addIRCode(new PrintString(format.substring(0, index)));
+                        IRSupporter.getInstance().addIRCode(new PrintNumber(values.get(pointer)));
+                        format = format.substring(index + 2);
+                    }
+                    pointer++;
+                }
+                break;
+            case 9:
+                left = ((LVal) getNode(0)).generateIR();
+                IRSupporter.getInstance().addIRCode(new GetInt(left));
+                break;
+        }
+        return null;
     }
 }

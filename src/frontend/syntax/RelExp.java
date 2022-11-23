@@ -3,6 +3,12 @@ package frontend.syntax;
 import frontend.util.LexicalitySupporter;
 import frontend.util.Node;
 import frontend.util.ParserUnit;
+import midend.ir.BinaryAssign;
+import midend.util.IRSupporter;
+import midend.util.Operator;
+import midend.util.Value;
+import midend.util.ValueType;
+import util.Allocator;
 
 import java.util.ArrayList;
 
@@ -21,7 +27,7 @@ public class RelExp extends ParserUnit {
             relExp.add(lexicalitySupporter.readAndNext());
             relExp.add(AddExp.parser(lexicalitySupporter));
         }
-        relExp.buildLeftRecursion();
+        relExp.buildLeftRecursion(false);
         return relExp;
     }
 
@@ -29,7 +35,7 @@ public class RelExp extends ParserUnit {
         return AddExp.pretreat(lexicalitySupporter);
     }
 
-    public void eliminateLeftRecursion() {
+    public void eliminateLeftRecursion(boolean pass) {
         ArrayList<Node> nodes = new ArrayList<>();
         RelExp relExp = this;
         while (relExp.getNode(0) instanceof RelExp) {
@@ -39,10 +45,11 @@ public class RelExp extends ParserUnit {
         }
         nodes.add(0, relExp.getNode(0));
         this.nodes = nodes;
-        super.eliminateLeftRecursion();
+        if (pass)
+            super.eliminateLeftRecursion(true);
     }
 
-    public void buildLeftRecursion() {
+    public void buildLeftRecursion(boolean pass) {
         int length = nodes.size() / 2;
         if (!(length == 0 || getNode(0) instanceof RelExp)) {
             RelExp relExp = new RelExp(), temp;
@@ -56,6 +63,39 @@ public class RelExp extends ParserUnit {
             }
             nodes = relExp.nodes;
         }
-        super.buildLeftRecursion();
+        if (pass)
+            super.buildLeftRecursion(true);
+    }
+
+    @Override
+    public Value generateIR() {
+        if (nodes.size() == 1) {
+            return ((ParserUnit) getNode(0)).generateIR();
+        } else {
+            Value left = ((ParserUnit) getNode(0)).generateIR();
+            Value right = ((ParserUnit) getNode(2)).generateIR();
+            if (left.getType() == ValueType.Imm && right.getType() == ValueType.Imm) {
+                switch (getNode(1).getType()) {
+                    case "LSS":
+                        return new Value(left.getValue() < right.getValue() ? 1 : 0);
+                    case "LEQ":
+                        return new Value(left.getValue() <= right.getValue() ? 1 : 0);
+                    case "GRE":
+                        return new Value(left.getValue() > right.getValue() ? 1 : 0);
+                    default:
+                        return new Value(left.getValue() >= right.getValue() ? 1 : 0);
+                }
+            }
+            Value value = Allocator.getInstance().getTemp();
+            if (getNode(1).getType().equals("LSS"))
+                IRSupporter.getInstance().addIRCode(new BinaryAssign(value, left, right, Operator.LSS));
+            else if (getNode(1).getType().equals("LEQ"))
+                IRSupporter.getInstance().addIRCode(new BinaryAssign(value, left, right, Operator.LEQ));
+            else if (getNode(1).getType().equals("GRE"))
+                IRSupporter.getInstance().addIRCode(new BinaryAssign(value, left, right, Operator.GRE));
+            else if (getNode(1).getType().equals("GEQ"))
+                IRSupporter.getInstance().addIRCode(new BinaryAssign(value, left, right, Operator.GEQ));
+            return value;
+        }
     }
 }

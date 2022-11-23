@@ -1,6 +1,7 @@
 package frontend.util;
 
 import frontend.syntax.CompUnit;
+import midend.util.Value;
 
 public class ParserUnit extends Node {
     public State state;
@@ -29,16 +30,18 @@ public class ParserUnit extends Node {
         nodes.add(node);
     }
 
-    public void buildLeftRecursion() {
-        for (Node node : nodes)
-            if (node instanceof ParserUnit)
-                ((ParserUnit) node).buildLeftRecursion();
+    public void buildLeftRecursion(boolean pass) {
+        if (pass)
+            for (Node node : nodes)
+                if (node instanceof ParserUnit)
+                    ((ParserUnit) node).buildLeftRecursion(true);
     }
 
-    public void eliminateLeftRecursion() {
-        for (Node node : nodes)
-            if (node instanceof ParserUnit)
-                ((ParserUnit) node).eliminateLeftRecursion();
+    public void eliminateLeftRecursion(boolean pass) {
+        if (pass)
+            for (Node node : nodes)
+                if (node instanceof ParserUnit)
+                    ((ParserUnit) node).eliminateLeftRecursion(true);
     }
 
     public void semantic() {
@@ -48,9 +51,16 @@ public class ParserUnit extends Node {
     }
 
     public void setState(State state) {
-        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue(), state.getBlockNumber());
+        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue(), state.getBlockNumber(), state.getLAndNumber(), state.getLOrNumber());
         for (Node node : nodes)
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).setState(this.state);
+    }
+
+    public Value generateIR() {
+        for (Node node : nodes)
+            if (node instanceof ParserUnit)
+                ((ParserUnit) node).generateIR();
+        return null;
     }
 }

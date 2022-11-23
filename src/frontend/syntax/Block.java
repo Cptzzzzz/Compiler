@@ -3,6 +3,7 @@ package frontend.syntax;
 import frontend.lexical.Lexicality;
 import frontend.util.LexicalitySupporter;
 import frontend.util.*;
+import util.Allocator;
 import util.ErrorWriter;
 
 public class Block extends ParserUnit {
@@ -29,7 +30,7 @@ public class Block extends ParserUnit {
     }
 
     public void setState(State state) {
-        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue(), Allocator.getInstance().getBlockNumber());
+        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue(), Allocator.getInstance().getBlockNumber(), state.getLAndNumber(), state.getLOrNumber());
         for (Node node : nodes)
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).setState(this.state);

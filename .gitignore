@@ -16,3 +16,4 @@ test_mips.bat
 intermediate-code.txt
 mips*.txt
 ./error.txt
+ir.txt

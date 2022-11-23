@@ -3,6 +3,10 @@ package frontend.syntax;
 import frontend.lexical.Lexicality;
 import frontend.util.LexicalitySupporter;
 import frontend.util.*;
+import midend.ir.FuncEnd;
+import midend.ir.FuncEntry;
+import midend.util.IRSupporter;
+import midend.util.Value;
 import util.ErrorWriter;
 
 import java.util.ArrayList;
@@ -58,9 +62,20 @@ public class FuncDef extends ParserUnit {
     }
 
     public void setState(State state) {
-        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), getNode(0).getNode(0).getContent().equals("int"), state.getBlockNumber());
+        this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), getNode(0).getNode(0).getContent().equals("int"), state.getBlockNumber(), state.getLAndNumber(), state.getLOrNumber());
         for (Node node : nodes)
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).setState(this.state);
+    }
+
+    @Override
+    public Value generateIR() {
+        IRSupporter.getInstance().addIRCode(new FuncEntry(getNode(1).getContent() + "_function"));
+        if (nodes.size() == 6) {
+            ((FuncFParams) getNode(3)).generateIR();
+        }
+        ((Block) getNode(nodes.size() - 1)).generateIR();
+        IRSupporter.getInstance().addIRCode(new FuncEnd(getNode(1).getContent() + "_function"));
+        return null;
     }
 }

@@ -1,0 +1,19 @@
+package midend.ir;
+
+import midend.util.Value;
+
+public class Branch extends IRCode {
+    private Value condition;
+    private String label;
+    private boolean isZeroBranch;
+
+    public Branch(Value condition, String label, boolean isZeroBranch) {
+        this.condition = condition;
+        this.label = label;
+        this.isZeroBranch = isZeroBranch;
+    }
+
+    public String toString() {
+        return String.format("branch %s if %s %s 0",label,condition,isZeroBranch?"==":"!=");
+    }
+}

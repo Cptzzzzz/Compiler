@@ -1,4 +1,4 @@
-package midend;
+package midend.ir;
 
 public class IRCode {
 }

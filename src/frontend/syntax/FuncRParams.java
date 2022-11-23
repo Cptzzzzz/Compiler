@@ -3,6 +3,7 @@ package frontend.syntax;
 import frontend.util.LexicalitySupporter;
 import frontend.util.Node;
 import frontend.util.ParserUnit;
+import midend.util.Value;
 
 import java.util.ArrayList;
 
@@ -30,6 +31,15 @@ public class FuncRParams extends ParserUnit {
         for (Node node : nodes) {
             if (node instanceof Exp)
                 res.add(((Exp) node).getDimension());
+        }
+        return res;
+    }
+
+    public ArrayList<Value> getValues() {
+        ArrayList<Value> res = new ArrayList<>();
+        for (Node node : nodes) {
+            if (node instanceof Exp)
+                res.add(((Exp) node).generateIR());
         }
         return res;
     }

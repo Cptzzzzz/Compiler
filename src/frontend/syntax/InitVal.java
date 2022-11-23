@@ -3,6 +3,7 @@ package frontend.syntax;
 import frontend.util.LexicalitySupporter;
 import frontend.util.Node;
 import frontend.util.ParserUnit;
+import midend.util.Value;
 
 import java.util.ArrayList;
 
@@ -43,6 +44,17 @@ public class InitVal extends ParserUnit {
                 res.addAll(((InitVal) node).getIntegers());
             else if (node instanceof Exp)
                 res.add(((Exp) node).getInteger());
+        }
+        return res;
+    }
+
+    public ArrayList<Value> getValues() {
+        ArrayList<Value> res = new ArrayList<>();
+        for (Node node : nodes) {
+            if (node instanceof InitVal)
+                res.addAll(((InitVal) node).getValues());
+            else if (node instanceof Exp)
+                res.add(((Exp) node).generateIR());
         }
         return res;
     }

@@ -2,10 +2,8 @@ import frontend.util.ContentScanner;
 import frontend.lexical.Lexicality;
 import frontend.syntax.CompUnit;
 import frontend.util.ParserUnit;
-import util.CompilerMode;
-import util.ErrorWriter;
-import util.InputReader;
-import util.OutputWriter;
+import midend.util.IRSupporter;
+import util.*;
 
 public class Compiler {
     public static void init() {
@@ -26,6 +24,7 @@ public class Compiler {
         String content = InputReader.readFile("testfile.txt");
         OutputWriter.init("output.txt");
         ErrorWriter.init("error.txt");
+        IRWriter.init("ir.txt");
         Lexicality.init();
 
 
@@ -42,6 +41,10 @@ public class Compiler {
         root.semantic();//语义分析+错误处理
         ErrorWriter.output();//输出错误处理结果
 
+        root.generateIR();//中间代码生成
+        IRSupporter.getInstance().output();//输出中间代码
+
+        IRWriter.close();
         OutputWriter.close();
         ErrorWriter.close();
     }
