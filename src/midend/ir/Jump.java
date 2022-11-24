@@ -10,4 +10,8 @@ public class Jump extends IRCode{
     public String toString() {
         return String.format("jump %s", label);
     }
+
+    public String getLabel() {
+        return label;
+    }
 }

@@ -52,7 +52,7 @@ public class LVal extends ParserUnit {
             if (node instanceof Exp)
                 args.add(((Exp) node).getInteger());
         }
-        Symbol symbol = SymbolTable.getInstance().getSymbol(getNode(0).getContent());
+        Symbol symbol = SymbolTable.getInstance().getSymbol(getNode(0).getContent(), state.getSymbolNumber());
         if (symbol == null) {
             ErrorWriter.add(getNode(0).getLineNumber(), 'c');
             return 0;
@@ -73,7 +73,7 @@ public class LVal extends ParserUnit {
         if (symbol == null)
             ErrorWriter.add(getNode(0).getLineNumber(), 'c');
         else
-            state.setBlockNumber(symbol.getScope());
+            state.setSymbolNumber(symbol.getScope());
         super.semantic();
     }
 
@@ -92,7 +92,7 @@ public class LVal extends ParserUnit {
 
     @Override
     public Value generateIR() {
-        Symbol symbol = SymbolTable.getInstance().getSymbol(getNode(0).getContent(), state.getBlockNumber());
+        Symbol symbol = SymbolTable.getInstance().getSymbol(getNode(0).getContent(), state.getSymbolNumber());
         ArrayList<Value> values = new ArrayList<>();
         for (Node node : nodes)
             if (node instanceof Exp)

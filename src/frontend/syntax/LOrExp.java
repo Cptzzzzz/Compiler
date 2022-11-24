@@ -66,6 +66,7 @@ public class LOrExp extends ParserUnit {
 
     @Override
     public void setState(State state) {
+        eliminateLeftRecursion(false);
         this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue(), state.getBlockNumber(), state.getLAndNumber(), Allocator.getInstance().getLOrNumber());
         for (Node node : nodes) {
             if (node instanceof ParserUnit)
@@ -75,16 +76,18 @@ public class LOrExp extends ParserUnit {
 
     @Override
     public Value generateIR() {
-        eliminateLeftRecursion(false);
         for (Node node : nodes)
             if (node instanceof ParserUnit)
                 ((ParserUnit) node).generateIR();
+        if (state.getIfNumber() != 0) {
+            if (!state.isHaveElse())
+                IRSupporter.getInstance().addIRCode(new Jump(String.format("if_%d_end", state.getIfNumber())));
+            else
+                IRSupporter.getInstance().addIRCode(new Jump(String.format("else_%d_start", state.getIfNumber())));
+
+        }
         if (state.getLoopNumber() != 0)
             IRSupporter.getInstance().addIRCode(new Jump(String.format("while_%d_end", state.getLoopNumber())));
-        else if (!state.isHaveElse())
-            IRSupporter.getInstance().addIRCode(new Jump(String.format("if_%d_end", state.getIfNumber())));
-        else
-            IRSupporter.getInstance().addIRCode(new Jump(String.format("else_%d_start", state.getIfNumber())));
         IRSupporter.getInstance().addIRCode(new Label(String.format("LOr_%d_success", state.getLOrNumber())));
         return null;
     }

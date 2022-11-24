@@ -9,4 +9,16 @@ public class FuncEntry extends IRCode {
     public String toString() {
         return String.format("function: %s", name);
     }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

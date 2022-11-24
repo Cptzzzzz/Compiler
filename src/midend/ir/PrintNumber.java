@@ -12,4 +12,8 @@ public class PrintNumber extends IRCode{
     public String toString() {
         return String.format("print number %s", value);
     }
+
+    public Value getValue() {
+        return value;
+    }
 }

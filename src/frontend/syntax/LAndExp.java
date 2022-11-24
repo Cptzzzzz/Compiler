@@ -67,6 +67,7 @@ public class LAndExp extends ParserUnit {
 
     @Override
     public void setState(State state) {
+        eliminateLeftRecursion(false);
         this.state = new State(state.getLoopNumber(), state.getIfNumber(), state.isHaveElse(), state.shouldReturnValue(), state.getBlockNumber(), Allocator.getInstance().getLAndNumber(), state.getLOrNumber());
         for (Node node : nodes) {
             if (node instanceof ParserUnit)
@@ -76,7 +77,6 @@ public class LAndExp extends ParserUnit {
 
     @Override
     public Value generateIR() {
-        eliminateLeftRecursion(false);
         Value value;
         for (Node node : nodes) {
             if (node instanceof EqExp) {

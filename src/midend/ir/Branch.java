@@ -14,6 +14,18 @@ public class Branch extends IRCode {
     }
 
     public String toString() {
-        return String.format("branch %s if %s %s 0",label,condition,isZeroBranch?"==":"!=");
+        return String.format("branch %s if %s %s 0", label, condition, isZeroBranch ? "==" : "!=");
+    }
+
+    public Value getCondition() {
+        return condition;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public boolean isZeroBranch() {
+        return isZeroBranch;
     }
 }

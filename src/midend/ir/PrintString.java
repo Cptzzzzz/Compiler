@@ -15,4 +15,12 @@ public class PrintString extends IRCode {
     public String toString() {
         return String.format("print string%d \"%s\"", number, content);
     }
+
+    public String getContent() {
+        return content;
+    }
+
+    public int getNumber() {
+        return number;
+    }
 }

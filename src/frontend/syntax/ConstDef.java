@@ -6,8 +6,11 @@ import frontend.util.ParserUnit;
 import frontend.util.Symbol;
 import frontend.util.SymbolTable;
 import midend.ir.Declaration;
+import midend.ir.UnaryAssign;
 import midend.util.IRSupporter;
+import midend.util.Operator;
 import midend.util.Value;
+import midend.util.ValueType;
 import util.ErrorWriter;
 import frontend.util.Node;
 
@@ -44,6 +47,7 @@ public class ConstDef extends ParserUnit {
 
     @Override
     public void semantic() {
+        super.semantic();
         String name = getNode(0).getContent();
         ArrayList<Integer> dimension = new ArrayList<>();
         for (Node node : nodes) {
@@ -63,6 +67,17 @@ public class ConstDef extends ParserUnit {
                 symbol.getFinalName(), state.getBlockNumber() == 0, true, symbol.getSize(), symbol.isReference(), symbol.getType(),
                 ((ConstInitVal) getNode(nodes.size() - 1)).getIntegers()
         ));
+        if (state.getBlockNumber() != 0) {
+            ArrayList<Integer> initValues = ((ConstInitVal) getNode(nodes.size() - 1)).getIntegers();
+            if (symbol.getType() == ValueType.Variable) {
+                IRSupporter.getInstance().addIRCode(new UnaryAssign(new Value(symbol.getFinalName()), new Value(initValues.get(0)), Operator.PLUS));
+            } else {
+                int size = initValues.size();
+                for (int i = 0; i < size; i++) {
+                    IRSupporter.getInstance().addIRCode(new UnaryAssign(new Value(symbol.getFinalName(), new Value(4 * i), false), new Value(initValues.get(i)), Operator.PLUS));
+                }
+            }
+        }
         return null;
     }
 }

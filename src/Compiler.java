@@ -1,3 +1,4 @@
+import backend.Mips;
 import frontend.util.ContentScanner;
 import frontend.lexical.Lexicality;
 import frontend.syntax.CompUnit;
@@ -10,8 +11,8 @@ public class Compiler {
         CompilerMode.getInstance().setLexical(false);
         CompilerMode.getInstance().setSyntax(false);
         CompilerMode.getInstance().setError(true);
-        CompilerMode.getInstance().setIr(false);
-        CompilerMode.getInstance().setMips(false);
+        CompilerMode.getInstance().setIr(true);
+        CompilerMode.getInstance().setMips(true);
         CompilerMode.getInstance().setDebug(false);
     }
 
@@ -25,6 +26,7 @@ public class Compiler {
         OutputWriter.init("output.txt");
         ErrorWriter.init("error.txt");
         IRWriter.init("ir.txt");
+        MipsWriter.init("mips.txt");
         Lexicality.init();
 
 
@@ -44,6 +46,8 @@ public class Compiler {
         root.generateIR();//中间代码生成
         IRSupporter.getInstance().output();//输出中间代码
 
+        Mips.generate();//目标代码生成
+        MipsWriter.close();
         IRWriter.close();
         OutputWriter.close();
         ErrorWriter.close();

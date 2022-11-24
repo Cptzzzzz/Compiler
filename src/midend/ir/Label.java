@@ -11,4 +11,8 @@ public class Label extends IRCode {
     public String toString() {
         return String.format("label: %s", label);
     }
+
+    public String getLabel() {
+        return label;
+    }
 }

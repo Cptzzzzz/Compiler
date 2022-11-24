@@ -18,4 +18,16 @@ public class UnaryAssign extends IRCode {
     public String toString() {
         return String.format("%s = %s %s", left, operator, right);
     }
+
+    public Operator getOperator() {
+        return operator;
+    }
+
+    public Value getLeft() {
+        return left;
+    }
+
+    public Value getRight() {
+        return right;
+    }
 }

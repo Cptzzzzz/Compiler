@@ -26,4 +26,28 @@ public class Declaration extends IRCode {
     public String toString() {
         return String.format("%s %s %s %s%s", isGlobal ? "global" : "local", isConst ? "const" : "var", type, reference ? "&" : "*", name);
     }
+
+    public boolean isGlobal() {
+        return isGlobal;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ArrayList<Integer> getValues() {
+        return values;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public ValueType getType() {
+        return type;
+    }
+
+    public boolean isReference() {
+        return reference;
+    }
 }

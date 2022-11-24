@@ -48,4 +48,12 @@ public class Value {
                 return address ? "&" : "*" + name + "[" + offset.toString() + "]";
         }
     }
+
+    public Value getOffset() {
+        return offset;
+    }
+
+    public boolean isAddress() {
+        return address;
+    }
 }

@@ -12,4 +12,8 @@ public class GetInt extends IRCode{
     public String toString() {
         return String.format("%s = getint()", value);
     }
+
+    public Value getValue() {
+        return value;
+    }
 }

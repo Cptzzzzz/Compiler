@@ -16,4 +16,16 @@ public class Return extends IRCode {
         else
             return String.format("return %s", value);
     }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public Value getValue() {
+        return value;
+    }
+
+    public int getSize() {
+        return size;
+    }
 }

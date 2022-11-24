@@ -59,6 +59,7 @@ public class VarDef extends ParserUnit {
             SymbolTable.getInstance().add(new Symbol(name, false, false, dimension, ((InitVal) getNode(nodes.size() - 1)).getIntegers()));
         else
             SymbolTable.getInstance().add(new Symbol(name, false, false, dimension));
+        super.semantic();
     }
 
     @Override

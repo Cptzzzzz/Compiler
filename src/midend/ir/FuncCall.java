@@ -21,4 +21,16 @@ public class FuncCall extends IRCode {
         else
             return String.format("%s = call %s(%s)", result, name, params);
     }
+
+    public ArrayList<Value> getParams() {
+        return params;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Value getResult() {
+        return result;
+    }
 }

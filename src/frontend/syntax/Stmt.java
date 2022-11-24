@@ -221,11 +221,11 @@ public class Stmt extends ParserUnit {
 
     public void setState(State state) {
         if (stmtType == 4) {
-            this.state = new State(0, Allocator.getInstance().getIfNumber(), nodes.size() == 7, state.shouldReturnValue(), state.getBlockNumber(), state.getLAndNumber(), state.getLOrNumber());
+            this.state = new State(state.getLoopNumber(), Allocator.getInstance().getIfNumber(), nodes.size() == 7, state.shouldReturnValue(), state.getBlockNumber(), state.getLAndNumber(), state.getLOrNumber());
         } else if (stmtType == 5) {
-            this.state = new State(Allocator.getInstance().getWhileNumber(), 0, state.isHaveElse(), state.shouldReturnValue(), state.getBlockNumber(), state.getLAndNumber(), state.getLOrNumber());
+            this.state = new State(Allocator.getInstance().getWhileNumber(), 0, false, state.shouldReturnValue(), state.getBlockNumber(), state.getLAndNumber(), state.getLOrNumber());
         } else {
-            this.state = new State(0, 0, false, state.shouldReturnValue(), state.getBlockNumber(), state.getLAndNumber(), state.getLOrNumber());
+            this.state = new State(state.getLoopNumber(), 0, false, state.shouldReturnValue(), state.getBlockNumber(), state.getLAndNumber(), state.getLOrNumber());
         }
         for (Node node : nodes) {
             if (node instanceof ParserUnit)
@@ -292,7 +292,7 @@ public class Stmt extends ParserUnit {
                         break;
                     }
                     if (values.get(pointer).getType() == ValueType.Imm) {
-                        format = format.replace("%d", String.valueOf(values.get(pointer).getValue()));
+                        format = format.substring(0, index) + String.valueOf(values.get(pointer).getValue()) + format.substring(index + 2, format.length());
                     } else {
                         if (index != 0)
                             IRSupporter.getInstance().addIRCode(new PrintString(format.substring(0, index)));

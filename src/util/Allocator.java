@@ -43,7 +43,7 @@ public class Allocator {
 
     public Value getTemp() {
         temp++;
-        Value value = new Value("t_" + temp);
+        Value value = new Value("t_" + temp+"_temp");
         IRSupporter.getInstance().addIRCode(new Declaration(value.getName(), false, false, 4, false, ValueType.Variable, null));
         return value;
     }

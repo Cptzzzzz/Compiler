@@ -1,6 +1,7 @@
 package midend.util;
 
 import midend.ir.IRCode;
+import util.CompilerMode;
 import util.IRWriter;
 
 import java.util.ArrayList;
@@ -27,7 +28,12 @@ public class IRSupporter {
     }
 
     public void output() {
-        for (IRCode irCode : irCodes)
-            IRWriter.writeln(irCode.toString());
+        if (CompilerMode.getInstance().isIr())
+            for (IRCode irCode : irCodes)
+                IRWriter.writeln(irCode.toString());
+    }
+
+    public ArrayList<IRCode> getIrCodes() {
+        return irCodes;
     }
 }

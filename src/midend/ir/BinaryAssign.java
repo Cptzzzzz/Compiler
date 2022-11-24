@@ -19,4 +19,16 @@ public class BinaryAssign extends IRCode {
     public String toString() {
         return String.format("%s = %s %s %s", left, right[0], operator, right[1]);
     }
+
+    public Value getLeft() {
+        return left;
+    }
+
+    public Value getRight(int i) {
+        return right[i];
+    }
+
+    public Operator getOperator() {
+        return operator;
+    }
 }

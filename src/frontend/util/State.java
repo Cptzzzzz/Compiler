@@ -9,6 +9,16 @@ public class State {
     private final int lAndNumber;
     private final int lOrNumber;
 
+    private int symbolNumber;
+
+    public void setSymbolNumber(int symbolNumber) {
+        this.symbolNumber = symbolNumber;
+    }
+
+    public int getSymbolNumber() {
+        return symbolNumber;
+    }
+
     public State() {
         loopNumber = 0;
         ifNumber = 0;
