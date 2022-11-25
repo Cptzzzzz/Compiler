@@ -93,9 +93,7 @@ public class Mips {
             if (irCode instanceof BinaryAssign) {
                 BinaryAssign binaryAssign = (BinaryAssign) irCode;
                 SymbolManager.getInstance().load(binaryAssign.getRight(0), "$t3");
-                SymbolManager.getInstance().store(binaryAssign.getRight(0), "$t3");
                 SymbolManager.getInstance().load(binaryAssign.getRight(1), "$t4");
-                SymbolManager.getInstance().load(binaryAssign.getRight(0), "$t3");
                 switch (binaryAssign.getOperator()) {
                     case PLUS:
                         Mips.writeln("addu $t3, $t3, $t4");
@@ -109,6 +107,7 @@ public class Mips {
                         break;
 
                     case DIV:
+                        
                         Mips.writeln("div $t3, $t3, $t4");
                         break;
 
