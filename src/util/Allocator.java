@@ -14,10 +14,12 @@ public class Allocator {
 
     public static Allocator getInstance() {
         if (allocator == null)
-            allocator = new Allocator();
+            reset();
         return allocator;
     }
-
+    public static void reset() {
+        allocator = new Allocator();
+    }
     private int blockNum = 0;
 
     public int getBlockNumber() {

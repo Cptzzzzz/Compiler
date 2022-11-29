@@ -8,6 +8,7 @@ public class IRWriter {
 
     public static void init(String filename) {
         try {
+            AutoJudge.getInstance().createFile(filename);
             out = new BufferedWriter(new FileWriter(filename));
         } catch (Exception e) {
             e.printStackTrace();

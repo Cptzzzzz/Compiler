@@ -12,6 +12,7 @@ public class ErrorWriter {
     public static void init(String filename) {
         if (CompilerMode.getInstance().isError())
             try {
+                AutoJudge.getInstance().createFile(filename);
                 errors = new ArrayList<>();
                 out = new BufferedWriter(new FileWriter(filename));
             } catch (Exception e) {
@@ -37,7 +38,6 @@ public class ErrorWriter {
     }
 
     public static void add(int line, char type) {
-        System.out.println("Error: " + line + " " + type);
         if (CompilerMode.getInstance().isError())
             errors.add(new Error(line, type));
     }

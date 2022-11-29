@@ -3,6 +3,7 @@ package backend;
 import midend.ir.*;
 import midend.util.IRSupporter;
 import midend.util.Value;
+import midend.util.ValueType;
 import util.MipsWriter;
 
 import java.util.ArrayList;
@@ -107,8 +108,11 @@ public class Mips {
                         break;
 
                     case DIV:
-                        
-                        Mips.writeln("div $t3, $t3, $t4");
+                        if (binaryAssign.getRight(1).getType() == ValueType.Imm) {
+                            DivImprove.generate("$t3", binaryAssign.getRight(1).getValue());
+                        } else {
+                            Mips.writeln("div $t3, $t3, $t4");
+                        }
                         break;
 
                     case MOD:

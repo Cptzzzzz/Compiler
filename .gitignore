@@ -17,3 +17,6 @@ intermediate-code.txt
 mips*.txt
 ./error.txt
 ir.txt
+format.exe
+formatdata.c
+try_judge.bat

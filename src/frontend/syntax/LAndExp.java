@@ -9,6 +9,7 @@ import midend.ir.Jump;
 import midend.ir.Label;
 import midend.util.IRSupporter;
 import midend.util.Value;
+import midend.util.ValueType;
 import util.Allocator;
 
 import java.util.ArrayList;
@@ -81,7 +82,11 @@ public class LAndExp extends ParserUnit {
         for (Node node : nodes) {
             if (node instanceof EqExp) {
                 value = ((EqExp) node).generateIR();
-                IRSupporter.getInstance().addIRCode(new Branch(value, String.format("LAnd_%d_fail", state.getLAndNumber()), true));
+                if (value.getType() == ValueType.Imm) {
+                    if (value.getValue() == 0)
+                        IRSupporter.getInstance().addIRCode(new Jump(String.format("LAnd_%d_fail", state.getLAndNumber())));
+                } else
+                    IRSupporter.getInstance().addIRCode(new Branch(value, String.format("LAnd_%d_fail", state.getLAndNumber()), true));
             }
         }
         IRSupporter.getInstance().addIRCode(new Jump(String.format("LOr_%d_success", state.getLOrNumber())));

@@ -1,7 +1,6 @@
 package util;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 
 public class OutputWriter {
@@ -10,6 +9,7 @@ public class OutputWriter {
     public static void init(String filename) {
         if (CompilerMode.getInstance().isLexical() || CompilerMode.getInstance().isSyntax())
             try {
+                AutoJudge.getInstance().createFile(filename);
                 out = new BufferedWriter(new FileWriter(filename));
             } catch (Exception e) {
                 e.printStackTrace();
