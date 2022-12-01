@@ -1,0 +1,24 @@
+name: AutoJudge
+
+on:
+  push:
+    branches: [ "verify-ir-v2" ]
+  pull_request:
+    branches: [ "verify-ir-v2" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+      - run: mkdir out
+      - run: javac -sourcepath src -d out -cp bin/*.jar src/*.java
+      - run: jar -cfm judge.jar manifest.judge -C out .
+      - run: java -classpath ".:./bin/java-diff-utils-4.12.jar:./out" Judge

@@ -32,7 +32,6 @@ public class Judge {
 
     public static void start() {
         System.out.println("Start judge");
-        System.out.println(judge(2021, 'A', 1));
 
         int tot = 0, pass = 0;
         for (int year = 2021; year <= 2022; year++) {
