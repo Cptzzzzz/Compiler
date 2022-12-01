@@ -38,6 +38,9 @@ public class Judge {
         for (int year = 2021; year <= 2022; year++) {
             for (char type = 'A'; type <= 'C'; type++) {
                 for (int number = 1; number <= 30; number++) {
+                    if (!new File(String.format("data/%d/full/%c/testfile%d.txt", year, type, number)).exists()) {
+                        continue;
+                    }
                     if (judge(year, type, number)) {
                         pass++;
                         System.out.println("Pass: " + year + type + number);
@@ -92,7 +95,7 @@ public class Judge {
                     String.format("./output/output/%d/%c/result%d.txt", year, type, number)*/
         try {
             AutoJudge.getInstance().createFile(String.format("output/output/%d/%c/result%d.txt", year, type, number));
-            ProcessBuilder processBuilder = new ProcessBuilder("java","-jar","./Compiler_Mars.jar",
+            ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", "./Compiler_Mars.jar",
                     String.format("./output/mips/%d/%c/result%d.txt", year, type, number));
             processBuilder.redirectInput(new File(String.format("./data/%d/full/%c/input%d.txt", year, type, number)));
             processBuilder.redirectOutput(new File(String.format("./output/output/%d/%c/result%d.txt", year, type, number)));
