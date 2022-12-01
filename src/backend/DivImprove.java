@@ -1,17 +1,31 @@
 package backend;
 
-public class DivImprove {
+import java.math.BigInteger;
 
-    public static void main(String[] args) {
-        generate("1", 3);
+public class DivImprove {
+    private DivImprove() {
     }
 
-    public static void generate(String register, int n) {
-        //choose multiplier
-        int l, sh;
+    private static DivImprove divImprove;
 
+    public static DivImprove getInstance() {
+        if (divImprove == null) divImprove = new DivImprove();
+        return divImprove;
+    }
+
+    private long m;
+    private int sh, l, n;
+    private boolean flag;
+
+    public void optimize(String reg, String temp, int n) {
+        generate(n);
+        solve(reg, temp);
+    }
+
+    private void generate(int n) {
+        this.n = n;
         int temp = n < 0 ? -n : n;
-        boolean flag = false;
+        flag = false;
         int low = -1;
         for (int i = 0; i < 31; i++) {
             if ((temp & (1 << i)) > 0) {
@@ -27,39 +41,41 @@ public class DivImprove {
             l = low;
         }
         sh = l;
-        long ml = (1L << (l + 32)) / temp;
-        long mh = ((1L << (l + 32)) + (1L << (1 + l))) / temp;
-        while ((ml / 2) < (mh / 2) && sh > 0) {
-            ml /= 2;
-            mh /= 2;
+        BigInteger mLow = BigInteger.valueOf(1).shiftLeft(l + 32).divide(BigInteger.valueOf(temp));
+        BigInteger mHigh = BigInteger.valueOf(1).shiftLeft(l + 32).add(BigInteger.valueOf(1).shiftLeft(1 + l)).divide(BigInteger.valueOf(temp));
+        while ((mLow.divide(BigInteger.valueOf(2))).compareTo(mHigh.divide(BigInteger.valueOf(2))) < 0 && sh > 0) {
+            mLow = mLow.divide(BigInteger.valueOf(2));
+            mHigh = mHigh.divide(BigInteger.valueOf(2));
             sh--;
         }
-//        System.out.println(mh + " " + sh + " " + l);
-        if (n == 1) {
-            n = n + 3 - 2 - 1;
-        } else if (!flag) {
-            Mips.writeln("sra $t4,$t3," + (l - 1));
-            Mips.writeln("srl $t4,$t4," + (32 - l));
-            Mips.writeln("addu $t3,$t3,$t4");
-            Mips.writeln("sra $t3,$t3," + l);
-        } else if (mh < (1L << 31)) {
-            Mips.writeln("sra $t4,$t3,31");
-            Mips.writeln("mul $t3,$t3," + mh);
-            Mips.writeln("mfhi $t3");
-            Mips.writeln("sra $t3,$t3," + sh);
-            Mips.writeln("subu $t3,$t3,$t4");
-        } else {
-            Mips.writeln("mul $t4,$t3," + (ml - (1L << 32)));//MULSH(m-2^N,n)
-            Mips.writeln("mfhi $t4");//$4=MULSH(m-2^N,n)
-            Mips.writeln("addu $t4,$t4,$t3");//n+MULSH(m-2^N)
-            Mips.writeln("sra $t4,$t4," + sh);//SRA(n+MULSH(m-2^N),sh)
-            Mips.writeln("sra $t3,$t3,31");
-            Mips.writeln("subu $t3,$t4,$t3");
-        }
-        if (n < 0) {
-            Mips.writeln("neg $t3,$t3");
-        }
+        m = mHigh.longValue();
     }
 
-
+    private void solve(String src, String temp) {
+        if (n != 1) {
+            if (!flag) {
+                Mips.writeln(String.format("sra %s,%s,%d", temp, src, l - 1));
+                Mips.writeln(String.format("srl %s,%s,%d", temp, temp, 32 - l));
+                Mips.writeln(String.format("addu %s,%s,%s", src, src, temp));
+                Mips.writeln(String.format("sra %s,%s,%d", src, src, l));
+            } else if (m < (1L << 31)) {
+                Mips.writeln("sra $t4,$t3,31");
+                Mips.writeln(String.format("sra %s,%s,%d", temp, src, 31));
+                Mips.writeln(String.format("mul %s,%s,%d", src, src, m));
+                Mips.writeln(String.format("mfhi %s", src));
+                Mips.writeln(String.format("sra %s,%s,%d", src, src, sh));
+                Mips.writeln(String.format("subu %s,%s,%s", src, src, temp));
+            } else {
+                Mips.writeln(String.format("mul %s,%s,%d", temp, src, m - (1L << 32)));
+                Mips.writeln(String.format("mfhi %s", temp));
+                Mips.writeln(String.format("addu %s,%s,%s", temp, temp, src));
+                Mips.writeln(String.format("sra %s,%s,%d", temp, temp, sh));
+                Mips.writeln(String.format("sra %s,%s,%d", src, src, 31));
+                Mips.writeln(String.format("subu %s,%s,%s", src, temp, src));
+            }
+        }
+        if (n < 0) {
+            Mips.writeln(String.format("neg %s,%s", src, src));
+        }
+    }
 }

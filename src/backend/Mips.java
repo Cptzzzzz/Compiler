@@ -109,15 +109,22 @@ public class Mips {
 
                     case DIV:
                         if (binaryAssign.getRight(1).getType() == ValueType.Imm) {
-                            DivImprove.generate("$t3", binaryAssign.getRight(1).getValue());
-                        } else {
+                            DivImprove.getInstance().optimize("$t3", "$t4", binaryAssign.getRight(1).getValue());
+                        }else{
                             Mips.writeln("div $t3, $t3, $t4");
                         }
                         break;
 
                     case MOD:
-                        Mips.writeln("div $t3,$t4");
-                        Mips.writeln("mfhi $t3");
+                        if (binaryAssign.getRight(1).getType() == ValueType.Imm) {
+                            DivImprove.getInstance().optimize("$t3", "$t4", binaryAssign.getRight(1).getValue());
+                            Mips.writeln("mul $t3,$t3," + binaryAssign.getRight(1).getValue());
+                            SymbolManager.getInstance().load(binaryAssign.getRight(0), "$t4");
+                            Mips.writeln("subu $t3,$t4,$t3");
+                        }else{
+                            Mips.writeln("div $t3,$t4");
+                            Mips.writeln("mfhi $t3");
+                        }
                         break;
 
                     case EQL:
