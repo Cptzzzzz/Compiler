@@ -1,7 +1,6 @@
 package util;
 
 import com.github.difflib.DiffUtils;
-import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
 
 import java.io.File;
@@ -19,29 +18,25 @@ public class AutoJudge {
             autoJudge = new AutoJudge();
         return autoJudge;
     }
-    public boolean mipsCompare(String filename1, String filename2){
+
+    public boolean mipsCompare(String filename1, String filename2) {
         try {
             List<String> original = Files.readAllLines(new File(filename1).toPath());
             List<String> revised = Files.readAllLines(new File(filename2).toPath());
             Patch<String> patch = DiffUtils.diff(original, revised);
-            for (AbstractDelta<String> delta : patch.getDeltas().subList(1, patch.getDeltas().size())) {
-                System.out.println(delta);
-            }
             return patch.getDeltas().subList(1, patch.getDeltas().size()).isEmpty();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
     }
+
     public boolean compare(String filename1, String filename2) {
         //对比文件
         try {
             List<String> original = Files.readAllLines(new File(filename1).toPath());
             List<String> revised = Files.readAllLines(new File(filename2).toPath());
             Patch<String> patch = DiffUtils.diff(original, revised);
-            for (AbstractDelta<String> delta : patch.getDeltas()) {
-                System.out.println(delta);
-            }
             return patch.getDeltas().isEmpty();
         } catch (Exception e) {
             e.printStackTrace();

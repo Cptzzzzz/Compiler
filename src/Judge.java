@@ -33,7 +33,6 @@ public class Judge {
     public static void start() {
         System.out.println("Start judge");
 
-        int tot = 0, pass = 0;
         for (int year = 2021; year <= 2022; year++) {
             for (char type = 'A'; type <= 'C'; type++) {
                 for (int number = 1; number <= 30; number++) {
@@ -41,20 +40,14 @@ public class Judge {
                         continue;
                     }
                     if (judge(year, type, number)) {
-                        pass++;
-                        System.out.println("Pass: " + year + type + number);
+                        System.out.printf("Testcase %d-%c-%d passed%n", year, type, number);
                     } else {
-                        System.out.println("Fail: " + year + type + number);
+                        throw new RuntimeException(String.format("Testcase %d-%c-%d failed", year, type, number));
                     }
-                    tot++;
                 }
             }
         }
-        if (tot == pass) {
-            System.out.println("All passed!");
-        } else {
-            System.out.println("Passed " + pass + " / " + tot);
-        }
+        System.out.println("All passed!");
     }
 
 
