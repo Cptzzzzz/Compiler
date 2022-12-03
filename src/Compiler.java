@@ -44,11 +44,12 @@ public class Compiler {
         ErrorWriter.output();//输出错误处理结果
 
         root.generateIR();//中间代码生成
+        IRSupporter.getInstance().optimize();//中间代码优化
         IRSupporter.getInstance().output();//输出中间代码
+        IRWriter.close();
 
         Mips.generate();//目标代码生成
         MipsWriter.close();
-        IRWriter.close();
         OutputWriter.close();
         ErrorWriter.close();
     }

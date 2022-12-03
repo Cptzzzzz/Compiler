@@ -16,4 +16,8 @@ public class PrintNumber extends IRCode{
     public Value getValue() {
         return value;
     }
+
+    public void setValue(Value value) {
+        this.value = value;
+    }
 }

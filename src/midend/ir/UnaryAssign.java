@@ -30,4 +30,7 @@ public class UnaryAssign extends IRCode {
     public Value getRight() {
         return right;
     }
+    public void setRight(Value right) {
+        this.right = right;
+    }
 }

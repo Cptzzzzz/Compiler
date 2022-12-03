@@ -56,4 +56,32 @@ public class Value {
     public boolean isAddress() {
         return address;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Value)) return false;
+        Value value = (Value) obj;
+        if (this.getType() != value.getType())
+            return false;
+        switch (type) {
+            case Imm:
+                return this.getValue() == value.getValue();
+            case Variable:
+                return this.getName().equals(value.getName());
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        switch (type) {
+            case Imm:
+                return value;
+            case Variable:
+                return name.hashCode();
+            default:
+                return 0;
+        }
+    }
 }

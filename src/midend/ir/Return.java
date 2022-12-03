@@ -28,4 +28,8 @@ public class Return extends IRCode {
     public int getSize() {
         return size;
     }
+
+    public void setValue(Value value) {
+        this.value = value;
+    }
 }

@@ -31,4 +31,12 @@ public class BinaryAssign extends IRCode {
     public Operator getOperator() {
         return operator;
     }
+
+    public void setLeft(Value left) {
+        this.left = left;
+    }
+
+    public void setRight(int i, Value right) {
+        this.right[i] = right;
+    }
 }

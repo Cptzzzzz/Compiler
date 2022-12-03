@@ -28,4 +28,12 @@ public class Branch extends IRCode {
     public boolean isZeroBranch() {
         return isZeroBranch;
     }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setCondition(Value value) {
+        condition = value;
+    }
 }

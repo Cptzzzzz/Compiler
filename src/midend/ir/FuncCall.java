@@ -33,4 +33,8 @@ public class FuncCall extends IRCode {
     public Value getResult() {
         return result;
     }
+
+    public void setParams(ArrayList<Value> params) {
+        this.params = params;
+    }
 }
