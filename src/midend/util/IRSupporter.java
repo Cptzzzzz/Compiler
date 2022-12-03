@@ -44,7 +44,7 @@ public class IRSupporter {
     public void optimize() {
         while (jumpOptimize()) ;
         buildFlowGraph();
-//        flowGraph.optimize();
+        flowGraph.optimize();
         irCodes = flowGraph.generateIRCodes();
         while (jumpOptimize()) ;
     }

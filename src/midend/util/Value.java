@@ -57,6 +57,10 @@ public class Value {
         return address;
     }
 
+    public void setOffset(Value offset) {
+        this.offset = offset;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Value)) return false;

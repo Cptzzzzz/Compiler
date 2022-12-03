@@ -34,184 +34,210 @@ public class BasicBlock {
     }
 
     public void optimize() {
-        HashMap<Value, Value> valueMap = new HashMap<>();
-        HashMap<Value, Boolean> valueAssigned = new HashMap<>();
+        HashMap<Value, Value> map = new HashMap<>();//常量/复写传播 key: variable  value: constant or variable
         ArrayList<IRCode> newIRCodes = new ArrayList<>();
         for (IRCode irCode : irCodes) {
-            if (irCode instanceof UnaryAssign) {
-                UnaryAssign unaryAssign = (UnaryAssign) irCode;
-                if (valueMap.containsKey(unaryAssign.getRight())) {
-                    if (unaryAssign.getRight().getType() == ValueType.Variable && unaryAssign.getRight().getName().matches("t_\\d+_temp")) {
-                        valueAssigned.put(unaryAssign.getRight(), true);
-                    }
-                    unaryAssign.setRight(valueMap.get(unaryAssign.getRight()));
-                }
-//                for (Value value : valueMap.keySet()) {
-//                    if (value.equals(unaryAssign.getRight()))
-//                        unaryAssign.setRight(valueMap.get(value));
-//                }
-                switch (unaryAssign.getOperator()) {
-                    case PLUS:
-                        if (unaryAssign.getLeft().getType() == ValueType.Array) {
-                            newIRCodes.add(irCode);
-                        } else {
-                            valueMap.put(unaryAssign.getLeft(), unaryAssign.getRight());
-                            valueAssigned.put(unaryAssign.getLeft(), false);
-                        }
-                        break;
-                    case MINUS:
-                        if (unaryAssign.getRight().getType() == ValueType.Imm && unaryAssign.getLeft().getType() != ValueType.Array) {
-                            valueMap.put(unaryAssign.getLeft(), new Value(-unaryAssign.getRight().getValue()));
-                            valueAssigned.put(unaryAssign.getLeft(), false);
-                        } else {
-                            newIRCodes.add(irCode);
-                            valueMap.remove(unaryAssign.getLeft());
-                            valueAssigned.put(unaryAssign.getLeft(), true);
-                        }
-                        break;
-                    case NOT:
-                        if (unaryAssign.getRight().getType() == ValueType.Imm && unaryAssign.getLeft().getType() != ValueType.Array) {
-                            valueMap.put(unaryAssign.getLeft(), new Value(unaryAssign.getRight().getValue() == 0 ? 1 : 0));
-                            valueAssigned.put(unaryAssign.getLeft(), false);
-                        } else {
-                            newIRCodes.add(irCode);
-                            valueMap.remove(unaryAssign.getLeft());
-                            valueAssigned.put(unaryAssign.getLeft(), true);
-                        }
-                        break;
-                }
-            } else if (irCode instanceof BinaryAssign) {
+            if (irCode instanceof BinaryAssign) {
                 BinaryAssign binaryAssign = (BinaryAssign) irCode;
-                if (valueMap.containsKey(binaryAssign.getRight(0))) {
-                    if (binaryAssign.getRight(0).getType() == ValueType.Variable && binaryAssign.getRight(0).getName().matches("t_\\d+_temp")) {
-                        valueAssigned.put(binaryAssign.getRight(0), true);
+                if (map.containsKey(binaryAssign.getRight(0))) {
+                    Value value = binaryAssign.getRight(0);
+                    binaryAssign.setRight(0, map.get(binaryAssign.getRight(0)));
+                    if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
+                        map.remove(value);
                     }
-                    binaryAssign.setRight(0, valueMap.get(binaryAssign.getRight(0)));
                 }
-                if (valueMap.containsKey(binaryAssign.getRight(1))) {
-                    if (binaryAssign.getRight(1).getType() == ValueType.Variable && binaryAssign.getRight(1).getName().matches("t_\\d+_temp")) {
-                        valueAssigned.put(binaryAssign.getRight(1), true);
+                if (map.containsKey(binaryAssign.getRight(1))) {
+                    Value value = binaryAssign.getRight(1);
+                    binaryAssign.setRight(1, map.get(binaryAssign.getRight(1)));
+                    if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
+                        map.remove(value);
                     }
-                    binaryAssign.setRight(1, valueMap.get(binaryAssign.getRight(1)));
                 }
-//                for (Value value : valueMap.keySet()) {
-//                    if (value.equals(binaryAssign.getRight(0)))
-//                        binaryAssign.setRight(0, valueMap.get(value));
-//                }
-//                for (Value value : valueMap.keySet()) {
-//                    if (value.equals(binaryAssign.getRight(1)))
-//                        binaryAssign.setRight(1, valueMap.get(value));
-//                }
                 if (binaryAssign.getRight(0).getType() == ValueType.Imm && binaryAssign.getRight(1).getType() == ValueType.Imm) {
                     switch (binaryAssign.getOperator()) {
                         case PLUS:
-                            valueMap.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() + binaryAssign.getRight(1).getValue()));
+                            map.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() + binaryAssign.getRight(1).getValue()));
                             break;
                         case MINUS:
-                            valueMap.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() - binaryAssign.getRight(1).getValue()));
+                            map.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() - binaryAssign.getRight(1).getValue()));
                             break;
                         case MULTI:
-                            valueMap.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() * binaryAssign.getRight(1).getValue()));
+                            map.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() * binaryAssign.getRight(1).getValue()));
                             break;
                         case DIV:
-                            valueMap.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() / binaryAssign.getRight(1).getValue()));
+                            map.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() / binaryAssign.getRight(1).getValue()));
                             break;
                         case MOD:
-                            valueMap.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() % binaryAssign.getRight(1).getValue()));
+                            map.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() % binaryAssign.getRight(1).getValue()));
                             break;
                         case EQL:
-                            valueMap.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() == binaryAssign.getRight(1).getValue() ? 1 : 0));
+                            map.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() == binaryAssign.getRight(1).getValue() ? 1 : 0));
                             break;
                         case NEQ:
-                            valueMap.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() != binaryAssign.getRight(1).getValue() ? 1 : 0));
+                            map.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() != binaryAssign.getRight(1).getValue() ? 1 : 0));
                             break;
                         case GRE:
-                            valueMap.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() > binaryAssign.getRight(1).getValue() ? 1 : 0));
+                            map.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() > binaryAssign.getRight(1).getValue() ? 1 : 0));
                             break;
                         case LSS:
-                            valueMap.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() < binaryAssign.getRight(1).getValue() ? 1 : 0));
+                            map.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() < binaryAssign.getRight(1).getValue() ? 1 : 0));
                             break;
                         case LEQ:
-                            valueMap.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() <= binaryAssign.getRight(1).getValue() ? 1 : 0));
+                            map.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() <= binaryAssign.getRight(1).getValue() ? 1 : 0));
                             break;
                         case GEQ:
-                            valueMap.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() >= binaryAssign.getRight(1).getValue() ? 1 : 0));
+                            map.put(binaryAssign.getLeft(), new Value(binaryAssign.getRight(0).getValue() >= binaryAssign.getRight(1).getValue() ? 1 : 0));
                             break;
                     }
-                    if (binaryAssign.getLeft().getType() == ValueType.Variable)
-                        valueAssigned.put(binaryAssign.getLeft(), false);
-                    else
-                        newIRCodes.add(irCode);
+                } else {
+                    map.remove(binaryAssign.getLeft());
+                    newIRCodes.add(irCode);
+                }
+            } else if (irCode instanceof Branch) {
+                Branch branch = (Branch) irCode;
+                if (map.containsKey(branch.getCondition())) {
+                    Value value = branch.getCondition();
+                    branch.setCondition(map.get(branch.getCondition()));
+                    if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
+                        map.remove(value);
+                    }
+                }
+                for (Value value : map.keySet()) {
+                    newIRCodes.add(new UnaryAssign(value, map.get(value), Operator.PLUS));
+                }
+                map.clear();
+                if (branch.getCondition().getType() == ValueType.Imm) {
+                    if (branch.getCondition().getValue() == 0) {
+                        newIRCodes.add(new Jump(branch.getLabel()));
+                    }
                 } else {
                     newIRCodes.add(irCode);
-                    valueAssigned.put(binaryAssign.getLeft(), true);
-                    valueMap.remove(binaryAssign.getLeft());
                 }
+            } else if (irCode instanceof Declaration) {
+                newIRCodes.add(irCode);
             } else if (irCode instanceof FuncCall) {
                 FuncCall funcCall = (FuncCall) irCode;
-                ArrayList<Value> params = new ArrayList<>();
-                for (Value param : funcCall.getParams()) {
-                    params.add(valueMap.getOrDefault(param, param));
+                int length = funcCall.getParams().size();
+                for (int i = 0; i < length; i++) {
+                    if (map.containsKey(funcCall.getParams().get(i))) {
+                        Value value = funcCall.getParams().get(i);
+                        funcCall.getParams().set(i, map.get(funcCall.getParams().get(i)));
+                        if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
+                            map.remove(value);
+                        }
+                    }
                 }
-                funcCall.setParams(params);
+                ArrayList<Value> shouldRemove = new ArrayList<>();
+                for (Value value : map.keySet()) {
+                    if (value.getName().matches(".*_0")) {
+                        newIRCodes.add(new UnaryAssign(value, map.get(value), Operator.PLUS));
+                        shouldRemove.add(value);
+                    }
+                }
+                for (Value value : shouldRemove) {
+                    map.remove(value);
+                }
+                newIRCodes.add(irCode);
+            } else if (irCode instanceof FuncEnd) {
+                newIRCodes.add(irCode);
+            } else if (irCode instanceof FuncEntry) {
                 newIRCodes.add(irCode);
             } else if (irCode instanceof GetInt) {
                 GetInt getInt = (GetInt) irCode;
-                if (valueMap.containsKey(getInt.getValue())) {
-                    valueMap.remove(getInt.getValue());
-                    valueAssigned.put(getInt.getValue(), true);
+                map.remove(getInt.getValue());
+                newIRCodes.add(irCode);
+            } else if (irCode instanceof Jump) {
+                for (Value value : map.keySet()) {
+                    newIRCodes.add(new UnaryAssign(value, map.get(value), Operator.PLUS));
                 }
-//                for (Value value : valueMap.keySet()) {
-//                    if (value.equals(getInt.getValue())) {
-//                        valueMap.remove(value);
-//                        valueAssigned.put(value, true);
-//                    }
-//                }
+                map.clear();
+                newIRCodes.add(irCode);
+            } else if (irCode instanceof Label) {
                 newIRCodes.add(irCode);
             } else if (irCode instanceof PrintNumber) {
                 PrintNumber printNumber = (PrintNumber) irCode;
-                if (valueMap.containsKey(printNumber.getValue())) {
-                    printNumber.setValue(valueMap.get(printNumber.getValue()));
-                    valueMap.remove(printNumber.getValue());
+                if (map.containsKey(printNumber.getValue())) {
+                    Value value = printNumber.getValue();
+                    printNumber.setValue(map.get(printNumber.getValue()));
+                    if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
+                        map.remove(value);
+                    }
                 }
-//                for (Value value : valueMap.keySet()) {
-//                    if (value.equals(printNumber.getValue())) {
-//                        valueMap.remove(value);
-//                        valueAssigned.put(value, true);
-//                        printNumber.setValue(valueMap.get(value));
-//                    }
-//                }
-                newIRCodes.add(irCode);
-            } else if (irCode instanceof Return) {
-                Return returnCode = (Return) irCode;
-                if (returnCode.getValue() != null && valueMap.containsKey(returnCode.getValue()))
-                    returnCode.setValue(valueMap.get(returnCode.getValue()));
-//                if (returnCode.getValue() != null)
-//                    for (Value value : valueMap.keySet()) {
-//                        if (value.equals(returnCode.getValue())) {
-//                            returnCode.setValue(valueMap.get(value));
-//                        }
-//                    }
-                newIRCodes.add(irCode);
-            } else if (irCode instanceof Jump) {
-                for (Value key : valueMap.keySet()) {
-                    if (!valueAssigned.get(key)) {
-                        newIRCodes.add(new UnaryAssign(key, valueMap.get(key), Operator.PLUS));
+                if (printNumber.getValue().getType() == ValueType.Array) {
+                    if (map.containsKey(printNumber.getValue().getOffset())) {
+                        Value value = printNumber.getValue().getOffset();
+                        printNumber.getValue().setOffset(map.get(printNumber.getValue().getOffset()));
+                        if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
+                            map.remove(value);
+                        }
                     }
                 }
                 newIRCodes.add(irCode);
-            } else if (irCode instanceof Branch) {
-                Branch branch = (Branch) irCode;
-                if (valueMap.containsKey(branch.getCondition())) {
-                    branch.setCondition(valueMap.get(branch.getCondition()));
-                    valueMap.remove(branch.getCondition());
-                }
-            } else {
+            } else if (irCode instanceof PrintString) {
                 newIRCodes.add(irCode);
+            } else if (irCode instanceof Return) {
+                Return returnCode = (Return) irCode;
+                if (map.containsKey(returnCode.getValue())) {
+                    returnCode.setValue(map.get(returnCode.getValue()));
+                }
+                for (Value value : map.keySet()) {
+                    if (value.getName().matches(".*_0"))
+                        newIRCodes.add(new UnaryAssign(value, map.get(value), Operator.PLUS));
+                }
+                map.clear();
+                newIRCodes.add(irCode);
+            } else if (irCode instanceof UnaryAssign) {
+                UnaryAssign unaryAssign = (UnaryAssign) irCode;
+                if (map.containsKey(unaryAssign.getRight())) {
+                    Value value = unaryAssign.getRight();
+                    unaryAssign.setRight(map.get(unaryAssign.getRight()));
+                    if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
+                        map.remove(value);
+                    }
+                }
+                if (unaryAssign.getLeft().getType() == ValueType.Array && unaryAssign.getLeft().getOffset().getType() == ValueType.Variable) {
+                    if (map.containsKey(unaryAssign.getLeft().getOffset())) {
+                        Value value = unaryAssign.getLeft().getOffset();
+                        unaryAssign.getLeft().setOffset(map.get(unaryAssign.getLeft().getOffset()));
+                        if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
+                            map.remove(value);
+                        }
+                    }
+                }
+                if (unaryAssign.getRight().getType() == ValueType.Array && unaryAssign.getRight().getOffset().getType() == ValueType.Variable) {
+                    if (map.containsKey(unaryAssign.getRight().getOffset())) {
+                        Value value = unaryAssign.getRight().getOffset();
+                        unaryAssign.getRight().setOffset(map.get(unaryAssign.getRight().getOffset()));
+                        if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
+                            map.remove(value);
+                        }
+                    }
+                }
+                if (unaryAssign.getRight().getType() == ValueType.Array || unaryAssign.getLeft().getType() == ValueType.Array) {
+                    newIRCodes.add(irCode);
+                    continue;
+                }
+                if (unaryAssign.getRight().getType() == ValueType.Imm) {
+                    switch (unaryAssign.getOperator()) {
+                        case PLUS:
+                            map.put(unaryAssign.getLeft(), new Value(unaryAssign.getRight().getValue()));
+                            break;
+                        case MINUS:
+                            map.put(unaryAssign.getLeft(), new Value(-unaryAssign.getRight().getValue()));
+                            break;
+                        case NOT:
+                            map.put(unaryAssign.getLeft(), new Value(unaryAssign.getRight().getValue() == 0 ? 1 : 0));
+                            break;
+                    }
+                } else {
+                    map.remove(unaryAssign.getLeft());
+                    newIRCodes.add(irCode);
+                }
             }
         }
-//        System.out.println(valueMap);
-//        System.out.println(valueAssigned);
+        for (Value value : map.keySet()) {
+            newIRCodes.add(new UnaryAssign(value, map.get(value), Operator.PLUS));
+        }
         irCodes = newIRCodes;
     }
 }

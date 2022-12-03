@@ -99,14 +99,20 @@ public class LVal extends ParserUnit {
                 values.add(((Exp) node).generateIR());
         switch (symbol.getDimension()) {
             case 0:
-                return new Value(symbol.getFinalName());
+                if (symbol.isConst())
+                    return new Value(symbol.getValues().get(0));
+                else
+                    return new Value(symbol.getFinalName());
             case 1:
                 if (values.size() == 0)
                     return new Value(symbol.getFinalName(), new Value(0), true);
                 else {
                     Value value = values.get(0);
                     if (value.getType() == ValueType.Imm)
-                        return new Value(symbol.getFinalName(), new Value(4 * value.getValue()), false);
+                        if (!symbol.isConst())
+                            return new Value(symbol.getFinalName(), new Value(4 * value.getValue()), false);
+                        else
+                            return new Value(symbol.getValues().get(value.getValue()));
                     Value value1 = Allocator.getInstance().getTemp();
                     IRSupporter.getInstance().addIRCode(new BinaryAssign(value1, value, new Value(4), Operator.MULTI));
                     return new Value(symbol.getFinalName(), value1, false);
@@ -128,8 +134,13 @@ public class LVal extends ParserUnit {
                     default:
                         if (values.get(0).getType() == ValueType.Imm) {
                             if (values.get(1).getType() == ValueType.Imm) {
-                                return new Value(symbol.getFinalName(),
-                                        new Value(4 * symbol.getDimensions()[1] * values.get(0).getValue() + 4 * values.get(1).getValue()), false);
+                                if (!symbol.isConst())
+                                    return new Value(symbol.getFinalName(),
+                                            new Value(4 * symbol.getDimensions()[1] * values.get(0).getValue() + 4 * values.get(1).getValue()), false);
+                                else
+                                    return new Value(symbol.getValues().get(
+                                            values.get(0).getValue() * symbol.getDimensions()[1] + values.get(1).getValue()
+                                    ));
                             } else {
                                 Value value = Allocator.getInstance().getTemp();
                                 IRSupporter.getInstance().addIRCode(new BinaryAssign(
