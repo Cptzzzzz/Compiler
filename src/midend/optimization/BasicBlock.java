@@ -29,8 +29,21 @@ public class BasicBlock {
         this.blockNumber = blockNumber;
     }
 
-    public void constOptimize() {
+    public void dag() {
 
+    }
+
+    private void mapRemove(HashMap<Value, Value> map, Value key, ArrayList<IRCode> irCodes) {
+        ArrayList<Value> shouldRemove = new ArrayList<>();
+        map.remove(key);
+        for (Value value : map.keySet()){
+            if (map.get(value).equals(key)){
+                shouldRemove.add(value);
+                irCodes.add(new UnaryAssign(value,key,Operator.PLUS));
+            }
+        }
+        for (Value value : shouldRemove)
+            map.remove(value);
     }
 
     public void optimize() {
@@ -43,14 +56,14 @@ public class BasicBlock {
                     Value value = binaryAssign.getRight(0);
                     binaryAssign.setRight(0, map.get(binaryAssign.getRight(0)));
                     if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
-                        map.remove(value);
+                        mapRemove(map, value, newIRCodes);
                     }
                 }
                 if (map.containsKey(binaryAssign.getRight(1))) {
                     Value value = binaryAssign.getRight(1);
                     binaryAssign.setRight(1, map.get(binaryAssign.getRight(1)));
                     if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
-                        map.remove(value);
+                        mapRemove(map, value, newIRCodes);
                     }
                 }
                 if (binaryAssign.getRight(0).getType() == ValueType.Imm && binaryAssign.getRight(1).getType() == ValueType.Imm) {
@@ -90,7 +103,7 @@ public class BasicBlock {
                             break;
                     }
                 } else {
-                    map.remove(binaryAssign.getLeft());
+                    mapRemove(map, binaryAssign.getLeft(), newIRCodes);
                     newIRCodes.add(irCode);
                 }
             } else if (irCode instanceof Branch) {
@@ -99,7 +112,7 @@ public class BasicBlock {
                     Value value = branch.getCondition();
                     branch.setCondition(map.get(branch.getCondition()));
                     if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
-                        map.remove(value);
+                        mapRemove(map, value, newIRCodes);
                     }
                 }
                 for (Value value : map.keySet()) {
@@ -123,7 +136,7 @@ public class BasicBlock {
                         Value value = funcCall.getParams().get(i);
                         funcCall.getParams().set(i, map.get(funcCall.getParams().get(i)));
                         if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
-                            map.remove(value);
+                            mapRemove(map, value, newIRCodes);
                         }
                     }
                 }
@@ -132,10 +145,13 @@ public class BasicBlock {
                     if (value.getName().matches(".*_0")) {
                         newIRCodes.add(new UnaryAssign(value, map.get(value), Operator.PLUS));
                         shouldRemove.add(value);
+                    }else if(map.get(value).getType()==ValueType.Variable&&map.get(value).getName().matches(".*_0")){
+                        newIRCodes.add(new UnaryAssign(value, map.get(value), Operator.PLUS));
+                        shouldRemove.add(value);
                     }
                 }
                 for (Value value : shouldRemove) {
-                    map.remove(value);
+                    mapRemove(map, value, newIRCodes);
                 }
                 newIRCodes.add(irCode);
             } else if (irCode instanceof FuncEnd) {
@@ -144,7 +160,7 @@ public class BasicBlock {
                 newIRCodes.add(irCode);
             } else if (irCode instanceof GetInt) {
                 GetInt getInt = (GetInt) irCode;
-                map.remove(getInt.getValue());
+                mapRemove(map, getInt.getValue(), newIRCodes);
                 newIRCodes.add(irCode);
             } else if (irCode instanceof Jump) {
                 for (Value value : map.keySet()) {
@@ -160,7 +176,7 @@ public class BasicBlock {
                     Value value = printNumber.getValue();
                     printNumber.setValue(map.get(printNumber.getValue()));
                     if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
-                        map.remove(value);
+                        mapRemove(map, value, newIRCodes);
                     }
                 }
                 if (printNumber.getValue().getType() == ValueType.Array) {
@@ -168,7 +184,7 @@ public class BasicBlock {
                         Value value = printNumber.getValue().getOffset();
                         printNumber.getValue().setOffset(map.get(printNumber.getValue().getOffset()));
                         if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
-                            map.remove(value);
+                            mapRemove(map, value, newIRCodes);
                         }
                     }
                 }
@@ -192,7 +208,7 @@ public class BasicBlock {
                     Value value = unaryAssign.getRight();
                     unaryAssign.setRight(map.get(unaryAssign.getRight()));
                     if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
-                        map.remove(value);
+                        mapRemove(map, value, newIRCodes);
                     }
                 }
                 if (unaryAssign.getLeft().getType() == ValueType.Array && unaryAssign.getLeft().getOffset().getType() == ValueType.Variable) {
@@ -200,7 +216,7 @@ public class BasicBlock {
                         Value value = unaryAssign.getLeft().getOffset();
                         unaryAssign.getLeft().setOffset(map.get(unaryAssign.getLeft().getOffset()));
                         if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
-                            map.remove(value);
+                            mapRemove(map, value, newIRCodes);
                         }
                     }
                 }
@@ -209,11 +225,12 @@ public class BasicBlock {
                         Value value = unaryAssign.getRight().getOffset();
                         unaryAssign.getRight().setOffset(map.get(unaryAssign.getRight().getOffset()));
                         if (value.getType() == ValueType.Variable && value.getName().matches("t_\\d+_temp")) {
-                            map.remove(value);
+                            mapRemove(map, value, newIRCodes);
                         }
                     }
                 }
                 if (unaryAssign.getRight().getType() == ValueType.Array || unaryAssign.getLeft().getType() == ValueType.Array) {
+                    mapRemove(map, unaryAssign.getLeft(), newIRCodes);
                     newIRCodes.add(irCode);
                     continue;
                 }
@@ -229,8 +246,11 @@ public class BasicBlock {
                             map.put(unaryAssign.getLeft(), new Value(unaryAssign.getRight().getValue() == 0 ? 1 : 0));
                             break;
                     }
+                } else if (unaryAssign.getOperator() == Operator.PLUS) {
+                    mapRemove(map, unaryAssign.getLeft(), newIRCodes);
+                    map.put(unaryAssign.getLeft(), unaryAssign.getRight());
                 } else {
-                    map.remove(unaryAssign.getLeft());
+                    mapRemove(map, unaryAssign.getLeft(), newIRCodes);
                     newIRCodes.add(irCode);
                 }
             }

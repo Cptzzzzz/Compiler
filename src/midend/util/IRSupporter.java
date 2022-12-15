@@ -42,11 +42,44 @@ public class IRSupporter {
     private FlowGraph flowGraph;
 
     public void optimize() {
+        moveDeclaration();
         while (jumpOptimize()) ;
         buildFlowGraph();
         flowGraph.optimize();
         irCodes = flowGraph.generateIRCodes();
         while (jumpOptimize()) ;
+    }
+
+    private void moveDeclaration() {
+        ArrayList<IRCode> res = new ArrayList<>();
+        ArrayList<IRCode> temp = new ArrayList<>();
+        ArrayList<IRCode> declarations = new ArrayList<>();
+        boolean flag = false;
+        for (IRCode irCode : irCodes) {
+            if (!flag) {
+                if (irCode instanceof FuncEntry) {
+                    flag = true;
+                    temp.add(irCode);
+                } else {
+                    res.add(irCode);
+                }
+            } else {
+                if (irCode instanceof FuncEnd) {
+                    temp.add(irCode);
+                    res.add(temp.get(0));
+                    temp.remove(0);
+                    res.addAll(declarations);
+                    res.addAll(temp);
+                    declarations = new ArrayList<>();
+                    temp = new ArrayList<>();
+                } else if (irCode instanceof Declaration) {
+                    declarations.add(irCode);
+                } else {
+                    temp.add(irCode);
+                }
+            }
+        }
+        irCodes = res;
     }
 
     public void removeLabel() {
