@@ -40,14 +40,26 @@ public class IRSupporter {
     }
 
     private FlowGraph flowGraph;
+    private ArrayList<FlowGraph> flowGraphs;//第一个流图包括全局变量声明 后续的每个流图以FuncEntry为入口 FuncEnd为出口
 
     public void optimize() {
-        moveDeclaration();
+//        moveDeclaration();
         while (jumpOptimize()) ;
-        buildFlowGraph();
-        flowGraph.optimize();
-        irCodes = flowGraph.generateIRCodes();
+//        buildFlowGraph();
+//        flowGraph.optimize();
+//        irCodes = flowGraph.generateIRCodes();
+        startFlowGraph();
+        ArrayList<IRCode> irCodes = new ArrayList<>();
+        for (FlowGraph flowGraph : flowGraphs) {
+            flowGraph.optimize();
+            irCodes.addAll(flowGraph.generateIRCodes());
+        }
+        this.irCodes = irCodes;
         while (jumpOptimize()) ;
+        startFlowGraph();
+        for (FlowGraph flowGraph : flowGraphs) {
+            flowGraph.analyse();
+        }
     }
 
     private void moveDeclaration() {
@@ -135,7 +147,6 @@ public class IRSupporter {
     }
 
     private void replaceLabel(String oldLabel, String newLabel) {
-//        System.out.println("replace " + oldLabel + " with " + newLabel);
         for (IRCode irCode : irCodes) {
             if (irCode instanceof Jump) {
                 if (((Jump) irCode).getLabel().equals(oldLabel))
@@ -147,10 +158,40 @@ public class IRSupporter {
         }
     }
 
-    public void buildFlowGraph() {
+    public void startFlowGraph() {
+        ArrayList<IRCode> temp = new ArrayList<>();
+        boolean flag = false;
+        flowGraphs = new ArrayList<>();
+        String name = null;
+        for (IRCode irCode : getIrCodes()) {
+            if (!flag) {
+                if (irCode instanceof FuncEntry) {
+                    flowGraphs.add(buildFlowGraph(temp));
+                    flag = true;
+                    temp = new ArrayList<>();
+                    name = ((FuncEntry) irCode).getName();
+                } else {
+                    temp.add(irCode);
+                }
+            } else {
+                if (irCode instanceof FuncEnd) {
+                    FlowGraph flowGraph = buildFlowGraph(temp);
+                    flowGraph.setName(name);
+                    flowGraphs.add(flowGraph);
+                    temp = new ArrayList<>();
+                } else if (irCode instanceof FuncEntry) {
+                    name = ((FuncEntry) irCode).getName();
+                } else {
+                    temp.add(irCode);
+                }
+            }
+        }
+    }
+
+    public FlowGraph buildFlowGraph(ArrayList<IRCode> irCodes) {
         ArrayList<String> labels = new ArrayList<>();
         boolean flag = true;
-        for (IRCode irCode : getIrCodes()) {
+        for (IRCode irCode : irCodes) {
             if (flag) {
                 irCode.setEntryCode();
                 flag = false;
@@ -163,7 +204,7 @@ public class IRSupporter {
                 flag = true;
             }
         }
-        for (IRCode irCode : getIrCodes()) {
+        for (IRCode irCode : irCodes) {
             if (irCode instanceof Label && labels.contains(((Label) irCode).getLabel())) {
                 irCode.setEntryCode();
             } else if (irCode instanceof FuncEntry) {
@@ -171,41 +212,46 @@ public class IRSupporter {
             }
         }
         int number = -1;
-        for (IRCode irCode : getIrCodes()) {
+        for (IRCode irCode : irCodes) {
             if (irCode.isEntryCode())
                 number++;
             irCode.setBlockNumber(number);
         }
-        flowGraph = new FlowGraph();
+        FlowGraph flowGraph = new FlowGraph();
         BasicBlock basicBlock = null;
         flag = true;
-        for (IRCode irCode : getIrCodes()) {
+        for (IRCode irCode : irCodes) {
             if (irCode.isEntryCode()) {
 //                System.out.println(irCode);
                 basicBlock = new BasicBlock();
                 basicBlock.setBlockNumber(irCode.getBlockNumber());
                 flowGraph.addBasicBlock(basicBlock, flag);
-                if (irCode instanceof FuncEntry && ((FuncEntry) irCode).getName().equals("main_function"))
-                    flag = false;
+                flag = false;
             }
             assert basicBlock != null;
-            basicBlock.addIRCode(irCode);
+            if (!basicBlock.isHasReturn())
+                basicBlock.addIRCode(irCode);
+            if (irCode instanceof Return)
+                basicBlock.setHasReturn(true);
         }
         for (BasicBlock basicBlock1 : flowGraph.getBasicBlocks()) {
             IRCode irCode = basicBlock1.getIrCodes().get(basicBlock1.getIrCodes().size() - 1);
-            if (irCode instanceof Jump) {
-                flowGraph.addEdge(basicBlock1.getBlockNumber(), getLabelNumber(((Jump) irCode).getLabel()));
-            } else if (irCode instanceof Branch) {
-                flowGraph.addEdge(basicBlock1.getBlockNumber(), getLabelNumber(((Branch) irCode).getLabel()));
-                flowGraph.addEdge(basicBlock1.getBlockNumber(), basicBlock1.getBlockNumber() + 1);
-            } else if (!(irCode instanceof FuncEnd)) {
-                flowGraph.addEdge(basicBlock1.getBlockNumber(), basicBlock1.getBlockNumber() + 1);
-            }
+            if (!basicBlock1.isHasReturn())
+                if (irCode instanceof Jump) {
+                    flowGraph.addEdge(basicBlock1.getBlockNumber(), getLabelNumber(((Jump) irCode).getLabel()));
+                } else if (irCode instanceof Branch) {
+                    flowGraph.addEdge(basicBlock1.getBlockNumber(), getLabelNumber(((Branch) irCode).getLabel()));
+                    flowGraph.addEdge(basicBlock1.getBlockNumber(), basicBlock1.getBlockNumber() + 1);
+                } else {
+                    if (basicBlock1.getBlockNumber() != flowGraph.getBasicBlocks().size() - 1)
+                        flowGraph.addEdge(basicBlock1.getBlockNumber(), basicBlock1.getBlockNumber() + 1);
+                }
         }
 //        System.out.println(flowGraph.getBasicBlocks().size());
-//        for (ArrayList<Integer> arrayList : flowGraph.getEdges()) {
+        for (ArrayList<Integer> arrayList : flowGraph.getEdges()) {
 //            System.out.println(arrayList);
-//        }
+        }
+        return flowGraph;
     }
 
     private int getLabelNumber(String label) {

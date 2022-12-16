@@ -7,6 +7,15 @@ public class Symbol {
     private final ValueType type;
     private final int location;
     private final boolean reference;
+    private int weight = 0;
+
+    public void addWeight() {
+        weight++;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
 
     public Symbol(String name, ValueType type) {//local
         this.name = name;
