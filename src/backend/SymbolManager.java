@@ -25,7 +25,7 @@ public class SymbolManager {
     private ArrayList<Symbol> localSymbols = new ArrayList<>();
     private ArrayList<Symbol> globalSymbols = new ArrayList<>();
 
-    private boolean isGlobal(Value value) {
+    public boolean isGlobal(Value value) {
         return value.getName().matches(".*\\_0");
     }
 
@@ -67,7 +67,8 @@ public class SymbolManager {
                 else
                     Mips.writeln(String.format("lw %s,%s+%d", register, value.getName(), value.getOffset().getValue()));
             } else {
-                load(value.getOffset(), "$t0");
+                RegisterManager.getInstance().symbolLoad(value.getOffset());
+//                load(value.getOffset(), "$t0");
                 if (value.isAddress())
                     Mips.writeln(String.format("la %s,%s($t0)", register, value.getName()));
                 else
@@ -83,7 +84,8 @@ public class SymbolManager {
             if (value.getOffset().getType() == ValueType.Imm) {
                 Mips.writeln(String.format("sw %s,%s+%d", register, value.getName(), value.getOffset().getValue()));
             } else {
-                load(value.getOffset(), "$t0");
+                RegisterManager.getInstance().symbolLoad(value.getOffset());
+//                load(value.getOffset(), "$t0");
                 Mips.writeln(String.format("sw %s,%s($t0)", register, value.getName()));
             }
         }
@@ -112,7 +114,8 @@ public class SymbolManager {
                     }
                 }
             } else {
-                load(value.getOffset(), "$t0");
+                RegisterManager.getInstance().symbolLoad(value.getOffset());
+//                load(value.getOffset(), "$t0");
                 if (value.isAddress()) {
                     if (symbol.isReference()) {
                         Mips.writeln(String.format("lw $t1,%d($sp)", symbol.getLocation()));
@@ -150,7 +153,8 @@ public class SymbolManager {
                     Mips.writeln(String.format("sw %s,%d($sp)", register, value.getOffset().getValue() + symbol.getLocation()));
                 }
             } else {
-                load(value.getOffset(), "$t0");
+                RegisterManager.getInstance().symbolLoad(value.getOffset());
+//                load(value.getOffset(), "$t0");
                 if (symbol.isReference()) {
                     Mips.writeln(String.format("lw $t1,%d($sp)", symbol.getLocation()));
                     Mips.writeln("addu $t0,$t0,$t1");
@@ -168,5 +172,55 @@ public class SymbolManager {
             if (symbol.getName().equals(name))
                 return symbol;
         return null;
+    }
+
+    public void addWeight(Value value) {
+        if (value.getType() == ValueType.Imm)
+            return;
+        if (value.getType() == ValueType.Variable) {
+            if (isGlobal(value)) {
+                for (Symbol symbol : globalSymbols)
+                    if (symbol.getName().equals(value.getName()))
+                        symbol.addWeight();
+            } else
+                for (Symbol symbol : localSymbols)
+                    if (symbol.getName().equals(value.getName()))
+                        symbol.addWeight();
+        } else if (value.getType() == ValueType.Array) {
+            if (isGlobal(value)) {
+                for (Symbol symbol : globalSymbols)
+                    if (symbol.getName().equals(value.getName()))
+                        symbol.addWeight(value.getOffset());
+            } else {
+                for (Symbol symbol : localSymbols)
+                    if (symbol.getName().equals(value.getName()))
+                        symbol.addWeight(value.getOffset());
+            }
+            addWeight(value.getOffset());
+        }
+    }
+
+    public int getWeight(Value value) {
+        if (value.getType() == ValueType.Variable) {
+            if (isGlobal(value)) {
+                for (Symbol symbol : globalSymbols)
+                    if (symbol.getName().equals(value.getName()))
+                        return symbol.getWeight();
+            } else
+                for (Symbol symbol : localSymbols)
+                    if (symbol.getName().equals(value.getName()))
+                        return symbol.getWeight();
+        } else if (value.getType() == ValueType.Array) {
+            if (isGlobal(value)) {
+                for (Symbol symbol : globalSymbols)
+                    if (symbol.getName().equals(value.getName()))
+                        return symbol.getWeight(value.getOffset());
+            } else {
+                for (Symbol symbol : localSymbols)
+                    if (symbol.getName().equals(value.getName()))
+                        return symbol.getWeight(value.getOffset());
+            }
+        }
+        return 0;
     }
 }

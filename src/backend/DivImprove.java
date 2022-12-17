@@ -59,7 +59,6 @@ public class DivImprove {
                 Mips.writeln(String.format("addu %s,%s,%s", src, src, temp));
                 Mips.writeln(String.format("sra %s,%s,%d", src, src, l));
             } else if (m < (1L << 31)) {
-                Mips.writeln("sra $t4,$t3,31");
                 Mips.writeln(String.format("sra %s,%s,%d", temp, src, 31));
                 Mips.writeln(String.format("mul %s,%s,%d", src, src, m));
                 Mips.writeln(String.format("mfhi %s", src));

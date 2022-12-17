@@ -142,7 +142,19 @@ public class BasicBlock {
     }
 
     public void dag() {
-
+        Dag dag = new Dag();
+        ArrayList<IRCode> res = new ArrayList<>();
+        for (IRCode irCode : irCodes) {
+            if (irCode instanceof Declaration)
+                res.add(irCode);
+            else if (irCode instanceof Label)
+                res.add(irCode);
+            else
+                dag.read(irCode);
+        }
+        System.out.println(dag);
+        res.addAll(dag.export(out));
+        irCodes = res;
     }
 
     private void mapRemove(HashMap<Value, Value> map, Value key, ArrayList<IRCode> irCodes) {

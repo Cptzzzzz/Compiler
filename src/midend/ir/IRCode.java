@@ -7,6 +7,9 @@ public class IRCode {
     public void setEntryCode() {
         entryCode = true;
     }
+    public void setEntryCode(boolean entryCode) {
+        this.entryCode = entryCode;
+    }
 
     public boolean isEntryCode() {
         return entryCode;

@@ -304,7 +304,9 @@ public class Stmt extends ParserUnit {
                 break;
             case 9:
                 left = ((LVal) getNode(0)).generateIR();
-                IRSupporter.getInstance().addIRCode(new GetInt(left));
+                Value temp=Allocator.getInstance().getTemp();
+                IRSupporter.getInstance().addIRCode(new GetInt(temp));
+                IRSupporter.getInstance().addIRCode(new UnaryAssign(left, temp, Operator.PLUS));
                 break;
         }
         return null;

@@ -33,7 +33,7 @@ public class FlowGraph {
         int length = basicBlocks.size();
         for (int i = 0; i < length; i++) {
             basicBlocks.get(i).analyse();
-            System.out.println(edges.get(i));
+//            System.out.println(edges.get(i));
             queue.add(i);
         }
         while (!queue.isEmpty()) {
@@ -66,6 +66,7 @@ public class FlowGraph {
         }
         for (BasicBlock basicBlock : basicBlocks) {
 //            basicBlock.print();
+//            basicBlock.dag();
         }
     }
 

@@ -45,7 +45,7 @@ public class Value {
             case Variable:
                 return name;
             default:
-                return address ? "&" : "*" + name + "[" + offset.toString() + "]";
+                return (address ? "&" : "*") + name + "[" + offset.toString() + "]";
         }
     }
 
@@ -73,7 +73,7 @@ public class Value {
             case Variable:
                 return this.getName().equals(value.getName());
             default:
-                return false;
+                return this.getName().equals(value.getName()) && this.getOffset().equals(value.getOffset())&& this.isAddress()== value.isAddress();
         }
     }
 
@@ -81,11 +81,11 @@ public class Value {
     public int hashCode() {
         switch (type) {
             case Imm:
-                return value;
-            case Variable:
-                return name.hashCode();
-            default:
                 return 0;
+            case Variable:
+                return 1;
+            default:
+                return 2;
         }
     }
 }

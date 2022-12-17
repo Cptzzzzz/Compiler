@@ -32,4 +32,32 @@ public enum Operator {
                 return "!";
         }
     }
+    public String toName(){
+        switch (this){
+            case PLUS:
+                return "PLUS";
+            case MINUS:
+                return "MINUS";
+            case MULTI:
+                return "MULTI";
+            case DIV:
+                return "DIV";
+            case MOD:
+                return "MOD";
+            case EQL:
+                return "EQL";
+            case NEQ:
+                return "NEQ";
+            case GRE:
+                return "GRE";
+            case LSS:
+                return "LSS";
+            case LEQ:
+                return "LEQ";
+            case GEQ:
+                return "GEQ";
+            default:
+                return "NOT";
+        }
+    }
 }
