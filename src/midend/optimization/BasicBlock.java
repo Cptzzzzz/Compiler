@@ -152,8 +152,9 @@ public class BasicBlock {
             else
                 dag.read(irCode);
         }
-        System.out.println(dag);
+//        System.out.println(dag);
         res.addAll(dag.export(out));
+//        System.out.println(res);
         irCodes = res;
     }
 

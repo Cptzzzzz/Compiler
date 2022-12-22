@@ -311,12 +311,12 @@ public class Mips {
                             Mips.writeln(String.format("mul %s, %s, %d", left, right, value));
                             break;
                         case DIV:
-                            Mips.writeln(String.format("li $t3, %d", value));
-                            Mips.writeln(String.format("div %s, $t3, %s", left, right));
+                            Mips.writeln(String.format("li $t0, %d", value));
+                            Mips.writeln(String.format("div %s, $t0, %s", left, right));
                             break;
                         case MOD:
-                            Mips.writeln(String.format("li $t3, %d", value));
-                            Mips.writeln("div $t3," + right);
+                            Mips.writeln(String.format("li $t0, %d", value));
+                            Mips.writeln("div $t0," + right);
                             Mips.writeln("mfhi " + left);
                             break;
                         case EQL:
@@ -328,8 +328,8 @@ public class Mips {
                             break;
 
                         case GRE:
-                            Mips.writeln(String.format("li $t3, %d", value));
-                            Mips.writeln(String.format("sgt %s, %s, %s", left, "$t3", right));
+                            Mips.writeln(String.format("li $t0, %d", value));
+                            Mips.writeln(String.format("sgt %s, %s, %s", left, "$t0", right));
                             break;
 
                         case LSS:
@@ -364,12 +364,12 @@ public class Mips {
                             break;
                         case DIV:
                             Mips.writeln(String.format("move %s, %s", left, right));
-                            DivImprove.getInstance().optimize(left, "$t3", value);
+                            DivImprove.getInstance().optimize(left, "$t0", value);
                             break;
 
                         case MOD:
                             Mips.writeln(String.format("move %s, %s", left, right));
-                            DivImprove.getInstance().optimize(left, "$t3", value);
+                            DivImprove.getInstance().optimize(left, "$t0", value);
                             Mips.writeln(String.format("mul %s, %s, %d", left, left, value));
                             Mips.writeln(String.format("subu %s, %s, %s", left, right, left));
                             break;
@@ -387,8 +387,8 @@ public class Mips {
                             break;
 
                         case LSS:
-                            Mips.writeln(String.format("li $t3, %d", value));
-                            Mips.writeln(String.format("sgt %s, %s, %s", left, "$t3", right));
+                            Mips.writeln(String.format("li $t0, %d", value));
+                            Mips.writeln(String.format("sgt %s, %s, %s", left, "$t0", right));
                             break;
 
                         case LEQ:
@@ -530,10 +530,10 @@ public class Mips {
                         Mips.writeln(String.format("move %s,%s", left, right));
                 }
                 RegisterManager.getInstance().unprotect(right);
-                if(unaryAssign.getLeft().getType()==ValueType.Array){
-                    SymbolManager.getInstance().store(unaryAssign.getLeft(),left);
-                    RegisterManager.getInstance().free(left);
-                }
+//                if(unaryAssign.getLeft().getType()==ValueType.Array){
+//                    SymbolManager.getInstance().store(unaryAssign.getLeft(),left);
+//                    RegisterManager.getInstance().free(left);
+//                }
             }
         }
     }

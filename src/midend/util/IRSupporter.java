@@ -57,9 +57,11 @@ public class IRSupporter {
         this.irCodes = irCodes;
         while (jumpOptimize()) ;
         startFlowGraph();
+        irCodes = new ArrayList<>();
         for (FlowGraph flowGraph : flowGraphs) {
-            flowGraph.analyse();
+            irCodes.addAll(flowGraph.analyse());
         }
+        this.irCodes = irCodes;
     }
 
     private void moveDeclaration() {

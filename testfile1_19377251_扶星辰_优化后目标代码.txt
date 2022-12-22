@@ -1,0 +1,205 @@
+.data
+    N_0: .word  10
+    a_0: .word  0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+    print_6: .asciiz ", "
+    print_7: .asciiz "\n"
+    print_8: .asciiz ", "
+    print_9: .asciiz ", "
+    print_10: .asciiz "\n"
+.text
+    jal main_function
+    li $v0, 10
+    syscall
+    fib_function:
+    addu $sp,$sp,-36
+    sw $ra,32($sp)
+    lw $t3,28($sp)
+    seq $t4, $t3, 1
+    beqz $t4, if_1_end
+    li $t3 1
+    move $v0 $t3
+    lw $ra,32($sp)
+    addu $sp,$sp,36
+    jr $ra
+    if_1_end:
+    lw $t3,28($sp)
+    seq $t4, $t3, 2
+    beqz $t4, if_2_end
+    li $t3 2
+    move $v0 $t3
+    lw $ra,32($sp)
+    addu $sp,$sp,36
+    jr $ra
+    if_2_end:
+    lw $t3,28($sp)
+    subu $t4, $t3, 1
+    sw $t4, -8($sp)
+    jal fib_function
+    move $t3 $v0
+    lw $t4,28($sp)
+    subu $t2, $t4, 2
+    sw $t2, -8($sp)
+    sw $t3,12($sp)
+    jal fib_function
+    move $t3 $v0
+    lw $t4,12($sp)
+    addu $t2, $t4, $t3
+    move $v0 $t2
+    lw $ra,32($sp)
+    addu $sp,$sp,36
+    jr $ra
+    main_function:
+    addu $sp,$sp,-188
+    sw $ra,184($sp)
+    li $v0, 5
+    syscall
+    move $t3 $v0
+    li $v0, 5
+    syscall
+    move $t4 $v0
+    mul $t2, $t3, $t4
+    neg $t5, $t2
+    li $t6 4
+    sw $t6, -8($sp)
+    sw $t5,152($sp)
+    jal fib_function
+    move $t3 $v0
+    lw $t4,152($sp)
+    mul $t2, $t4, $t3
+    addu $t5, $t2, 0
+    lw $t6,a_0+4
+    mul $t7, $t6, 1
+    addu $t8, $t5, $t7
+    subu $t9, $t8, 0
+    mul $s0, $t9, 5
+    li $s1 5
+    sw $s1, -8($sp)
+    sw $s0,124($sp)
+    jal fib_function
+    move $t3 $v0
+    addu $t4, $t3, 2
+    sw $t4, -8($sp)
+    jal fib_function
+    move $t3 $v0
+    subu $t4, $t3, 1197
+    neg $t4, $t4
+    addu $t2, $t4, -10091
+    li $t5 1
+    move $t6,$t5
+    li $t7 2
+    move $t8,$t7
+    lw $t9,124($sp)
+    move $s0,$t9
+    move $s1,$t2
+    li $s2 -6
+    move $s3,$s2
+    sw $s0,180($sp)
+    sw $s1,176($sp)
+    sw $s3,100($sp)
+    sw $t6,172($sp)
+    sw $t8,168($sp)
+    while_1_start:
+    lw $t3,180($sp)
+    sle $t4, $t3, 100
+    beqz $t4, while_1_end
+    lw $t3,100($sp)
+    mul $t4, $t3, $t3
+    lw $t2,a_0+0
+    addu $t5, $t2, $t4
+    move $t2,$t5
+    lw $t6,a_0+4
+    addu $t7, $t6, $t4
+    move $t6,$t7
+    lw $t8,a_0+8
+    addu $t9, $t8, $t4
+    move $t8,$t9
+    lw $s0,a_0+12
+    addu $s1, $s0, $t4
+    move $s0,$s1
+    lw $s2,a_0+16
+    addu $s3, $s2, $t4
+    move $s2,$s3
+    lw $s4,a_0+20
+    addu $s5, $s4, $t4
+    move $s4,$s5
+    lw $s6,a_0+24
+    addu $s7, $s6, $t4
+    move $s6,$s7
+    lw $v1,a_0+28
+    addu $a1, $v1, $t4
+    move $v1,$a1
+    lw $a2,a_0+32
+    addu $a3, $a2, $t4
+    move $a2,$a3
+    lw $s1,a_0+36
+    addu $s3, $s1, $t4
+    move $s1,$s3
+    lw $s3,180($sp)
+    addu $t5, $s3, 1
+    move $s3,$t5
+    sw $s0,a_0+12
+    sw $t2,a_0+0
+    sw $s1,a_0+36
+    sw $s2,a_0+16
+    sw $s3,180($sp)
+    sw $s4,a_0+20
+    sw $t6,a_0+4
+    sw $s6,a_0+24
+    sw $t8,a_0+8
+    sw $a2,a_0+32
+    sw $v1,a_0+28
+    j while_1_start
+    while_1_end:
+    li $t3 0
+    move $t4,$t3
+    sw $t4,180($sp)
+    while_2_start:
+    lw $t3,180($sp)
+    li $t0, 10
+    sgt $t4, $t0, $t3
+    beqz $t4, while_2_end
+    lw $t3,180($sp)
+    mul $t4, $t3, 4
+    move $t0 $t4
+    lw $t2,a_0($t0)
+    move $a0 $t2
+    li $v0, 1
+    syscall
+    la $a0, print_6
+    li $v0, 4
+    syscall
+    addu $t5, $t3, 1
+    move $t3,$t5
+    sw $t3,180($sp)
+    sw $t4,4($sp)
+    j while_2_start
+    while_2_end:
+    la $a0, print_7
+    li $v0, 4
+    syscall
+    lw $t3,180($sp)
+    move $a0 $t3
+    li $v0, 1
+    syscall
+    la $a0, print_8
+    li $v0, 4
+    syscall
+    lw $t4,176($sp)
+    move $a0 $t4
+    li $v0, 1
+    syscall
+    la $a0, print_9
+    li $v0, 4
+    syscall
+    lw $t2,100($sp)
+    move $a0 $t2
+    li $v0, 1
+    syscall
+    la $a0, print_10
+    li $v0, 4
+    syscall
+    li $t5 0
+    move $v0 $t5
+    lw $ra,184($sp)
+    addu $sp,$sp,188
+    jr $ra

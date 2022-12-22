@@ -1,7 +1,6 @@
 package backend;
 
 import midend.util.Value;
-import midend.util.ValueType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +44,8 @@ public class RegisterManager {
         manager = new HashMap<>();
         writeBack = new HashMap<>();
         free = new ArrayList<>();
+        free.add("$t3");
+        free.add("$t4");
         free.add("$t2");
         free.add("$t5");
         free.add("$t6");
@@ -67,10 +68,10 @@ public class RegisterManager {
 
     public String load(Value value) {
         for (String register : manager.keySet()) {
-            if (manager.get(register).equals(value)) {
-                if (manager.get(register).getType() == ValueType.Variable &&
-                        manager.get(register).getName().matches("t\\_\\d+\\_temp"))
-                    writeBack.put(value, false);
+            if (manager.get(register).equals(value)) {//仅仅对竞速的弱数据有用
+//                if (manager.get(register).getType() == ValueType.Variable &&
+//                        manager.get(register).getName().matches("t\\_\\d+\\_temp"))
+//                    writeBack.put(value, false);
                 return register;
             }
         }

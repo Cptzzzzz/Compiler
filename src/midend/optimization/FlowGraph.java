@@ -28,7 +28,7 @@ public class FlowGraph {
         }
     }
 
-    public void analyse() {
+    public ArrayList<IRCode> analyse() {
         ArrayList<Integer> queue = new ArrayList<>();
         int length = basicBlocks.size();
         for (int i = 0; i < length; i++) {
@@ -66,8 +66,9 @@ public class FlowGraph {
         }
         for (BasicBlock basicBlock : basicBlocks) {
 //            basicBlock.print();
-//            basicBlock.dag();
+            basicBlock.dag();
         }
+        return generateIRCodes();
     }
 
     public void addEdge(int from, int to) {
