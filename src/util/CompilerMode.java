@@ -17,8 +17,17 @@ public class CompilerMode {
     private boolean error;
     private boolean ir;
     private boolean mips;
+    private boolean optimize;
 
     private boolean debug;
+
+    public boolean isOptimize() {
+        return optimize;
+    }
+
+    public void setOptimize(boolean optimize) {
+        this.optimize = optimize;
+    }
 
     public boolean isDebug() {
         return debug;

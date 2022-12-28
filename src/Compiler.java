@@ -14,6 +14,7 @@ public class Compiler {
         CompilerMode.getInstance().setIr(true);
         CompilerMode.getInstance().setMips(true);
         CompilerMode.getInstance().setDebug(false);
+        CompilerMode.getInstance().setOptimize(true);
     }
 
     public static void main(String[] args) {

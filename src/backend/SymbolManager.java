@@ -2,6 +2,7 @@ package backend;
 
 import midend.util.Value;
 import midend.util.ValueType;
+import util.CompilerMode;
 
 import java.util.ArrayList;
 
@@ -67,8 +68,10 @@ public class SymbolManager {
                 else
                     Mips.writeln(String.format("lw %s,%s+%d", register, value.getName(), value.getOffset().getValue()));
             } else {
-                RegisterManager.getInstance().symbolLoad(value.getOffset());
-//                load(value.getOffset(), "$t0");
+                if (CompilerMode.getInstance().isOptimize())
+                    RegisterManager.getInstance().symbolLoad(value.getOffset());
+                else
+                    load(value.getOffset(), "$t0");
                 if (value.isAddress())
                     Mips.writeln(String.format("la %s,%s($t0)", register, value.getName()));
                 else
@@ -84,8 +87,10 @@ public class SymbolManager {
             if (value.getOffset().getType() == ValueType.Imm) {
                 Mips.writeln(String.format("sw %s,%s+%d", register, value.getName(), value.getOffset().getValue()));
             } else {
-                RegisterManager.getInstance().symbolLoad(value.getOffset());
-//                load(value.getOffset(), "$t0");
+                if (CompilerMode.getInstance().isOptimize())
+                    RegisterManager.getInstance().symbolLoad(value.getOffset());
+                else
+                    load(value.getOffset(), "$t0");
                 Mips.writeln(String.format("sw %s,%s($t0)", register, value.getName()));
             }
         }
@@ -114,8 +119,10 @@ public class SymbolManager {
                     }
                 }
             } else {
-                RegisterManager.getInstance().symbolLoad(value.getOffset());
-//                load(value.getOffset(), "$t0");
+                if (CompilerMode.getInstance().isOptimize())
+                    RegisterManager.getInstance().symbolLoad(value.getOffset());
+                else
+                    load(value.getOffset(), "$t0");
                 if (value.isAddress()) {
                     if (symbol.isReference()) {
                         Mips.writeln(String.format("lw $t1,%d($sp)", symbol.getLocation()));
@@ -153,8 +160,10 @@ public class SymbolManager {
                     Mips.writeln(String.format("sw %s,%d($sp)", register, value.getOffset().getValue() + symbol.getLocation()));
                 }
             } else {
-                RegisterManager.getInstance().symbolLoad(value.getOffset());
-//                load(value.getOffset(), "$t0");
+                if (CompilerMode.getInstance().isOptimize())
+                    RegisterManager.getInstance().symbolLoad(value.getOffset());
+                else
+                    load(value.getOffset(), "$t0");
                 if (symbol.isReference()) {
                     Mips.writeln(String.format("lw $t1,%d($sp)", symbol.getLocation()));
                     Mips.writeln("addu $t0,$t0,$t1");

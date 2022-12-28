@@ -43,6 +43,8 @@ public class IRSupporter {
     private ArrayList<FlowGraph> flowGraphs;//第一个流图包括全局变量声明 后续的每个流图以FuncEntry为入口 FuncEnd为出口
 
     public void optimize() {
+        if (!CompilerMode.getInstance().isOptimize())
+            return;
 //        moveDeclaration();
         while (jumpOptimize()) ;
 //        buildFlowGraph();

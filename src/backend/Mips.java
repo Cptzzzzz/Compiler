@@ -4,6 +4,7 @@ import midend.ir.*;
 import midend.util.IRSupporter;
 import midend.util.Value;
 import midend.util.ValueType;
+import util.CompilerMode;
 import util.MipsWriter;
 
 import java.util.ArrayList;
@@ -22,9 +23,11 @@ public class Mips {
     public static void generate() {
         init();
         data();
-//        text();
-        setEntryCode();
-        realText();
+        if (CompilerMode.getInstance().isOptimize()) {
+            setEntryCode();
+            realText();
+        } else
+            text();
     }
 
     public static void init() {
@@ -285,7 +288,7 @@ public class Mips {
         writeln("li $v0, 10");
         writeln("syscall");
         for (IRCode irCode : IRSupporter.getInstance().getIrCodes()) {
-            if (irCode.isEntryCode()){
+            if (irCode.isEntryCode()) {
                 RegisterManager.getInstance().clear();
 //                System.out.println(irCode);
             }
