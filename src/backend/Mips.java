@@ -124,6 +124,9 @@ public class Mips {
                 SymbolManager.getInstance().load(binaryAssign.getRight(0), "$t3");
                 SymbolManager.getInstance().load(binaryAssign.getRight(1), "$t4");
                 switch (binaryAssign.getOperator()) {
+                    case BITAND:
+                        Mips.writeln("and $t3, $t3, $t4");
+                        break;
                     case PLUS:
                         Mips.writeln("addu $t3, $t3, $t4");
                         break;

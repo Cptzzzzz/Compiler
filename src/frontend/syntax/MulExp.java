@@ -22,7 +22,8 @@ public class MulExp extends ParserUnit {
         mulExp.add(UnaryExp.parser(lexicalitySupporter));
         while (lexicalitySupporter.read().getType().equals("MULT") ||
                 lexicalitySupporter.read().getType().equals("DIV") ||
-                lexicalitySupporter.read().getType().equals("MOD")) {
+                lexicalitySupporter.read().getType().equals("MOD") ||
+                lexicalitySupporter.read().getType().equals("BITAND")) {
             mulExp.add(lexicalitySupporter.readAndNext());
             mulExp.add(UnaryExp.parser(lexicalitySupporter));
         }
@@ -74,8 +75,10 @@ public class MulExp extends ParserUnit {
                 return ((MulExp) getNode(0)).getInteger() * ((UnaryExp) getNode(2)).getInteger();
             } else if (getNode(1).getType().equals("DIV")) {
                 return ((MulExp) getNode(0)).getInteger() / ((UnaryExp) getNode(2)).getInteger();
-            } else {
+            } else if (getNode(1).getType().equals("MOD")) {
                 return ((MulExp) getNode(0)).getInteger() % ((UnaryExp) getNode(2)).getInteger();
+            } else {
+                return ((MulExp) getNode(0)).getInteger() & ((UnaryExp) getNode(2)).getInteger();
             }
         }
     }
@@ -103,15 +106,19 @@ public class MulExp extends ParserUnit {
                 return new Value(v1.getValue() * v2.getValue());
             else if (getNode(1).getType().equals("DIV"))
                 return new Value(v1.getValue() / v2.getValue());
-            else
+            else if (getNode(1).getType().equals("MOD"))
                 return new Value(v1.getValue() % v2.getValue());
+            else
+                return new Value(v1.getValue() & v2.getValue());
         Value value = Allocator.getInstance().getTemp();
         if (getNode(1).getType().equals("MULT"))
             IRSupporter.getInstance().addIRCode(new BinaryAssign(value, v1, v2, Operator.MULTI));
         else if (getNode(1).getType().equals("DIV"))
             IRSupporter.getInstance().addIRCode(new BinaryAssign(value, v1, v2, Operator.DIV));
-        else
+        else if (getNode(1).getType().equals("MOD"))
             IRSupporter.getInstance().addIRCode(new BinaryAssign(value, v1, v2, Operator.MOD));
+        else
+            IRSupporter.getInstance().addIRCode(new BinaryAssign(value, v1, v2, Operator.BITAND));
         return value;
     }
 }

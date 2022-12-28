@@ -1,11 +1,11 @@
 package midend.util;
 
 public enum Operator {
-    PLUS, MINUS, MULTI, DIV, MOD, EQL, NEQ, GRE, LSS, LEQ, GEQ, NOT;
+    PLUS, MINUS, MULTI, DIV, MOD, EQL, NEQ, GRE, LSS, LEQ, GEQ, NOT, BITAND;
 
     @Override
     public String toString() {
-        switch (this){
+        switch (this) {
             case PLUS:
                 return "+";
             case MINUS:
@@ -28,12 +28,15 @@ public enum Operator {
                 return "<=";
             case GEQ:
                 return ">=";
+            case BITAND:
+                return "&";
             default:
                 return "!";
         }
     }
-    public String toName(){
-        switch (this){
+
+    public String toName() {
+        switch (this) {
             case PLUS:
                 return "PLUS";
             case MINUS:
@@ -56,6 +59,8 @@ public enum Operator {
                 return "LEQ";
             case GEQ:
                 return "GEQ";
+            case BITAND:
+                return "BITAND";
             default:
                 return "NOT";
         }

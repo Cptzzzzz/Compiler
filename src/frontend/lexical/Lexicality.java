@@ -31,6 +31,7 @@ public class Lexicality extends Node {
         keywords.put("printf", "PRINTFTK");
         keywords.put("return", "RETURNTK");
         keywords.put("void", "VOIDTK");
+        keywords.put("bitand", "BITAND");
 
         symbols = new HashMap<>();
         symbols.put("\\!", "NOT");

@@ -3,6 +3,7 @@ package frontend.syntax;
 import frontend.lexical.Lexicality;
 import frontend.util.*;
 import midend.ir.Declaration;
+import midend.ir.GetInt;
 import midend.ir.UnaryAssign;
 import midend.util.IRSupporter;
 import midend.util.Operator;
@@ -32,7 +33,13 @@ public class VarDef extends ParserUnit {
         }
         if (lexicalitySupporter.read().getType().equals("ASSIGN")) {
             varDef.add(lexicalitySupporter.readAndNext());
-            varDef.add(InitVal.parser(lexicalitySupporter));
+            if (InitVal.pretreat(lexicalitySupporter))
+                varDef.add(InitVal.parser(lexicalitySupporter));
+            else if (lexicalitySupporter.read().getType().equals("GETINTTK")) {
+                varDef.add(lexicalitySupporter.readAndNext());
+                varDef.add(lexicalitySupporter.readAndNext());
+                varDef.add(lexicalitySupporter.readAndNext());
+            }
         }
         return varDef;
     }
@@ -77,7 +84,9 @@ public class VarDef extends ParserUnit {
             }
         }
         IRSupporter.getInstance().addIRCode(new Declaration(symbol.getFinalName(), state.getBlockNumber() == 0, false, symbol.getSize(), false, symbol.getType(), values));
-        if (state.getBlockNumber() != 0 && getNode(nodes.size() - 1) instanceof InitVal) {
+        if (nodes.size() >= 3 && getNode(nodes.size() - 3).getType().equals("GETINTTK")) {
+            IRSupporter.getInstance().addIRCode(new GetInt(new Value(symbol.getFinalName())));
+        } else if (state.getBlockNumber() != 0 && getNode(nodes.size() - 1) instanceof InitVal) {
             ArrayList<Value> initValues = ((InitVal) getNode(nodes.size() - 1)).getValues();
             if (symbol.getType() == ValueType.Variable) {
                 IRSupporter.getInstance().addIRCode(new UnaryAssign(new Value(symbol.getFinalName()), initValues.get(0), Operator.PLUS));
