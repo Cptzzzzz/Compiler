@@ -1,171 +1,189 @@
-global const Variable *N_0
-global var Array *a_0
-function: fib_function
+global var Variable *a_0
+global var Variable *b_0
+global var Variable *c_0
+global var Variable *d_0
+global var Variable *e_0
+global var Variable *i_0
+function: func0_function
+local var Variable *a_1
+local var Variable *b_1
 local var Variable *i_1
+i_1 = + 0
+local var Variable *c_1
+c_1 = + 128
 local var Variable *t_1_temp
-t_1_temp = i_1 == 1
-branch LAnd_1_fail if t_1_temp == 0
+t_1_temp = a_1 + b_1
+local var Variable *t_2_temp
+t_2_temp = t_1_temp % c_1
+return t_2_temp
+function func0_function end
+function: func1_function
+local var Variable *a_2
+local var Variable *t_3_temp
+t_3_temp = i_0 + 1
+i_0 = + t_3_temp
+return i_0
+function func1_function end
+function: func2_function
+local var Variable *a_3
+local var Variable *b_3
+local var Variable *t_4_temp
+t_4_temp = a_3 % b_3
+local var Variable *t_5_temp
+t_5_temp = t_4_temp == 0
+branch LAnd_1_fail if t_5_temp == 0
 jump LOr_1_success
 label: LAnd_1_fail
 jump if_1_end
 label: LOr_1_success
 return 1
 label: if_1_end
-local var Variable *t_2_temp
-t_2_temp = i_1 == 2
-branch LAnd_2_fail if t_2_temp == 0
+return 0
+function func2_function end
+function: func3_function
+print string1 "glo_i = "
+print number i_0
+print string2 "\n"
+local var Variable *tt0_5
+local var Variable *tt1_5
+local var Variable *t2_5
+local var Variable *tt3_5
+local var Variable *tt4_5
+local var Variable *v_5
+v_5 = + 1906
+label: while_1_start
+local var Variable *t_6_temp
+t_6_temp = i_0 < 10000
+branch LAnd_2_fail if t_6_temp == 0
 jump LOr_2_success
 label: LAnd_2_fail
-jump if_2_end
+jump while_1_end
 label: LOr_2_success
-return 2
-label: if_2_end
-local var Variable *t_3_temp
-t_3_temp = i_1 - 1
-local var Variable *t_4_temp
-t_4_temp = call fib_function([t_3_temp])
-local var Variable *t_5_temp
-t_5_temp = i_1 - 2
-local var Variable *t_6_temp
-t_6_temp = call fib_function([t_5_temp])
+local var Variable *v_6
 local var Variable *t_7_temp
-t_7_temp = t_4_temp + t_6_temp
-return t_7_temp
-function fib_function end
-function: main_function
-local var Variable *i_4
-i_4 = + 2
-local var Variable *j_4
-j_4 = + 5
-local const Variable *a1_4
-a1_4 = + 1
-local const Variable *a2_4
-a2_4 = + 2
+t_7_temp = a_0 * 4
 local var Variable *t_8_temp
-t_8_temp = getint()
-i_4 = + t_8_temp
+t_8_temp = t_7_temp * 32
 local var Variable *t_9_temp
-t_9_temp = getint()
-j_4 = + t_9_temp
+t_9_temp = t_8_temp * a_0
 local var Variable *t_10_temp
-t_10_temp = i_4 * j_4
+t_10_temp = t_9_temp / a_0
 local var Variable *t_11_temp
-t_11_temp = - t_10_temp
+t_11_temp = t_10_temp / 32
+v_6 = + t_11_temp
 local var Variable *t_12_temp
-t_12_temp = call fib_function([4])
+t_12_temp = call func0_function([b_0, v_6])
+b_0 = + t_12_temp
 local var Variable *t_13_temp
-t_13_temp = t_11_temp * t_12_temp
+t_13_temp = a_0 * 4
 local var Variable *t_14_temp
-t_14_temp = t_13_temp + 0
+t_14_temp = t_13_temp + b_0
 local var Variable *t_15_temp
-t_15_temp = *a_0[4] * 1
+t_15_temp = t_14_temp + c_0
+tt0_5 = + t_15_temp
 local var Variable *t_16_temp
-t_16_temp = t_14_temp + t_15_temp
+t_16_temp = a_0 * 4
 local var Variable *t_17_temp
-t_17_temp = t_16_temp - 0
+t_17_temp = t_16_temp + b_0
 local var Variable *t_18_temp
-t_18_temp = t_17_temp * 5
-i_4 = + t_18_temp
+t_18_temp = t_17_temp + c_0
 local var Variable *t_19_temp
-t_19_temp = call fib_function([5])
+t_19_temp = t_18_temp + d_0
+tt1_5 = + t_19_temp
 local var Variable *t_20_temp
-t_20_temp = t_19_temp + 2
+t_20_temp = a_0 * 4
 local var Variable *t_21_temp
-t_21_temp = call fib_function([t_20_temp])
+t_21_temp = t_20_temp + b_0
 local var Variable *t_22_temp
-t_22_temp = 1197 - t_21_temp
+t_22_temp = t_21_temp + c_0
 local var Variable *t_23_temp
-t_23_temp = t_22_temp + -10091
-j_4 = + t_23_temp
-local var Variable *k_4
-k_4 = + -6
-label: while_1_start
+t_23_temp = t_22_temp + d_0
 local var Variable *t_24_temp
-t_24_temp = i_4 <= 100
-branch LAnd_3_fail if t_24_temp == 0
+t_24_temp = t_23_temp + e_0
+t2_5 = + t_24_temp
+local var Variable *t_25_temp
+t_25_temp = a_0 * 4
+local var Variable *t_26_temp
+t_26_temp = t_25_temp + b_0
+local var Variable *t_27_temp
+t_27_temp = t_26_temp + c_0
+local var Variable *t_28_temp
+t_28_temp = t_27_temp + d_0
+local var Variable *t_29_temp
+t_29_temp = t_28_temp + e_0
+tt3_5 = + t_29_temp
+local var Variable *t_30_temp
+t_30_temp = a_0 * 4
+local var Variable *t_31_temp
+t_31_temp = t_30_temp + b_0
+local var Variable *t_32_temp
+t_32_temp = t_31_temp + c_0
+local var Variable *t_33_temp
+t_33_temp = t_32_temp + d_0
+local var Variable *t_34_temp
+t_34_temp = t_33_temp + e_0
+tt4_5 = + t_34_temp
+local var Variable *t_35_temp
+t_35_temp = call func2_function([i_0, 1000])
+branch LAnd_3_fail if t_35_temp == 0
 jump LOr_3_success
 label: LAnd_3_fail
+jump if_2_end
 jump while_1_end
 label: LOr_3_success
-local var Variable *t_25_temp
-t_25_temp = k_4 * k_4
-local var Variable *t_26_temp
-t_26_temp = *a_0[0] + t_25_temp
-*a_0[0] = + t_26_temp
-local var Variable *t_27_temp
-t_27_temp = k_4 * k_4
-local var Variable *t_28_temp
-t_28_temp = *a_0[4] + t_27_temp
-*a_0[4] = + t_28_temp
-local var Variable *t_29_temp
-t_29_temp = k_4 * k_4
-local var Variable *t_30_temp
-t_30_temp = *a_0[8] + t_29_temp
-*a_0[8] = + t_30_temp
-local var Variable *t_31_temp
-t_31_temp = k_4 * k_4
-local var Variable *t_32_temp
-t_32_temp = *a_0[12] + t_31_temp
-*a_0[12] = + t_32_temp
-local var Variable *t_33_temp
-t_33_temp = k_4 * k_4
-local var Variable *t_34_temp
-t_34_temp = *a_0[16] + t_33_temp
-*a_0[16] = + t_34_temp
-local var Variable *t_35_temp
-t_35_temp = k_4 * k_4
 local var Variable *t_36_temp
-t_36_temp = *a_0[20] + t_35_temp
-*a_0[20] = + t_36_temp
+t_36_temp = tt0_5 + tt1_5
 local var Variable *t_37_temp
-t_37_temp = k_4 * k_4
+t_37_temp = t_36_temp + t2_5
 local var Variable *t_38_temp
-t_38_temp = *a_0[24] + t_37_temp
-*a_0[24] = + t_38_temp
+t_38_temp = t_37_temp + tt3_5
 local var Variable *t_39_temp
-t_39_temp = k_4 * k_4
+t_39_temp = t_38_temp + tt4_5
+print string3 "sum = "
+print number t_39_temp
+print string4 "\n"
+label: if_2_end
 local var Variable *t_40_temp
-t_40_temp = *a_0[28] + t_39_temp
-*a_0[28] = + t_40_temp
-local var Variable *t_41_temp
-t_41_temp = k_4 * k_4
-local var Variable *t_42_temp
-t_42_temp = *a_0[32] + t_41_temp
-*a_0[32] = + t_42_temp
-local var Variable *t_43_temp
-t_43_temp = k_4 * k_4
-local var Variable *t_44_temp
-t_44_temp = *a_0[36] + t_43_temp
-*a_0[36] = + t_44_temp
-local var Variable *t_45_temp
-t_45_temp = i_4 + 1
-i_4 = + t_45_temp
+t_40_temp = call func1_function([i_0])
 jump while_1_start
 label: while_1_end
-i_4 = + 0
-label: while_2_start
+local var Variable *t_41_temp
+t_41_temp = tt0_5 + tt1_5
+local var Variable *t_42_temp
+t_42_temp = t_41_temp + t2_5
+local var Variable *t_43_temp
+t_43_temp = t_42_temp + tt3_5
+local var Variable *t_44_temp
+t_44_temp = t_43_temp + tt4_5
+return t_44_temp
+function func3_function end
+function: main_function
+local var Variable *i_8
+i_8 = + 0
+local var Variable *t_45_temp
+t_45_temp = getint()
+a_0 = + t_45_temp
 local var Variable *t_46_temp
-t_46_temp = i_4 < 10
-branch LAnd_4_fail if t_46_temp == 0
-jump LOr_4_success
-label: LAnd_4_fail
-jump while_2_end
-label: LOr_4_success
+t_46_temp = getint()
+b_0 = + t_46_temp
 local var Variable *t_47_temp
-t_47_temp = i_4 * 4
-print number *a_0[t_47_temp]
-print string1 ", "
+t_47_temp = getint()
+c_0 = + t_47_temp
 local var Variable *t_48_temp
-t_48_temp = i_4 + 1
-i_4 = + t_48_temp
-jump while_2_start
-label: while_2_end
-print string2 "\n"
-print number i_4
-print string3 ", "
-print number j_4
-print string4 ", "
-print number k_4
-print string5 "\n"
+t_48_temp = getint()
+d_0 = + t_48_temp
+local var Variable *t_49_temp
+t_49_temp = getint()
+e_0 = + t_49_temp
+local var Variable *t_50_temp
+t_50_temp = getint()
+i_8 = + t_50_temp
+print string5 "main_i = "
+print number i_8
+print string6 "\n"
+local var Variable *t_51_temp
+t_51_temp = call func3_function([])
+print number t_51_temp
+print string7 "\n"
 return 0
 function main_function end

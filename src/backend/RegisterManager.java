@@ -92,7 +92,7 @@ public class RegisterManager {
         Mips.writeln(String.format("move %s %s", register, temp));
     }
 
-    public String  allocate(Value value) {
+    public String allocate(Value value) {
         for (String register : manager.keySet()) {
             if (manager.get(register).equals(value)) {
                 writeBack.put(value, true);
